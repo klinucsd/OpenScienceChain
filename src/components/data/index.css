@@ -1,0 +1,87 @@
+.ant-input-group-addon {
+    position: relative;
+    padding: 0 11px;
+    color: darkgreen;
+    font-weight: normal;
+    font-size: 14px;
+    text-align: center;
+    background-color: #fafafa;
+    border: 1px solid #d9d9d9 !important;
+    border-radius: 2px;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+.ant-input-group-addon-aux {
+    position: relative;
+    padding: 7px 11px 7px 11px;
+    top: 5px;
+    right: -1px;
+    color: darkgreen;
+    font-weight: normal;
+    font-size: 14px;
+    text-align: center;
+    background-color: #e8e8e8;
+    border: 1px solid #d9d9d9 !important;
+    border-radius: 2px;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+thead[class*="ant-table-thead"] th{
+    background-color: #d8ecf3 !important;
+}
+
+.ant-table.ant-table-small .ant-table-tbody > tr > td {
+    padding: 2px 0px 2px 8px;
+}
+
+.ant-table.ant-table-small .ant-table-thead > tr > th {
+    padding: 4px 4px 4px 8px;
+}
+
+
+
+
+.card-container p {
+    margin: 0;
+}
+.card-container > .ant-tabs-card > .ant-tabs-content {
+    height: 120px;
+    margin-top: -16px;
+}
+[data-theme='compact'] .card-container > .ant-tabs-card > .ant-tabs-content {
+    height: 120px;
+    margin-top: -8px;
+}
+
+[data-theme='compact'] .card-container > .ant-tabs-card > .ant-tabs-content > .ant-tabs-tabpane,
+.card-container > .ant-tabs-card > .ant-tabs-content > .ant-tabs-tabpane {
+    background: #fff;
+    padding: 16px;
+}
+
+[data-theme='compact'] .card-container > .ant-tabs-card > .ant-tabs-bar,
+.card-container > .ant-tabs-card > .ant-tabs-bar {
+    border-color: #fff;
+}
+
+[data-theme='compact'] .card-container > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab,
+.card-container > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab {
+    border-color: transparent;
+    background: transparent;
+}
+
+[data-theme='compact'] .card-container > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active,
+.card-container > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
+    border-color: #fff;
+    background: #fff;
+}
+
+.MuiStepIcon-root.MuiStepIcon-completed {
+    color: green !important;
+}
+
+.MuiStepIcon-root.MuiStepIcon-active {
+    color: #3f51b5 !important;
+}

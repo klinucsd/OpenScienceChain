@@ -1,0 +1,4 @@
+
+thead[class*="ant-table-thead"] th{
+    background-color: yellow !important;
+}
