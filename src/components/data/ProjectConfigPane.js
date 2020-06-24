@@ -668,7 +668,7 @@ class ProjectConfigPane extends React.Component {
                                                                )
                                                            }
                                                        onClick={() => this.stepTo(3)}>
-                                                {'Select questionnarie data'}
+                                                {'Select questionnaire data'}
                                             </StepLabel>
                                         </Step>
                                     </Stepper>

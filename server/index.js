@@ -68,22 +68,9 @@ Project.belongsToMany(User, {through: 'User_Project', as: 'users'});
 const seed = () => {
     return Promise.all([
         User.create({
-            first_name: 'Kai',
-            last_name: 'Lin',
-            email: 'klin@sdsc.edu',
-            role: 'admin',
-            password: '1234',
-        }),
-        User.create({
             first_name: 'Normal',
             last_name: 'User',
             email: 'user@coh.org',
-            role: 'user',
-        }),
-        User.create({
-            first_name: 'Amber',
-            last_name: 'Brown',
-            email: 'abrown@university.edu',
             role: 'user',
         }),
         User.create({
@@ -120,17 +107,24 @@ const seed = () => {
             geospatial_data: true,
             data_sharing: false,
         })
-    ]).then(([kai, user, amber, admin, DOEBCR, HNCS, LCRS]) => {
+    ]).then(([user, admin, DOEBCR, HNCS, LCRS]) => {
         return Promise.all([
-            kai.setProjects([DOEBCR, HNCS]),
             user.setProjects([DOEBCR, HNCS, LCRS]),
-            amber.setProjects([LCRS]),
             admin.setProjects([DOEBCR, HNCS]),
         ]);
     }).catch(error => console.log(error));
 };
 
+const users = require('../src/model/users');
+const init = () => {
+    for (var i=0; i<users.length; i++) {
+        console.log(JSON.stringify(users[i]));
+        User.create(users[i]);
+    }
+}
+
 sequelize.sync({force: false})
+    //.then(() => init())
     //.then(() => seed())
     .then(() => User.findAll({include: [{model: Project, as: 'projects'}]}))
     .then(users => console.log(JSON.stringify(users)))
@@ -788,6 +782,64 @@ app.post('/api/topic_variable', (req, res) => {
                     variable: data[i]['Variable'],
                 });
             }
+            res.json(dataset);
+        });
+});
+
+
+app.post('/api/topic_for_original_design', (req, res) => {
+
+    let sql =
+        "SELECT Questionnarie, topic_name, `Variable`, Description, `Values`, section " +
+        "  FROM topic WHERE NOT topic_name = '' ";
+
+    if (req.body.search.questionnarie && req.body.search.questionnarie.length > 0) {
+        if (req.body.search.questionnarie.length !== 8) {
+            sql += " AND (";
+            for (var i = 0; i < req.body.search.questionnarie.length; i++) {
+                if (i > 0) sql += "  OR ";
+                sql += "Questionnarie='" + req.body.search.questionnarie[i] + "'";
+            }
+            sql += ")";
+        }
+
+        if (req.body.search.searchTerm) {
+            sql += ` AND ( topic_name LIKE '%${req.body.search.searchTerm}%' OR  description LIKE '%${req.body.search.searchTerm}%' ) `
+        }
+
+        if (req.body.search.topics && req.body.search.topics.length > 0) {
+            sql += ' AND (';
+            for (var i = 0; i < req.body.search.topics.length; i++) {
+                if (i > 0) sql += "  OR ";
+                sql += ` topic_name ='${req.body.search.topics[i]}' `;
+            }
+            sql += " ) ";
+        } else if (!req.body.search.searchTerm) {
+            sql += " AND 1 = 0 ";
+        }
+    } else {
+        sql += " AND 1 = 0 ";
+    }
+
+    sql += " ORDER BY topic_name, Questionnarie ";
+
+    console.log("sql = " + sql);
+
+    sequelize.query(sql)
+        .then(result => {
+            let data = result[0];
+            let dataset = [];
+            for (var i = 0; i < data.length; i++) {
+                dataset.push({
+                    questionnarie: data[i]['questionnarie'],
+                    topic: data[i]['topic_name'],
+                    variable: data[i]['Variable'],
+                    description: data[i]['Description'],
+                    values: data[i]['Values'],
+                    section: data[i]['section']
+                });
+            }
+
             res.json(dataset);
         });
 });

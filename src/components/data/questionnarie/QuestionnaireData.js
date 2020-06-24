@@ -1,12 +1,17 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography/index';
-import {Button, Input, Tabs} from 'antd';
+import {Button, Input, Tabs, Card, Divider} from 'antd';
 import {Collapse} from 'antd';
 import 'antd/dist/antd.css';
 import '../index.css';
 import './questionnarie.css';
 import SectionTable from "./SectionTable";
 import AllTopicTable from "./AllTopicTable";
+import all_topic_to_variable from '../../../model/topic_variables';
+
+import QuestionnariePane from './QuestionnariePane';
+import TopicPane from './TopicPane';
+import TopicVariableTable from "./topic/TopicVariableTable";
 
 const {Panel} = Collapse;
 const {Search} = Input;
@@ -24,22 +29,21 @@ class QuestionnaireData extends React.Component {
         this.state = {
             mode: 'section',
             topicActiveTabKey: 'Q1',
-            searchTerm: null
+            searchTerm: null,
+            selected_variables: this.props.project.questionnarie ?
+                JSON.parse(this.props.project.questionnarie)
+                :
+                {
+                    Q1: {},
+                    Q2: {},
+                    Q3: {},
+                    Q4: {},
+                    Q4mini: {},
+                    Q5: {},
+                    Q5mini: {},
+                    Q6: {}
+                }
         };
-
-        this.selected_variables = this.props.project.questionnarie ?
-            JSON.parse(this.props.project.questionnarie)
-            :
-            {
-                Q1: {},
-                Q2: {},
-                Q3: {},
-                Q4: {},
-                Q4mini: {},
-                Q5: {},
-                Q5mini: {},
-                Q6: {}
-            };
 
         this.sectionQ1Ref = React.createRef();
         this.sectionQ2Ref = React.createRef();
@@ -51,6 +55,7 @@ class QuestionnaireData extends React.Component {
         this.sectionQ6Ref = React.createRef();
 
         this.topicRef = React.createRef();
+        this.allTopicRef = React.createRef();
     }
 
     viewByTopics = () => {
@@ -96,21 +101,21 @@ class QuestionnaireData extends React.Component {
     }
 
     setSelectedVariables = (questionnarie, values) => {
-        this.selected_variables[questionnarie] = values;
-        //console.log("setSelectedVariables = " + JSON.stringify(this.selected_variables));
-        this.props.save_questionnarie(this.selected_variables);
+        this.state.selected_variables[questionnarie] = values;
+        //console.log("setSelectedVariables = " + JSON.stringify(this.state.selected_variables));
+        this.props.save_questionnarie(this.state.selected_variables);
     }
 
     setSelectedVariablesWithQuestionnarie = (map) => {
 
-        //console.log("before ==== " + JSON.stringify(this.selected_variables));
+        //console.log("before ==== " + JSON.stringify(this.state.selected_variables));
         //console.log("after ==== " + JSON.stringify(map));
 
         for (let [questionnarie, selected] of Object.entries(map)) {
-            this.selected_variables[questionnarie] = selected;
+            this.state.selected_variables[questionnarie] = selected;
         }
-        this.props.save_questionnarie(this.selected_variables);
-        //console.log("final ==== " + JSON.stringify(this.selected_variables));
+        this.props.save_questionnarie(this.state.selected_variables);
+        //console.log("final ==== " + JSON.stringify(this.state.selected_variables));
     }
 
     onSearchTermChange = (evt) => {
@@ -119,13 +124,22 @@ class QuestionnaireData extends React.Component {
         });
     }
 
+    setSearchTerm = (searchTerm) => {
+        this.setState({
+            searchTerm
+        });
+    }
+
     getSelectedVariables = () => {
-        return this.selected_variables;
+        return this.state.selected_variables;
     }
 
     reset = () => {
         if (this.topicRef.current) {
             this.topicRef.current.reset();
+        }
+        if (this.allTopicRef.current) {
+            this.allTopicRef.current.reset();
         }
         if (this.sectionQ1Ref.current) {
             this.sectionQ1Ref.current.reset();
@@ -184,6 +198,38 @@ class QuestionnaireData extends React.Component {
         }
     }
 
+    countSelectedVariables = () => {
+        let result = 0;
+        if (this.state.selected_variables) {
+            Object.keys(this.state.selected_variables).forEach(questionnarie => {
+                if (this.state.selected_variables[questionnarie]) {
+                    result += Object.keys(this.state.selected_variables[questionnarie]).length;
+                }
+            });
+
+        }
+        return result;
+    }
+
+    getSelectedTopicVariables = (topic) => {
+        let result = [];
+        let all_variables = all_topic_to_variable[topic];
+        for (var i = 0; i < all_variables.length; i++) {
+            let variable = all_variables[i].variable;
+            let questionnarie = all_variables[i].questionnarie;
+            if (this.state.selected_variables[questionnarie][variable]) {
+                result.push(variable);
+            }
+        }
+
+        return result;
+    }
+
+    setSelectedTopicsAndQuestionnarie = (questionnarie, topics) => {
+        this.questionnarie = questionnarie;
+        this.topics = topics;
+    }
+
     render() {
         let thisState = this.state;
         return (
@@ -202,142 +248,257 @@ class QuestionnaireData extends React.Component {
                     the window on the right, and click Confirm Selections to finish.
                 </Typography>
 
-                {
-                    this.state.mode === 'section' ?
-                        <Tabs defaultActiveKey="1"
-                              type={"card"}
-                              style={{padding: '10pt 10pt 10pt 10pt'}}
-                              tabBarExtraContent={
-                                  <table border={0}>
-                                      <tbody>
-                                      <tr>
-                                          <td>
-                                              <Button style={{marginRight: '2pt'}}
-                                                      onClick={this.viewByTopics}>
-                                                  View by Topics
-                                              </Button>
-                                          </td>
-                                          <td>
-                                              <Search placeholder="input search text"
-                                                      allowClear
-                                                      onSearch={this.onSearch}
-                                                      value={this.state.searchTerm}
-                                                      onChange={this.onSearchTermChange}
-                                                      style={{width: '100'}}
-                                              />
-                                          </td>
-                                          <td style={{width: '5pt'}}></td>
-                                      </tr>
-                                      </tbody>
-                                  </table>
-                              }
-                        >
-                            <TabPane tab="Q1" key="1" forceRender={true}>
-                                <SectionTable type={'Q1'}
-                                              selectedVariables={this.selected_variables['Q1']}
-                                              setSelectedVariables={this.setSelectedVariables}
-                                              searchTerm={this.state.searchTerm}
-                                              ref={this.sectionQ1Ref}
-                                />
-                            </TabPane>
-                            <TabPane tab="Q2" key="2" forceRender={true}>
-                                <SectionTable type={'Q2'}
-                                              selectedVariables={this.selected_variables['Q2']}
-                                              setSelectedVariables={this.setSelectedVariables}
-                                              searchTerm={this.state.searchTerm}
-                                              ref={this.sectionQ2Ref}
-                                />
-                            </TabPane>
-                            <TabPane tab="Q3" key="3" forceRender={true}>
-                                <SectionTable type={'Q3'}
-                                              selectedVariables={this.selected_variables['Q3']}
-                                              setSelectedVariables={this.setSelectedVariables}
-                                              searchTerm={this.state.searchTerm}
-                                              ref={this.sectionQ3Ref}
-                                />
-                            </TabPane>
-                            <TabPane tab="Q4" key="4" forceRender={true}>
-                                <SectionTable type={'Q4'}
-                                              selectedVariables={this.selected_variables['Q4']}
-                                              setSelectedVariables={this.setSelectedVariables}
-                                              searchTerm={this.state.searchTerm}
-                                              ref={this.sectionQ4Ref}
-                                />
-                            </TabPane>
-                            <TabPane tab="Q4mini" key="41" forceRender={true}>
-                                <SectionTable type={'Q4mini'}
-                                              selectedVariables={this.selected_variables['Q4mini']}
-                                              setSelectedVariables={this.setSelectedVariables}
-                                              searchTerm={this.state.searchTerm}
-                                              ref={this.sectionQ4miniRef}
-                                />
-                            </TabPane>
-                            <TabPane tab="Q5" key="5" forceRender={true}>
-                                <SectionTable type={'Q5'}
-                                              selectedVariables={this.selected_variables['Q5']}
-                                              setSelectedVariables={this.setSelectedVariables}
-                                              searchTerm={this.state.searchTerm}
-                                              ref={this.sectionQ5Ref}
-                                />
-                            </TabPane>
-                            <TabPane tab="Q5mini" key="51" forceRender={true}>
-                                <SectionTable type={'Q5mini'}
-                                              selectedVariables={this.selected_variables['Q5mini']}
-                                              setSelectedVariables={this.setSelectedVariables}
-                                              searchTerm={this.state.searchTerm}
-                                              ref={this.sectionQ5miniRef}
-                                />
-                            </TabPane>
-                            <TabPane tab="Q6" key="6" forceRender={true}>
-                                <SectionTable type={'Q6'}
-                                              selectedVariables={this.selected_variables['Q6']}
-                                              setSelectedVariables={this.setSelectedVariables}
-                                              searchTerm={this.state.searchTerm}
-                                              ref={this.sectionQ6Ref}
-                                />
-                            </TabPane>
-                        </Tabs>
-                        :
-                        <Tabs defaultActiveKey="Q1"
-                              activeKey={this.state.topicActiveTabKey}
-                              onChange={this.onTopicActiveTabChange}
-                              type={"card"}
-                              style={{padding: '10pt 10pt 10pt 10pt'}}
-                              tabBarExtraContent={
-                                  <table border={0}>
-                                      <tbody>
-                                      <tr>
-                                          <td>
-                                              <Button style={{marginRight: '2pt'}}
-                                                      onClick={this.viewBySections}>
-                                                  View by Sections
-                                              </Button>
-                                          </td>
-                                          <td>
-                                              <Search placeholder="input search text"
-                                                      allowClear
-                                                      onSearch={this.onSearch}
-                                                      value={this.state.searchTerm}
-                                                      onChange={this.onSearchTermChange}
-                                                      style={{width: '100'}}
-                                              />
-                                          </td>
-                                          <td style={{width: '5pt'}}></td>
-                                      </tr>
-                                      </tbody>
-                                  </table>
-                              }
-                        >
-                            <TabPane tab="Topics" key="Q1" forceRender={true}>
-                                <AllTopicTable type={'Q1'}
-                                               getSelectedVariables={this.getSelectedVariables}
-                                               setSelectedVariablesWithQuestionnarie={this.setSelectedVariablesWithQuestionnarie}
-                                               searchTerm={this.state.searchTerm}
-                                               ref={this.topicRef}
-                                />
-                            </TabPane>
-                        </Tabs>
-                }
+                <table style={{width: '100%'}}>
+                    <tbody>
+                    <tr style={{verticalAlign: 'top'}}>
+                        <td>
+                            {
+                                this.state.mode === 'section' ?
+                                    <Tabs defaultActiveKey="1"
+                                          type={"card"}
+                                          style={{padding: '10pt 3pt 10pt 10pt'}}
+                                          tabBarExtraContent={
+                                              <table border={0}>
+                                                  <tbody>
+                                                  <tr>
+                                                      <td>
+                                                          <Button style={{marginRight: '2pt'}}
+                                                                  onClick={this.viewByTopics}>
+                                                              View by Topics
+                                                          </Button>
+                                                      </td>
+                                                      <td>
+                                                          <Search placeholder="input search text"
+                                                                  allowClear
+                                                                  onSearch={this.onSearch}
+                                                                  value={this.state.searchTerm}
+                                                                  onChange={this.onSearchTermChange}
+                                                                  style={{width: '100'}}
+                                                          />
+                                                      </td>
+                                                      <td style={{width: '5pt'}}></td>
+                                                  </tr>
+                                                  </tbody>
+                                              </table>
+                                          }
+                                    >
+                                        <TabPane tab="Q1" key="1" forceRender={true}>
+                                            <SectionTable type={'Q1'}
+                                                          selectedVariables={this.state.selected_variables['Q1']}
+                                                          setSelectedVariables={this.setSelectedVariables}
+                                                          searchTerm={this.state.searchTerm}
+                                                          ref={this.sectionQ1Ref}
+                                            />
+                                        </TabPane>
+                                        <TabPane tab="Q2" key="2" forceRender={true}>
+                                            <SectionTable type={'Q2'}
+                                                          selectedVariables={this.state.selected_variables['Q2']}
+                                                          setSelectedVariables={this.setSelectedVariables}
+                                                          searchTerm={this.state.searchTerm}
+                                                          ref={this.sectionQ2Ref}
+                                            />
+                                        </TabPane>
+                                        <TabPane tab="Q3" key="3" forceRender={true}>
+                                            <SectionTable type={'Q3'}
+                                                          selectedVariables={this.state.selected_variables['Q3']}
+                                                          setSelectedVariables={this.setSelectedVariables}
+                                                          searchTerm={this.state.searchTerm}
+                                                          ref={this.sectionQ3Ref}
+                                            />
+                                        </TabPane>
+                                        <TabPane tab="Q4" key="4" forceRender={true}>
+                                            <SectionTable type={'Q4'}
+                                                          selectedVariables={this.state.selected_variables['Q4']}
+                                                          setSelectedVariables={this.setSelectedVariables}
+                                                          searchTerm={this.state.searchTerm}
+                                                          ref={this.sectionQ4Ref}
+                                            />
+                                        </TabPane>
+                                        <TabPane tab="Q4mini" key="41" forceRender={true}>
+                                            <SectionTable type={'Q4mini'}
+                                                          selectedVariables={this.state.selected_variables['Q4mini']}
+                                                          setSelectedVariables={this.setSelectedVariables}
+                                                          searchTerm={this.state.searchTerm}
+                                                          ref={this.sectionQ4miniRef}
+                                            />
+                                        </TabPane>
+                                        <TabPane tab="Q5" key="5" forceRender={true}>
+                                            <SectionTable type={'Q5'}
+                                                          selectedVariables={this.state.selected_variables['Q5']}
+                                                          setSelectedVariables={this.setSelectedVariables}
+                                                          searchTerm={this.state.searchTerm}
+                                                          ref={this.sectionQ5Ref}
+                                            />
+                                        </TabPane>
+                                        <TabPane tab="Q5mini" key="51" forceRender={true}>
+                                            <SectionTable type={'Q5mini'}
+                                                          selectedVariables={this.state.selected_variables['Q5mini']}
+                                                          setSelectedVariables={this.setSelectedVariables}
+                                                          searchTerm={this.state.searchTerm}
+                                                          ref={this.sectionQ5miniRef}
+                                            />
+                                        </TabPane>
+                                        <TabPane tab="Q6" key="6" forceRender={true}>
+                                            <SectionTable type={'Q6'}
+                                                          selectedVariables={this.state.selected_variables['Q6']}
+                                                          setSelectedVariables={this.setSelectedVariables}
+                                                          searchTerm={this.state.searchTerm}
+                                                          ref={this.sectionQ6Ref}
+                                            />
+                                        </TabPane>
+                                    </Tabs>
+                                    :
+                                    <div>
+                                        {/*
+                                        <Tabs defaultActiveKey="Q1"
+                                              activeKey={this.state.topicActiveTabKey}
+                                              onChange={this.onTopicActiveTabChange}
+                                              type={"card"}
+                                              style={{padding: '10pt 3pt 10pt 10pt', display: 'none'}}
+                                              tabBarExtraContent={
+                                                  <table border={0}>
+                                                      <tbody>
+                                                      <tr>
+                                                          <td>
+                                                              <Button style={{marginRight: '2pt'}}
+                                                                      onClick={this.viewBySections}>
+                                                                  View by Sections
+                                                              </Button>
+                                                          </td>
+                                                          <td>
+                                                              <Search placeholder="input search text"
+                                                                      allowClear
+                                                                      onSearch={this.onSearch}
+                                                                      value={this.state.searchTerm}
+                                                                      onChange={this.onSearchTermChange}
+                                                                      style={{width: '100'}}
+                                                              />
+                                                          </td>
+                                                          <td style={{width: '5pt'}}></td>
+                                                      </tr>
+                                                      </tbody>
+                                                  </table>
+                                              }
+                                        >
+                                            <TabPane tab="Topics" key="Q1" forceRender={true}>
+                                                <AllTopicTable type={'Q1'}
+                                                               getSelectedVariables={this.getSelectedVariables}
+                                                               setSelectedVariablesWithQuestionnarie={this.setSelectedVariablesWithQuestionnarie}
+                                                               searchTerm={this.state.searchTerm}
+                                                               ref={this.topicRef}
+                                                />
+                                            </TabPane>
+                                        </Tabs>
+                                        */}
+
+                                        <TopicVariableTable questionnarie={this.questionnarie}
+                                                            topics={this.topics}
+                                                            viewBySections={this.viewBySections}
+                                                            getSelectedVariables={this.getSelectedVariables}
+                                                            setSelectedVariablesWithQuestionnarie={this.setSelectedVariablesWithQuestionnarie}
+                                                            searchTerm={this.state.searchTerm}
+                                                            setSearchTerm={this.setSearchTerm}
+                                                            setSelectedTopicsAndQuestionnarie={this.setSelectedTopicsAndQuestionnarie}
+                                                            ref={this.allTopicRef}
+                                        />
+
+                                    </div>
+
+
+                            }
+
+                        </td>
+                        <td style={{width: '150px', height: 'max(200px, 100%)', position: 'relative'}}>
+
+                            <div style={{
+                                position: 'absolute',
+                                left: 0,
+                                top: 12,
+                                width: '100%',
+                                borderColor: '#e1e1e1',
+                                backgroundColor: '#dadada',
+                                padding: '8pt 0pt 10pt 10pt',
+                                fontWeight: 'normal'
+                            }}>
+                                My Selections
+                            </div>
+                            <Card size="small"
+                                  title=""
+                                  headStyle={{backgroundColor: '#e1e1e1'}}
+                                  style={{
+                                      width: '150px',
+                                      overflow: 'scroll',
+                                      margin: '10pt 0pt 10pt 0pt',
+                                      height: '90%',
+                                      position: 'absolute',
+                                      left: 0,
+                                      top: 40,
+                                      borderColor: '#e1e1e1',
+                                      backgroundColor: '#fafafa'
+                                  }}>
+
+                                {
+                                    this.state.mode === 'section' ?
+                                        Object.keys(this.state.selected_variables).map((questionnarie, i) => (
+                                            Object.keys(this.state.selected_variables[questionnarie]).length > 0 ?
+                                                <div key={'my-selections-' + i}>
+                                                    <span style={{
+                                                        fontWeight: 'bold',
+                                                        fontSize: 12
+                                                    }}>{questionnarie}</span>
+                                                    {
+                                                        Object.keys(this.state.selected_variables[questionnarie]).sort().map((variable, j) => (
+                                                            <div key={'variable-' + i + '-' + j}
+                                                                 style={{paddingLeft: '8pt', fontSize: 12}}>
+                                                                {variable}
+                                                            </div>
+                                                        ))
+                                                    }
+                                                </div>
+                                                :
+                                                null
+                                        ))
+                                        :
+                                        Object.keys(all_topic_to_variable).map((topic, i) => (
+                                            this.getSelectedTopicVariables(topic).length > 0 ?
+                                                <div key={'my-selections-' + i}>
+                                                    <div style={{
+                                                        fontWeight: 'bold',
+                                                        fontSize: 12,
+                                                        //whiteSpace: 'nowrap',
+                                                        paddingTop: (i>0? '3pt': '0pt'),
+                                                        paddingBottom: '5pt',
+                                                        lineHeight: 'normal'
+                                                    }}>
+                                                        {topic}
+                                                    </div>
+                                                    {
+                                                        this.getSelectedTopicVariables(topic).map((variable, j) => (
+                                                            <div key={'variable-' + i + '-' + j}
+                                                                 style={{paddingLeft: '8pt', fontSize: 12}}>
+                                                                {variable}
+                                                            </div>
+                                                        ))
+                                                    }
+                                                </div>
+                                                : null
+                                        ))
+                                }
+
+                                {
+                                    this.countSelectedVariables() === 0 ?
+                                        <div>
+                                            No selected variables.
+                                        </div>
+                                        :
+                                        null
+                                }
+
+                            </Card>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
 
 
                 {/*

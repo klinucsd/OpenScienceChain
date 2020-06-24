@@ -15,6 +15,7 @@ import axios from "axios";
 import ProjectConfigPane from "../data/ProjectConfigPane";
 
 import {Typography} from 'antd';
+
 const {Title} = Typography;
 const {Text} = Typography;
 
@@ -44,7 +45,7 @@ const root_style = {
 
 const subtitle_style = {
     fontWeight: 'bold',
-    color:'#808080'
+    color: '#808080'
 }
 
 const small_green_style = {
@@ -147,7 +148,7 @@ class ProjectList extends React.Component {
 
     updateProjectInList = (project) => {
         let projects = [];
-        for (var i=0; i<this.state.projects.length; i++) {
+        for (var i = 0; i < this.state.projects.length; i++) {
             if (this.state.projects[i].id === project.id) {
                 projects.push(project);
             } else {
@@ -175,6 +176,19 @@ class ProjectList extends React.Component {
                         <tr>
                             <td colSpan="2">
                                 <List style={{width: '100%', minWidth: '60vw'}}>
+
+                                    {
+                                        this.state.projects.length === 0 ?
+                                            <div>
+                                                <Text style={{
+                                                    fontSize: 18
+                                                }}>Your project list is empty.</Text>
+                                            </div>
+                                            :
+                                            null
+                                    }
+
+
                                     {
                                         this.state.projects.map((project, i) => (
                                             <div key={"project-" + i}>
@@ -221,7 +235,8 @@ class ProjectList extends React.Component {
 
                                                                 {project.biospecimens || project.geospatial_data ? (
                                                                     <>
-                                                                        <Text style={subtitle_style}>Include Data: </Text>
+                                                                        <Text style={subtitle_style}>Include
+                                                                            Data: </Text>
                                                                         <Text>
                                                                             {project.biospecimens ? "Biospecimens" : null}
                                                                             {project.biospecimens && project.geospatial_data ? ", " : null}
@@ -265,7 +280,7 @@ class ProjectList extends React.Component {
                                                             </React.Fragment>
                                                         }/>
                                                     <ListItemSecondaryAction style={{top: '14%'}}>
-                                                        <Tooltip title="Configure Project Data" >
+                                                        <Tooltip title="Configure Project Data">
                                                             <IconButton edge="end"
                                                                         aria-label="edit"
                                                                         onClick={() => this.viewProject(i)}>

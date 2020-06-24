@@ -459,6 +459,66 @@ class AllTopicTable extends React.Component {
 
     onTableChange = (pagination, filters, sorter, extra) => {
         console.log("filter: " + JSON.stringify(filters));
+        let questionnarie = filters.questionnarie;
+        if (questionnarie === null) {
+            questionnarie = ['Q1', 'Q2', 'Q3', 'Q4', 'Q4mini', 'Q5', 'Q5mini', 'Q6'];
+        }
+        this.setState({
+            questionnarie
+        });
+
+
+        let thisState = this;
+        axios.post('/api/topic',
+            {
+                search: {
+                    questionnarie:  questionnarie,
+                    searchTerm: this.state.searchTerm
+                }
+            })
+            .then(function (response) {
+                thisState.setState({
+                    data: response.data,
+                    columns: thisState.getColumns(response.data),
+                    expends: thisState.initExpends(response.data),
+                    section_selected: {},
+                    loading: false,
+                    expandAll: true
+                });
+            })
+
+
+        axios.post('/api/topic_variable',
+            {
+                search: {
+                    questionnarie: questionnarie,
+                    searchTerm: this.state.searchTerm
+                }
+            })
+            .then(function (response) {
+                let section_to_variable = {};
+                for (var i = 0; i < response.data.length; i++) {
+                    let variables = section_to_variable[response.data[i].section];
+                    if (variables === undefined) {
+                        variables = [];
+                    }
+                    let variable = {
+                        variable: response.data[i].variable,
+                        questionnarie: response.data[i].questionnarie
+                    };
+                    variables.push(variable);
+                    section_to_variable[response.data[i].section] = variables;
+                }
+
+                //console.log("section_to_variable = " + JSON.stringify(section_to_variable));
+
+                thisState.setState({
+                    section_to_variable,
+                });
+            });
+
+
+
     }
 
     getColumns = (data) => {

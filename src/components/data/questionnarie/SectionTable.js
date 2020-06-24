@@ -281,6 +281,10 @@ class QuestionnaireTable extends React.Component {
         this.props.setSelectedVariables(this.props.type, {});
     }
 
+    getAllVariables = () => {
+        return [1, 2, 3];
+    }
+
     getColumns = (data) => {
 
         let thisState = this;

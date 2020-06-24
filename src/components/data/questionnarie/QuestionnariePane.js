@@ -11,42 +11,42 @@ class QuestionnariePane extends React.PureComponent {
         this.state = {
             questionnarie: [
                 {
-                    name: 'Questionnaire 1 (1995-1996)',
+                    name: <div>Questionnaire 1<br/>(1995-1996)</div>,
                     key: 'Q1',
                     selected: false,
                 },
                 {
-                    name: 'Questionnaire 2 (1997-1998)',
+                    name: <div>Questionnaire 2<br/>(1997-1998)</div>,
                     key: 'Q2',
                     selected: false,
                 },
                 {
-                    name: 'Questionnaire 3 (2000-2002)',
+                    name: <div>Questionnaire 3<br/>(2000-2002)</div>,
                     key: 'Q3',
                     selected: false,
                 },
                 {
-                    name: 'Questionnaire 4 (2005-2008)',
+                    name: <div>Questionnaire 4<br/>(2005-2008)</div>,
                     key: 'Q4',
                     selected: false,
                 },
                 {
-                    name: 'Questionnaire 4mini',
+                    name: <div>Questionnaire 4mini</div>,
                     key: 'Q4mini',
                     selected: false,
                 },
                 {
-                    name: 'Questionnaire 5 (2012-2015)',
+                    name: <div>Questionnaire 5<br/> (2012-2015)</div>,
                     key: 'Q5',
                     selected: false,
                 },
                 {
-                    name: 'Questionnaire 5mini',
+                    name: <div>Questionnaire 5mini</div>,
                     key: 'Q5mini',
                     selected: false,
                 },
                 {
-                    name: 'Questionnaire 6 (2017-2019)',
+                    name: <div>Questionnaire 6<br/> (2017-2019)</div>,
                     key: 'Q6',
                     selected: false,
                 },
