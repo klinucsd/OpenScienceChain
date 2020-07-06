@@ -185,6 +185,43 @@ class ProjectList extends React.Component {
             .then(function (response) {
                 let result = response.data;
                 project.id = result.id;
+
+                let preselected = {
+                    "Q1": {
+                        "age_at_baseline": true,
+                        "adopted": true,
+                        "twin": true,
+                        "birthplace": true,
+                        "birthplace_mom": true,
+                        "birthplace_dad": true,
+                        "participant_race": true,
+                        "nih_ethnic_cat": true,
+                        "age_mom": true,
+                        "age_dad": true,
+                        "FMP": true,
+                        "ROCYN15": true,
+                        "RTOCYRS15": true,
+                        "EVPRG": true,
+                        "AGEFFTP": true,
+                        "TOTPRG": true,
+                        "RMENOVARC": true,
+                        "HEIGHTX": true,
+                        "WEIGHTX": true,
+                        "bmi": true,
+                        "DIABSELF": true,
+                        "HIPFSELF": true,
+                        "SPMP3YR": true,
+                        "SPMHRLT": true,
+                        "vitgrp": true,
+                        "ALCYRC": true,
+                        "SMKEXP": true,
+                        "TYRSSMK": true,
+                        "AVGCIGDY": true,
+                        "TPACKYRS": true
+                    }, "Q2": {}, "Q3": {}, "Q4": {}, "Q4mini": {}, "Q5": {}, "Q5mini": {}, "Q6": {}
+                };
+                project.questionnarie = JSON.stringify(preselected);
+
                 thisState.state.projects.push(project);
                 thisState.setState({
                     action: 'list_projects',

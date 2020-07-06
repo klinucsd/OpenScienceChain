@@ -183,7 +183,7 @@ class EditProject extends React.Component {
     render() {
         return (
             <div style={root_style}>
-                <Paper elevation={3} style={{width: '800px'}}>
+                <Paper elevation={3} style={{width: '900px'}}>
                     <Typography style={title_style}>
                         Edit Project
                     </Typography>

@@ -18,6 +18,7 @@ import CensoringRules from './CensoringRules';
 import CancerEndpoint from './CancerEndpoint';
 import QuestionnaireData from './questionnarie/QuestionnaireData';
 import SelectedDataSummary from './SelectedDataSummary';
+import Summary from './Summary';
 import axios from "axios";
 import MuiButton from "@material-ui/core/Button";
 import Paper from '@material-ui/core/Paper';
@@ -433,17 +434,52 @@ class ProjectConfigPane extends React.Component {
 
     startOver = () => {
 
+        let preselected = {
+            "Q1": {
+                "age_at_baseline": true,
+                "adopted": true,
+                "twin": true,
+                "birthplace": true,
+                "birthplace_mom": true,
+                "birthplace_dad": true,
+                "participant_race": true,
+                "nih_ethnic_cat": true,
+                "age_mom": true,
+                "age_dad": true,
+                "FMP": true,
+                "ROCYN15": true,
+                "RTOCYRS15": true,
+                "EVPRG": true,
+                "AGEFFTP": true,
+                "TOTPRG": true,
+                "RMENOVARC": true,
+                "HEIGHTX": true,
+                "WEIGHTX": true,
+                "bmi": true,
+                "DIABSELF": true,
+                "HIPFSELF": true,
+                "SPMP3YR": true,
+                "SPMHRLT": true,
+                "vitgrp": true,
+                "ALCYRC": true,
+                "SMKEXP": true,
+                "TYRSSMK": true,
+                "AVGCIGDY": true,
+                "TPACKYRS": true
+            }, "Q2": {}, "Q3": {}, "Q4": {}, "Q4mini": {}, "Q5": {}, "Q5mini": {}, "Q6": {}
+        };
+
         let project = this.state.project;
         project.cancer_endpoint = null;
         project.start_of_follow_up = null;
         project.censoring_rules = null;
-        project.questionnarie = null;
+        project.questionnarie = JSON.stringify(preselected);
 
         this.setState({
             cancer_endpoint: null,
             start_of_follow_up: null,
             censoring_rules: null,
-            questionnarie: null,
+            questionnarie: preselected,
             project,
             activeTabKey: 'config',
             activeStep: 0,
@@ -524,8 +560,9 @@ class ProjectConfigPane extends React.Component {
                               onChange={this.onTabChange}
                               animated={false}
                               tabBarExtraContent={
-                                  <Button size={'small'} style={{marginRight: '10pt'}} onClick={this.startOver}>Start
-                                      Over</Button>
+                                  <Button size={'small'} style={{marginRight: '10pt'}} onClick={this.startOver}>
+                                      Start Over
+                                  </Button>
                               }
                               size="default"
                               type="line"
@@ -671,6 +708,106 @@ class ProjectConfigPane extends React.Component {
                                                 {'Select questionnaire data'}
                                             </StepLabel>
                                         </Step>
+                                        <Step>
+                                            <StepLabel completed={
+                                                this.state.cancer_endpoint &&
+                                                this.state.cancer_endpoint.length > 0 &&
+                                                this.state.start_of_follow_up !== undefined &&
+                                                this.state.start_of_follow_up !== null &&
+                                                this.state.start_of_follow_up.start_of_follow_up !== undefined &&
+                                                this.state.start_of_follow_up.start_of_follow_up !== null &&
+                                                (
+                                                    (
+                                                        this.state.start_of_follow_up.start_of_follow_up === 'Other' &&
+                                                        this.state.start_of_follow_up.start_of_follow_up_specified !== undefined &&
+                                                        this.state.start_of_follow_up.start_of_follow_up_specified !== null
+                                                    )
+                                                    ||
+                                                    (
+                                                        this.state.start_of_follow_up.start_of_follow_up !== 'Other' &&
+                                                        this.state.start_of_follow_up.start_of_follow_up_exclude !== undefined &&
+                                                        this.state.start_of_follow_up.start_of_follow_up_exclude !== null
+                                                    )
+                                                ) &&
+                                                this.state.censoring_rules !== undefined &&
+                                                this.state.censoring_rules !== null &&
+                                                this.state.censoring_rules.through_2015_12_31 !== undefined &&
+                                                this.state.censoring_rules.through_2015_12_31 !== null &&
+                                                (
+                                                    (
+                                                        this.state.censoring_rules.through_2015_12_31 === true &&
+                                                        this.state.censoring_rules.end_of_follow_up_exclude !== undefined &&
+                                                        this.state.censoring_rules.end_of_follow_up_exclude !== null
+                                                    )
+                                                    ||
+                                                    (
+                                                        this.state.censoring_rules.through_2015_12_31 === false &&
+                                                        this.state.censoring_rules.end_of_follow_up !== undefined &&
+                                                        this.state.censoring_rules.end_of_follow_up !== null &&
+                                                        (
+                                                            (
+                                                                this.state.censoring_rules.end_of_follow_up === 'Other' &&
+                                                                this.state.censoring_rules.end_of_follow_up_specified !== undefined &&
+                                                                this.state.censoring_rules.end_of_follow_up_specified !== null
+                                                            )
+                                                            ||
+                                                            (
+                                                                this.state.censoring_rules.end_of_follow_up !== 'Other' &&
+                                                                this.state.censoring_rules.end_of_follow_up_exclude !== undefined &&
+                                                                this.state.censoring_rules.end_of_follow_up_exclude !== null
+                                                            )
+                                                        )
+                                                    )
+                                                ) &&
+                                                this.state.questionnarie &&
+                                                (
+                                                    (
+                                                        this.state.questionnarie['Q1'] &&
+                                                        JSON.stringify(this.state.questionnarie['Q1']) !== '{}'
+                                                    )
+                                                    ||
+                                                    (
+                                                        this.state.questionnarie['Q2'] &&
+                                                        JSON.stringify(this.state.questionnarie['Q2']) !== '{}'
+                                                    )
+                                                    ||
+                                                    (
+                                                        this.state.questionnarie['Q3'] &&
+                                                        JSON.stringify(this.state.questionnarie['Q3']) !== '{}'
+                                                    )
+                                                    ||
+                                                    (
+                                                        this.state.questionnarie['Q4'] &&
+                                                        JSON.stringify(this.state.questionnarie['Q4']) !== '{}'
+                                                    )
+                                                    ||
+                                                    (
+                                                        this.state.questionnarie['Q4mini'] &&
+                                                        JSON.stringify(this.state.questionnarie['Q4mini']) !== '{}'
+                                                    )
+                                                    ||
+                                                    (
+                                                        this.state.questionnarie['Q5'] &&
+                                                        JSON.stringify(this.state.questionnarie['Q5']) !== '{}'
+                                                    )
+                                                    ||
+                                                    (
+                                                        this.state.questionnarie['Q5mini'] &&
+                                                        JSON.stringify(this.state.questionnarie['Q5mini']) !== '{}'
+                                                    )
+                                                    ||
+                                                    (
+                                                        this.state.questionnarie['Q6'] &&
+                                                        JSON.stringify(this.state.questionnarie['Q6']) !== '{}'
+                                                    )
+                                                )
+                                            }
+
+                                                       onClick={() => this.stepTo(4)}
+                                            >
+                                                {'Summary'}
+                                            </StepLabel>
+                                        </Step>
                                     </Stepper>
 
                                     {
@@ -711,6 +848,11 @@ class ProjectConfigPane extends React.Component {
                                             : null
                                     }
 
+                                    {
+                                        this.state.activeStep === 4 ?
+                                            <Summary project={this.state.project}/> : null
+                                    }
+
                                     <div style={{width: '100%', textAlign: 'center'}}>
                                         <Space>
                                             <MuiButton variant="contained"
@@ -722,7 +864,7 @@ class ProjectConfigPane extends React.Component {
                                             </MuiButton>
                                             <MuiButton variant="contained"
                                                        color="primary"
-                                                       disabled={this.state.activeStep === 3}
+                                                       disabled={this.state.activeStep === 4}
                                                        onClick={this.nextStep}
                                                        style={{margin: '10pt 0pt 8pt 0pt', textTransform: 'none'}}>
                                                 NEXT

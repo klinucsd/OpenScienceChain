@@ -6,14 +6,8 @@ import 'antd/dist/antd.css';
 import '../index.css';
 import './questionnarie.css';
 import SectionTable from "./SectionTable";
-import AllTopicTable from "./AllTopicTable";
 import all_topic_to_variable from '../../../model/topic_variables';
-
-import QuestionnariePane from './QuestionnariePane';
-import TopicPane from './TopicPane';
 import TopicVariableTable from "./topic/TopicVariableTable";
-
-const {Panel} = Collapse;
 const {Search} = Input;
 const {TabPane} = Tabs;
 
@@ -248,7 +242,7 @@ class QuestionnaireData extends React.Component {
                     the window on the right, and click Confirm Selections to finish.
                 </Typography>
 
-                <table style={{width: '100%'}}>
+                <table border={0} style={{width: '100%'}}>
                     <tbody>
                     <tr style={{verticalAlign: 'top'}}>
                         <td>

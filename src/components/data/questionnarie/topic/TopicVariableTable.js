@@ -6,6 +6,7 @@ import {Checkbox, Collapse, Table, Card, Input, Button} from "antd";
 import QuestionnariePane from "./QuestionnariePane";
 import TopicPane from "./TopicPane";
 import Tooltip from "@material-ui/core/Tooltip/Tooltip";
+import preselected_variables from '../../../../model/preselected_variables';
 
 import all_topic_to_variable from '../../../../model/topic_variables';
 import axios from "axios";
@@ -57,7 +58,7 @@ class TopicVariableTable extends React.Component {
 
     reset = () => {
         let variable_selected = {};
-        Object.keys(this.state.variable_selected).forEach(function(key) {
+        Object.keys(this.state.variable_selected).forEach(function (key) {
             variable_selected[key] = {};
         });
 
@@ -136,7 +137,11 @@ class TopicVariableTable extends React.Component {
         if (evt.target.checked) {
             variable_selected[evt.target.value.questionnarie][evt.target.value.variable] = true;
         } else {
-            variable_selected[evt.target.value.questionnarie][evt.target.value.variable] = undefined;
+            if (preselected_variables.includes(evt.target.value.variable) && evt.target.value.questionnarie === 'Q1') {
+                variable_selected[evt.target.value.questionnarie][evt.target.value.variable] = true;
+            } else {
+                variable_selected[evt.target.value.questionnarie][evt.target.value.variable] = undefined;
+            }
         }
 
         this.setState({
@@ -163,7 +168,12 @@ class TopicVariableTable extends React.Component {
             for (var i = 0; i < this.state.data.length; i++) {
                 let variable = this.state.data[i].variable;
                 let questionnarie = this.state.data[i].questionnarie;
-                variable_selected[questionnarie][variable] = undefined;
+
+                if (preselected_variables.includes(variable) && questionnarie === 'Q1') {
+                    variable_selected[questionnarie][variable] = true;
+                } else {
+                    variable_selected[questionnarie][variable] = undefined;
+                }
             }
             this.setState({
                 variable_selected,
@@ -233,10 +243,16 @@ class TopicVariableTable extends React.Component {
                         }
                         return {
                             props: {
-                                style: {fontWeight: 'normal', verticalAlign: 'top'},
+                                style: {fontWeight: 'normal',
+                                    verticalAlign: 'top',
+                                    backgroundColor: text === 'Pre-selected variables' ? '#CFDBC5' : 'white'
+                                },
                                 rowSpan: count,
                             },
-                            children: <div style={{fontWeight: 'bold', fontSize: 12}}>{text}</div>
+                            children: <div style={{
+                                fontWeight: 'bold',
+                                fontSize: 12,
+                            }}>{text}</div>
                         };
                     } else {
                         return {
@@ -274,7 +290,12 @@ class TopicVariableTable extends React.Component {
                                 fontWeight: 'normal',
                                 verticalAlign: 'top',
                                 fontSize: 12,
-                                backgroundColor: (index % 2 === 0 ? 'white' : '#eee')
+                                backgroundColor: index % 2 === 0 ?
+                                    (row.questionnarie === 'Q1' && preselected_variables.includes(row.variable) ?
+                                        '#E0EEE0' : 'white')
+                                    :
+                                    (row.questionnarie === 'Q1' && preselected_variables.includes(row.variable) ?
+                                        '#CFDBC5' : '#eee'),
                             },
                         },
                     };
@@ -307,7 +328,12 @@ class TopicVariableTable extends React.Component {
                                 fontWeight: 'normal',
                                 verticalAlign: 'top',
                                 fontSize: 12,
-                                backgroundColor: (index % 2 === 0 ? 'white' : '#eee')
+                                backgroundColor: index % 2 === 0 ?
+                                    (row.questionnarie === 'Q1' && preselected_variables.includes(row.variable) ?
+                                        '#E0EEE0' : 'white')
+                                    :
+                                    (row.questionnarie === 'Q1' && preselected_variables.includes(row.variable) ?
+                                        '#CFDBC5' : '#eee'),
                             }
                         },
                     };
@@ -322,12 +348,18 @@ class TopicVariableTable extends React.Component {
                             style: {
                                 width: '20px',
                                 fontWeight: 'normal',
-                                backgroundColor: index % 2 === 0 ? 'white' : '#eee',
+                                backgroundColor: index % 2 === 0 ?
+                                    (row.questionnarie === 'Q1' && preselected_variables.includes(row.variable) ?
+                                        '#E0EEE0' : 'white')
+                                    :
+                                    (row.questionnarie === 'Q1' && preselected_variables.includes(row.variable) ?
+                                        '#CFDBC5' : '#eee'),
                                 textAlign: 'left'
                             }
                         },
                         children: <Checkbox value={row}
                                             checked={thisState.state.variable_selected[row.questionnarie][row.variable]}
+                                            disabled={row.questionnarie === 'Q1' && preselected_variables.includes(row.variable)}
                                             onChange={thisState.onVariableCheckboxChange}>
                         </Checkbox>
                     };

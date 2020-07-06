@@ -117,15 +117,15 @@ const seed = () => {
 
 const users = require('../src/model/users');
 const init = () => {
-    for (var i=0; i<users.length; i++) {
+    for (var i = 0; i < users.length; i++) {
         console.log(JSON.stringify(users[i]));
         User.create(users[i]);
     }
 }
 
 sequelize.sync({force: false})
-    //.then(() => init())
-    //.then(() => seed())
+//.then(() => init())
+//.then(() => seed())
     .then(() => User.findAll({include: [{model: Project, as: 'projects'}]}))
     .then(users => console.log(JSON.stringify(users)))
     .then(() => Project.findAll())
@@ -204,27 +204,64 @@ app.get('/api/project', (req, res) => {
 });
 
 app.post('/api/project', (req, res) => {
-    Project.create(req.body).then(
-        project => {
-            if (req.body.users && req.body.users.length > 0) {
-                let conditions = [];
-                for (var i = 0; i < req.body.users.length; i++) {
-                    conditions.push({id: req.body.users[i].id});
-                }
-                const {Op} = require("sequelize");
-                User.findAll({
-                    where: {[Op.or]: conditions}
-                }).then(users => {
-                    project.setUsers(users);
+
+    let input_project = req.body;
+    let preselected = {
+        "Q1": {
+            "age_at_baseline": true,
+            "adopted": true,
+            "twin": true,
+            "birthplace": true,
+            "birthplace_mom": true,
+            "birthplace_dad": true,
+            "participant_race": true,
+            "nih_ethnic_cat": true,
+            "age_mom": true,
+            "age_dad": true,
+            "FMP": true,
+            "ROCYN15": true,
+            "RTOCYRS15": true,
+            "EVPRG": true,
+            "AGEFFTP": true,
+            "TOTPRG": true,
+            "RMENOVARC": true,
+            "HEIGHTX": true,
+            "WEIGHTX": true,
+            "bmi": true,
+            "DIABSELF": true,
+            "HIPFSELF": true,
+            "SPMP3YR": true,
+            "SPMHRLT": true,
+            "vitgrp": true,
+            "ALCYRC": true,
+            "SMKEXP": true,
+            "TYRSSMK": true,
+            "AVGCIGDY": true,
+            "TPACKYRS": true
+        }, "Q2": {}, "Q3": {}, "Q4": {}, "Q4mini": {}, "Q5": {}, "Q5mini": {}, "Q6": {}
+    };
+    input_project.questionnarie = JSON.stringify(preselected);
+        Project.create(input_project).then(
+            project => {
+                if (req.body.users && req.body.users.length > 0) {
+                    let conditions = [];
+                    for (var i = 0; i < req.body.users.length; i++) {
+                        conditions.push({id: req.body.users[i].id});
+                    }
+                    const {Op} = require("sequelize");
+                    User.findAll({
+                        where: {[Op.or]: conditions}
+                    }).then(users => {
+                        project.setUsers(users);
+                        res.setHeader('Content-Type', 'application/json');
+                        res.send(JSON.stringify(project));
+                    })
+                } else {
                     res.setHeader('Content-Type', 'application/json');
                     res.send(JSON.stringify(project));
-                })
-            } else {
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(project));
+                }
             }
-        }
-    )
+        )
 });
 
 app.get('/api/project/:id', (req, res) => {

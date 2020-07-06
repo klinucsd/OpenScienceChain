@@ -197,6 +197,7 @@ class TopicPane extends React.PureComponent {
                             <td>
                                 <Checkbox checked={topic.selected}
                                           value={i}
+                                          //disabled={topic.name === 'Pre-selected variables'}
                                           onChange={this.onTopicChange}
                                 />
                             </td>

@@ -4,6 +4,7 @@ import {PlusSquareOutlined, MinusSquareOutlined} from '@ant-design/icons';
 import Tooltip from "@material-ui/core/Tooltip/Tooltip";
 import axios from "axios";
 import './card_container.css';
+import preselected_variables from '../../../model/preselected_variables';
 
 class QuestionnaireTable extends React.Component {
 
@@ -174,7 +175,11 @@ class QuestionnaireTable extends React.Component {
         } else {
             section_selected[evt.target.value] = undefined;
             for (var i = 0; i < this.state.section_to_variable[evt.target.value].length; i++) {
-                variable_selected[this.state.section_to_variable[evt.target.value][i]] = undefined;
+                if (this.props.type === 'Q1' && preselected_variables.includes(this.state.section_to_variable[evt.target.value][i])) {
+                    variable_selected[this.state.section_to_variable[evt.target.value][i]] = true;
+                } else {
+                    variable_selected[this.state.section_to_variable[evt.target.value][i]] = undefined;
+                }
             }
         }
 
@@ -251,10 +256,10 @@ class QuestionnaireTable extends React.Component {
             let variable_selected = {};
 
             let thisState = this;
-            Object.keys(this.state.section_to_variable).forEach(function(key) {
+            Object.keys(this.state.section_to_variable).forEach(function (key) {
                 var variables = thisState.state.section_to_variable[key];
                 section_selected[key] = true;
-                for (var i=0; i<variables.length; i++) {
+                for (var i = 0; i < variables.length; i++) {
                     variable_selected[variables[i]] = true;
                 }
             });
@@ -265,20 +270,41 @@ class QuestionnaireTable extends React.Component {
             });
             this.props.setSelectedVariables(this.props.type, variable_selected);
         } else {
+            let variable_selected = this.state.variable_selected;
+            let thisState = this;
+            Object.keys(variable_selected).forEach(function (key) {
+                if (thisState.props.type === 'Q1' && preselected_variables.includes(key)) {
+                    variable_selected[key] = true;
+                } else {
+                    variable_selected[key] = undefined;
+                }
+            });
+
             this.setState({
-                variable_selected: {},
+                variable_selected: variable_selected,
                 section_selected: {},
             });
-            this.props.setSelectedVariables(this.props.type, {});
+            this.props.setSelectedVariables(this.props.type, variable_selected);
         }
     }
 
     reset = () => {
+
+        let variable_selected = this.state.variable_selected;
+        let thisState = this;
+        Object.keys(variable_selected).forEach(function (key) {
+            if (thisState.props.type === 'Q1' && preselected_variables.includes(key)) {
+                variable_selected[key] = true;
+            } else {
+                variable_selected[key] = undefined;
+            }
+        });
+
         this.setState({
-            variable_selected: {},
+            variable_selected: variable_selected,
             section_selected: {},
         });
-        this.props.setSelectedVariables(this.props.type, {});
+        this.props.setSelectedVariables(this.props.type, variable_selected);
     }
 
     getAllVariables = () => {
@@ -371,7 +397,13 @@ class QuestionnaireTable extends React.Component {
                                     fontWeight: 'normal',
                                     verticalAlign: 'top',
                                     fontSize: 12,
-                                    backgroundColor: (index % 2 === 0 ? 'white' : '#eee')
+                                    backgroundColor: (index % 2 === 0 ?
+                                            (thisState.props.type === 'Q1' && preselected_variables.includes(row.variable) ?
+                                                '#E0EEE0' : 'white')
+                                            :
+                                            (thisState.props.type === 'Q1' && preselected_variables.includes(row.variable) ?
+                                                '#CFDBC5' : '#eee')
+                                    ),
                                 },
                             },
                         }
@@ -414,7 +446,13 @@ class QuestionnaireTable extends React.Component {
                                     fontWeight: 'normal',
                                     verticalAlign: 'top',
                                     fontSize: 12,
-                                    backgroundColor: (index % 2 === 0 ? 'white' : '#eee')
+                                    backgroundColor: (index % 2 === 0 ?
+                                            (thisState.props.type === 'Q1' && preselected_variables.includes(row.variable) ?
+                                                '#E0EEE0' : 'white')
+                                            :
+                                            (thisState.props.type === 'Q1' && preselected_variables.includes(row.variable) ?
+                                                '#CFDBC5' : '#eee')
+                                    ),
                                 }
                             },
                         };
@@ -447,14 +485,22 @@ class QuestionnaireTable extends React.Component {
                                 style: {
                                     width: '20px',
                                     fontWeight: 'normal',
-                                    backgroundColor: index % 2 === 0 ? 'white' : '#eee',
+                                    backgroundColor: (index % 2 === 0 ?
+                                            (thisState.props.type === 'Q1' && preselected_variables.includes(row.variable) ?
+                                                '#E0EEE0' : 'white')
+                                            :
+                                            (thisState.props.type === 'Q1' && preselected_variables.includes(row.variable) ?
+                                                '#CFDBC5' : '#eee')
+                                    ),
                                     textAlign: 'left'
                                 }
                             },
-                            children: <Checkbox value={row.variable}
-                                                checked={thisState.state.variable_selected[row.variable]}
-                                                onChange={thisState.onVariableCheckboxChange}>
-                            </Checkbox>
+                            children:
+                                <Checkbox value={row.variable}
+                                          checked={thisState.state.variable_selected[row.variable]}
+                                          disabled={thisState.props.type === 'Q1' && preselected_variables.includes(row.variable)}
+                                          onChange={thisState.onVariableCheckboxChange}>
+                                </Checkbox>
                         };
                     }
                 }
@@ -464,7 +510,6 @@ class QuestionnaireTable extends React.Component {
 
 
     render() {
-
         return (
             <Table
                 columns={this.state.columns}

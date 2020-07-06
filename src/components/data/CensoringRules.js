@@ -196,7 +196,7 @@ class CensoringRules extends React.Component {
                                 <td><Radio style={radioStyle} value={'no censor at diagnosis for any other'}></Radio></td>
                                 <td>
                                     Do not censor at diagnosis of any other cancer. Follow-up time will
-                                    end at the earliest of the other dates described above."
+                                    end at the earliest of the other dates described above.
                                 </td>
                             </tr>
                             </tbody>
