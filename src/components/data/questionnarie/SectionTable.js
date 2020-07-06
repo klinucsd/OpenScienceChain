@@ -402,7 +402,7 @@ class QuestionnaireTable extends React.Component {
                                                 '#E0EEE0' : 'white')
                                             :
                                             (thisState.props.type === 'Q1' && preselected_variables.includes(row.variable) ?
-                                                '#CFDBC5' : '#eee')
+                                                '#e8f5e9' : '#eee')
                                     ),
                                 },
                             },
@@ -451,7 +451,7 @@ class QuestionnaireTable extends React.Component {
                                                 '#E0EEE0' : 'white')
                                             :
                                             (thisState.props.type === 'Q1' && preselected_variables.includes(row.variable) ?
-                                                '#CFDBC5' : '#eee')
+                                                '#e8f5e9' : '#eee')
                                     ),
                                 }
                             },
@@ -490,7 +490,7 @@ class QuestionnaireTable extends React.Component {
                                                 '#E0EEE0' : 'white')
                                             :
                                             (thisState.props.type === 'Q1' && preselected_variables.includes(row.variable) ?
-                                                '#CFDBC5' : '#eee')
+                                                '#e8f5e9' : '#eee')
                                     ),
                                     textAlign: 'left'
                                 }

@@ -160,6 +160,31 @@ class ProjectList extends React.Component {
         });
     }
 
+    getLettersForAvatar = (name) => {
+        let result = '';
+        if (name) {
+            var elements = name.split(' ');
+            let candidate = '';
+            for (var i=0; i<elements.length; i++) {
+                let letter = elements[i].charAt(0);
+                if (letter.toUpperCase() === letter) {
+                    result += letter;
+                }
+                if (result.length === 2) {
+                    break;
+                }
+                if (candidate.length < 2) {
+                    candidate += letter;
+                }
+            }
+            if (result.length === 0) {
+                result = candidate.toUpperCase();
+            }
+        }
+
+        return result;
+    }
+
     render() {
         return (
             this.state.action === 'list_projects' ? (
@@ -206,7 +231,9 @@ class ProjectList extends React.Component {
                                                                             small_coral_style : small_blue_style)
                                                                 }
                                                                 onClick={() => this.viewProject(i)}
-                                                            />
+                                                            >
+                                                                { this.getLettersForAvatar(project.name) }
+                                                            </Avatar>
                                                         </Tooltip>
                                                     </ListItemAvatar>
                                                     <ListItemText

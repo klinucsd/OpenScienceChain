@@ -245,7 +245,7 @@ class TopicVariableTable extends React.Component {
                             props: {
                                 style: {fontWeight: 'normal',
                                     verticalAlign: 'top',
-                                    backgroundColor: text === 'Pre-selected variables' ? '#CFDBC5' : 'white'
+                                    backgroundColor: text === 'Pre-selected variables' ? '#e8f5e9' : 'white'
                                 },
                                 rowSpan: count,
                             },
@@ -295,7 +295,7 @@ class TopicVariableTable extends React.Component {
                                         '#E0EEE0' : 'white')
                                     :
                                     (row.questionnarie === 'Q1' && preselected_variables.includes(row.variable) ?
-                                        '#CFDBC5' : '#eee'),
+                                        '#e8f5e9' : '#eee'),
                             },
                         },
                     };
@@ -333,7 +333,7 @@ class TopicVariableTable extends React.Component {
                                         '#E0EEE0' : 'white')
                                     :
                                     (row.questionnarie === 'Q1' && preselected_variables.includes(row.variable) ?
-                                        '#CFDBC5' : '#eee'),
+                                        '#e8f5e9' : '#eee'),
                             }
                         },
                     };
@@ -353,7 +353,7 @@ class TopicVariableTable extends React.Component {
                                         '#E0EEE0' : 'white')
                                     :
                                     (row.questionnarie === 'Q1' && preselected_variables.includes(row.variable) ?
-                                        '#CFDBC5' : '#eee'),
+                                        '#e8f5e9' : '#eee'),
                                 textAlign: 'left'
                             }
                         },
