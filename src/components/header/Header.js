@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography/index';
 import IconButton from '@material-ui/core/IconButton/index';
 import MenuIcon from '@material-ui/icons/Menu';
 import Avatar from '@material-ui/core/Avatar';
+import axios from "axios";
 
 const theme = createMuiTheme({
     overrides: {
@@ -69,6 +70,20 @@ class Header extends React.Component {
     }
 
     logout = () => {
+
+        axios.post('/api/logout', {
+            params: {
+                email: this.state.user.email,
+            }
+        }).then(function (response) {
+            console.log("logout: " + JSON.stringify(response.data));
+        }).catch(function (error) {
+            console.log(error);
+        }).then(function () {
+            // always executed
+        });
+
+
         this.setState({
             user: null
         });

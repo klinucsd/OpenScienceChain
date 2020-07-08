@@ -407,8 +407,7 @@ class QuestionnaireTable extends React.Component {
                                 },
                             },
                         }
-                    }
-                    ;
+                    };
                 },
             },
             {

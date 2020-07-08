@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const expressSession = require('express-session');
 const pino = require('express-pino-logger')();
 const path = require('path');
 const moment = require('moment');
@@ -158,6 +159,7 @@ sequelize.sync({force: false})
 const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use(expressSession({secret: 'curiousjoe', resave: true, saveUninitialized: true}));
 app.use(pino);
 app.use(express.static(path.join(__dirname, '..', 'build')));
 
@@ -182,9 +184,56 @@ app.get('/api/user', (req, res) => {
     }
     User.findAll(query)
         .then(users => {
+            for (var i = 0; i < users.length; i++) {
+                users[i].password = undefined;
+            }
             res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(users));
+
+            if (users && users.length > 1) {
+                if (req.session.user && req.session.user.role === 'admin') {
+                    // only admin can see multiple users
+                    res.send(JSON.stringify(users));
+                } else {
+                    res.json({Error: 'Not authenticated'});
+                }
+            } else {
+                // single user
+                if (users && users.length === 1 && users[0].role !== 'admin') {
+                    req.session.user = users[0];
+                }
+                res.send(JSON.stringify(users));
+            }
         })
+});
+
+app.post('/api/login', (req, res) => {
+    let email = req.body.params.email;
+    let password = req.body.params.password;
+    let query = {
+        include: [
+            {model: Project, as: 'projects'},
+        ],
+    }
+    query['where'] = {
+        email: email,
+        password: password
+    };
+    User.findOne(query)
+        .then(user => {
+            if (user) {
+                req.session.user = user;
+            }
+            res.setHeader('Content-Type', 'application/json');
+            res.json(user);
+        })
+});
+
+app.post('/api/logout', (req, res) => {
+    let email = req.body.params.email;
+    if (req.session && req.session.user && req.session.user.email === email) {
+        req.session.user = undefined;
+        res.json({OK: true});
+    }
 });
 
 app.get('/api/project', (req, res) => {
@@ -198,49 +247,78 @@ app.get('/api/project', (req, res) => {
     }
     Project.findAll(query)
         .then(projects => {
+            for (var j = 0; j < projects.length; j++) {
+                for (var i = 0; i < projects[j].users.length; i++) {
+                    projects[j].users[i].password = undefined;
+                }
+            }
+
             res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(projects));
+            if (req.session.user) {
+                if (req.session.user.role === 'admin') {
+                    res.json(projects);
+                } else {
+                    let output_projects = [];
+                    for (var j = 0; j < projects.length; j++) {
+                        var found = false;
+                        for (var i = 0; i < projects[j].users.length; i++) {
+                            if (projects[j].users[i].email === req.session.user.email) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found) {
+                            output_projects.push(projects[j]);
+                        }
+                    }
+
+                    res.json(output_projects);
+                }
+            } else {
+                res.json([]);
+            }
         })
 });
 
 app.post('/api/project', (req, res) => {
 
-    let input_project = req.body;
-    let preselected = {
-        "Q1": {
-            "age_at_baseline": true,
-            "adopted": true,
-            "twin": true,
-            "birthplace": true,
-            "birthplace_mom": true,
-            "birthplace_dad": true,
-            "participant_race": true,
-            "nih_ethnic_cat": true,
-            "age_mom": true,
-            "age_dad": true,
-            "FMP": true,
-            "ROCYN15": true,
-            "RTOCYRS15": true,
-            "EVPRG": true,
-            "AGEFFTP": true,
-            "TOTPRG": true,
-            "RMENOVARC": true,
-            "HEIGHTX": true,
-            "WEIGHTX": true,
-            "bmi": true,
-            "DIABSELF": true,
-            "HIPFSELF": true,
-            "SPMP3YR": true,
-            "SPMHRLT": true,
-            "vitgrp": true,
-            "ALCYRC": true,
-            "SMKEXP": true,
-            "TYRSSMK": true,
-            "AVGCIGDY": true,
-            "TPACKYRS": true
-        }, "Q2": {}, "Q3": {}, "Q4": {}, "Q4mini": {}, "Q5": {}, "Q5mini": {}, "Q6": {}
-    };
-    input_project.questionnarie = JSON.stringify(preselected);
+    if (req.session.user && req.session.user.role === 'admin') {
+        let input_project = req.body;
+        let preselected = {
+            "Q1": {
+                "age_at_baseline": true,
+                "adopted": true,
+                "twin": true,
+                "birthplace": true,
+                "birthplace_mom": true,
+                "birthplace_dad": true,
+                "participant_race": true,
+                "nih_ethnic_cat": true,
+                "age_mom": true,
+                "age_dad": true,
+                "FMP": true,
+                "ROCYN15": true,
+                "RTOCYRS15": true,
+                "EVPRG": true,
+                "AGEFFTP": true,
+                "TOTPRG": true,
+                "RMENOVARC": true,
+                "HEIGHTX": true,
+                "WEIGHTX": true,
+                "bmi": true,
+                "DIABSELF": true,
+                "HIPFSELF": true,
+                "SPMP3YR": true,
+                "SPMHRLT": true,
+                "vitgrp": true,
+                "ALCYRC": true,
+                "SMKEXP": true,
+                "TYRSSMK": true,
+                "AVGCIGDY": true,
+                "TPACKYRS": true
+            }, "Q2": {}, "Q3": {}, "Q4": {}, "Q4mini": {}, "Q5": {}, "Q5mini": {}, "Q6": {}
+        };
+        input_project.questionnarie = JSON.stringify(preselected);
         Project.create(input_project).then(
             project => {
                 if (req.body.users && req.body.users.length > 0) {
@@ -262,6 +340,10 @@ app.post('/api/project', (req, res) => {
                 }
             }
         )
+    } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.json({Error: 'No permission to create a new project'});
+    }
 });
 
 app.get('/api/project/:id', (req, res) => {
@@ -272,8 +354,38 @@ app.get('/api/project/:id', (req, res) => {
             {model: User, as: 'users'},
         ],
     }).then(project => {
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify(project));
+
+        if (project) {
+
+            for (var i = 0; i < project.users.length; i++) {
+                project.users[i].password = undefined;
+            }
+
+            res.setHeader('Content-Type', 'application/json');
+            if (req.session.user) {
+                if (req.session.user.role === 'admin') {
+                    res.json(project);
+                } else {
+                    var found = false;
+                    for (var i = 0; i < project.users.length; i++) {
+                        if (project.users[i].email === req.session.user.email) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found) {
+                        res.json(project);
+                    } else {
+                        res.json([]);
+                    }
+                }
+            } else {
+                res.json([]);
+            }
+        } else {
+            res.setHeader('Content-Type', 'application/json');
+            res.json([]);
+        }
     });
 });
 
@@ -450,44 +562,54 @@ app.post('/api/summary/stage', (req, res) => {
 });
 
 app.delete('/api/project/:id', (req, res) => {
-    const id = req.params.id;
-    Project.destroy({where: {id: id}}).then(
-        project => {
-            res.setHeader('Content-Type', 'application/json');
-            res.send({done: true});
-        }
-    )
+    if (req.session.user && req.session.user.role === 'admin') {
+        const id = req.params.id;
+        Project.destroy({where: {id: id}}).then(
+            project => {
+                res.setHeader('Content-Type', 'application/json');
+                res.send({done: true});
+            }
+        )
+    } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send({Error: 'No permission to delete this project.'});
+    }
 });
 
 app.put('/api/project/:id', (req, res) => {
-    const id = req.params.id;
-    const updates = req.body;
-    Project.findOne({
-        where: {id: id},
-        include: [
-            {model: User, as: 'users'},
-        ],
-    }).then(project => {
-        return project.update(updates);
-    }).then(updated_project => {
-        if (req.body.users && req.body.users.length > 0) {
-            let conditions = [];
-            for (var i = 0; i < req.body.users.length; i++) {
-                conditions.push({id: req.body.users[i].id});
-            }
-            const {Op} = require("sequelize");
-            User.findAll({
-                where: {[Op.or]: conditions}
-            }).then(users => {
-                updated_project.setUsers(users);
+    if (req.session.user && req.session.user.role === 'admin') {
+        const id = req.params.id;
+        const updates = req.body;
+        Project.findOne({
+            where: {id: id},
+            include: [
+                {model: User, as: 'users'},
+            ],
+        }).then(project => {
+            return project.update(updates);
+        }).then(updated_project => {
+            if (req.body.users && req.body.users.length > 0) {
+                let conditions = [];
+                for (var i = 0; i < req.body.users.length; i++) {
+                    conditions.push({id: req.body.users[i].id});
+                }
+                const {Op} = require("sequelize");
+                User.findAll({
+                    where: {[Op.or]: conditions}
+                }).then(users => {
+                    updated_project.setUsers(users);
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify(updated_project));
+                })
+            } else {
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify(updated_project));
-            })
-        } else {
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(updated_project));
-        }
-    });
+            }
+        });
+    } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send({Error: 'No permission to update this project.'});
+    }
 });
 
 app.post('/api/cancer_endpoints', (req, res) => {

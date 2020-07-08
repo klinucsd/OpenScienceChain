@@ -3,6 +3,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography/index';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import axios from "axios";
 
 const root_style = {
     width: '100%',
@@ -39,6 +40,34 @@ class Password extends React.Component {
     };
 
     checkPassword = () => {
+
+        let thisProps = this.props;
+        let thisState = this;
+        axios.post('/api/login', {
+            params: {
+                email: this.state.user.email,
+                password: this.state.password
+            }
+        }).then(function (response) {
+            console.log(response.data);
+            if (response.data !== null) {
+                thisProps.set_authenticated(true);
+                localStorage.setItem("user", JSON.stringify(thisState.state.user));
+            } else {
+                thisState.setState({
+                    password_error_message: 'Wrong password.'
+                });
+            }
+        }).catch(function (error) {
+            console.log(error);
+        }).then(function () {
+            // always executed
+        });
+
+
+
+
+        /*
         if (this.state.password === this.state.user.password) {
             this.props.set_authenticated(true);
             localStorage.setItem("user", JSON.stringify(this.state.user));
@@ -47,6 +76,7 @@ class Password extends React.Component {
                 password_error_message: 'Wrong password.'
             });
         }
+         */
     }
 
     render() {
