@@ -275,7 +275,7 @@ app.get('/api/project', (req, res) => {
                     res.json(output_projects);
                 }
             } else {
-                res.json([]);
+                res.json(projects);
             }
         })
 });
@@ -438,6 +438,7 @@ app.post('/api/summary/diagnosis_age', (req, res) => {
     let sql = 'SELECT DISTINCT cast(strftime(\'%Y\', date(DATE_DT))as integer) as year,  ' +
         ' cast(round((julianday(DATE_DT)-julianday(DATE_OF_BIRTH_DT))/365.25)as integer) as age FROM ssap_data WHERE ' +
         getCondition(req.body.cancer_endpoint, req.body.start_of_follow_up, req.body.censoring_rules) +
+        //' AND DATE_DT <= \'2017-12-31\' ' +
         ' AND NOT DATE_DT = \'\' ORDER BY year, age';
 
     console.log("---------------------------");
@@ -478,7 +479,7 @@ app.post('/api/summary/diagnosis_age', (req, res) => {
 
 app.post('/api/summary/tumor_histology', (req, res) => {
 
-    let sql = "SELECT (CASE HISTOLOGIC_ICDO3_TYP WHEN '' THEN 'Unknown' ELSE HISTOLOGIC_ICDO3_TYP END) AS HISTOLOGIC_ICDO3_TYP, count(*) AS TOTAL FROM ssap_data WHERE " +
+    let sql = "SELECT (CASE HISTOLOGIC_ICDO3_TYP WHEN '' THEN 'Unknown' ELSE HISTOLOGIC_ICDO3_TYP END) AS HISTOLOGIC_ICDO3_TYP, count(*) AS TOTAL FROM ssap_data WHERE NOT HISTOLOGIC_ICDO3_TYP='' AND  " +
         getCondition(req.body.cancer_endpoint, req.body.start_of_follow_up, req.body.censoring_rules) +
         " GROUP BY HISTOLOGIC_ICDO3_TYP";
 
@@ -577,7 +578,7 @@ app.delete('/api/project/:id', (req, res) => {
 });
 
 app.put('/api/project/:id', (req, res) => {
-    if (req.session.user && req.session.user.role === 'admin') {
+    if (req.session.user) {
         const id = req.params.id;
         const updates = req.body;
         Project.findOne({
@@ -678,7 +679,7 @@ app.post('/api/cancer_endpoints', (req, res) => {
                     total += result[i].TOTAL;
                 }
                 result.push({
-                    SITE_GROUP_NME: 'Grand Total',
+                    SITE_GROUP_NME: 'Total Number of Cancer Records',
                     TOTAL: total
                 })
             }
@@ -740,7 +741,7 @@ app.post('/api/cancer_endpoint', (req, res) => {
                     total += result[i].TOTAL;
                 }
                 result.push({
-                    SITE_GROUP_NME: 'Grand Total',
+                    SITE_GROUP_NME: 'Total Number of Cancer Records',
                     TOTAL: total
                 })
             }

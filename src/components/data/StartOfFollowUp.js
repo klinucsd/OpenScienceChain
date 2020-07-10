@@ -105,13 +105,13 @@ class StartOfFollowUp extends React.Component {
                 </Typography>
 
                 <Typography style={{padding: '5pt 10pt 0pt 10pt', width: '100%'}}>
-                    For your analysis, when should follow-up begin?
+                    For your analysis, when should follow-up begin?  Please select one of the following.
                 </Typography>
 
                 <div style={{padding: '5pt 0pt 10pt 25pt'}}>
                     <Radio.Group onChange={this.onChangeStart} value={this.state.start_of_follow_up}>
                         <Radio style={radioStyle} value={'QNR_1_FILL_DT'}>
-                            CTS Baseline - Questionnaire 1 (1995-1996)
+                            CTS Baseline, i.e. Questionnaire 1 (1995-1996)
                         </Radio>
                         <Radio style={radioStyle} value={'QNR_2_FILL_DT'}>
                             Questionnaire 2 (1997-1998)

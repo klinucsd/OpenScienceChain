@@ -1329,7 +1329,7 @@ class CancerEndpoint extends React.Component {
                         <span style={{flex: '1'}}>
                              <Select mode="multiple"
                                      allowClear="true"
-                                     placeholder="enter or select cancer site groups"
+                                     placeholder="Type or click here to select your cancer site group(s)"
                                      value={this.state.auto_values}
                                      ref={(select) => this.siteGroupNameSelect = select}
                                      onChange={this.onChangeAutoValues}

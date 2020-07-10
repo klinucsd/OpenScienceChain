@@ -222,7 +222,7 @@ class ProjectList extends React.Component {
                                                         <Tooltip title="Configure Project Data" placement="left">
                                                             <Avatar
                                                                 alt={project.name}
-                                                                src={"/static/images/avatar/"}
+                                                                //src={"/static/images/avatar/"}
                                                                 style={
                                                                     project.study_design === 'Cohort' ?
                                                                         small_green_style

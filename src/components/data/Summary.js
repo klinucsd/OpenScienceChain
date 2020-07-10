@@ -309,7 +309,7 @@ class Summary extends React.Component {
                                             {
                                                 this.censoring_rules.through_2015_12_31 ?
                                                     <Text style={{paddingRight: '10pt'}}>
-                                                        Include all eligible cases diagnosed through 12/31/2015.
+                                                        Include all eligible cases diagnosed through 12/31/2017.
                                                     </Text>
                                                     :
                                                     this.censoring_rules.end_of_follow_up ?
@@ -321,7 +321,7 @@ class Summary extends React.Component {
                                                         </Text>
                                                         :
                                                         <Text type="danger">
-                                                            Not include all eligible cases diagnosed through 12/31/2015.
+                                                            Not include all eligible cases diagnosed through 12/31/2017.
                                                             But no specified time.
                                                         </Text>
                                             }

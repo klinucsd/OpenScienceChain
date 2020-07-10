@@ -34,7 +34,7 @@ class SelectedDataSummary extends React.Component {
                     type: 'integer',
                     allowDecimals: false,
                     min: 1995,
-                    max: 2020,
+                    max: 2017,
                     tickInterval: 1,
                     title: {
                         enabled: true,
@@ -268,7 +268,7 @@ class SelectedDataSummary extends React.Component {
                             type: 'integer',
                             allowDecimals: false,
                             min: Math.min(1995, minYear),
-                            max: 2020,
+                            max: 2017,
                             tickInterval: 1,
                             title: {
                                 enabled: true,

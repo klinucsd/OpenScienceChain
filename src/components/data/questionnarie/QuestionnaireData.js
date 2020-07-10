@@ -229,17 +229,20 @@ class QuestionnaireData extends React.Component {
         return (
             <div style={root_style}>
                 <Typography style={{padding: '10pt 10pt 0pt 10pt', width: '100%'}}>
-                    Every dataset automatically includes the most commonly used variables, which are marked in green
-                    in the table below and are already included in your selections.
+                    Over 1200 variables are available for your analysis.
+                    To make your selections, check the boxes and
+                    review them in the window on the right.
                 </Typography>
                 <Typography style={{padding: '10pt 10pt 0pt 10pt', width: '100%'}}>
-                    Over 1200 variables are available for your analysis. Search, review, and make your selections
-                    below. On the left, use the search bar or the menus to filter by Questionnaire (1-6), Section, or
-                    Topic.
+                    The <b>Sections</b> view below is organized by the section titles on the
+                    physical questionnaires (1-6).
+                    If you prefer to review across all questionnaires by topic area, click <b>View By Topics</b>.
+                    You can also use the search bar to search by key terms.
                 </Typography>
                 <Typography style={{padding: '10pt 10pt 10pt 10pt', width: '100%'}}>
-                    Check the boxes and select “Add” to add variables to your selections. Review your selections in
-                    the window on the right, and click Confirm Selections to finish.
+                    Every analysis automatically includes the most commonly used CTS variables,
+                    which are marked in green in the table below and are already
+                    included in your dataset.
                 </Typography>
 
                 <table border={0} style={{width: '100%'}}>

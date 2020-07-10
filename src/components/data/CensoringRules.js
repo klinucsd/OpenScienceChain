@@ -116,8 +116,8 @@ class CensoringRules extends React.Component {
                 </Typography>
 
                 <Typography style={{padding: '5pt 10pt 0pt 10pt', width: '100%'}}>
-                    CTS follow-up data are currently complete through 12/31/2015. Will your
-                    analysis include all eligible cases diagnosed through 12/31/2015?
+                    CTS follow-up data are currently complete through 12/31/2017. Will your
+                    analysis include all eligible cases diagnosed through 12/31/2017?
                 </Typography>
 
                 <div style={{padding: '5pt 0pt 10pt 25pt'}}>
@@ -175,10 +175,13 @@ class CensoringRules extends React.Component {
                 }
 
                 <Typography style={{padding: '5pt 10pt 0pt 10pt', width: '100%'}}>
-                    By default, CTS analyses censor participants when they die; move out of California;
-                    are diagnosed with any other cancer; undergo risk-eliminating surgery (hysterectomy,
-                    bilateral oophorectomy, or bilateral mastectomy for uterine, ovarian, or breast cancers,
-                    respectively); or reach the administrative censoring date (12/31/2015). You can choose whether to censor participants who are diagnosed with any other cancer. Please specify your choice for censoring rules:
+                    By default, CTS analyses censor participants when they are diagnosed
+                    with any other cancer; die; move out of California; if applicable,
+                    undergo risk-eliminating surgery (hysterectomy, bilateral oophorectomy,
+                    or bilateral mastectomy for analyses of uterine, ovarian, or breast cancers,
+                    respectively); or reach the administrative censoring date (12/31/2017).
+                    You can choose whether to censor participants who are diagnosed with
+                    any other cancer. Please specify your choice for censoring rules:”
                 </Typography>
 
                 <div style={{padding: '5pt 20pt 10pt 25pt'}}>

@@ -354,11 +354,13 @@ class QuestionnaireTable extends React.Component {
                                                 onClick={() => this.expendIt(row.section)}/>
                                     }
                                     <span style={{padding: '0pt 5pt 0pt 5pt'}}>
-                                        Section:
+                                        Section :
+                                        <span style={{paddingLeft: '2pt'}}>
                                         {
                                             row.section.toLowerCase().charAt(0).toUpperCase() +
                                             row.section.toLowerCase().slice(1)
                                         }
+                                        </span>
                                         <span style={{
                                             width: 48,
                                             display: 'inline-block',
