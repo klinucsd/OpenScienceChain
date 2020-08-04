@@ -4,8 +4,6 @@ import AppBar from '@material-ui/core/AppBar/index';
 import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar from '@material-ui/core/Toolbar/index';
 import Typography from '@material-ui/core/Typography/index';
-import IconButton from '@material-ui/core/IconButton/index';
-import MenuIcon from '@material-ui/icons/Menu';
 import Avatar from '@material-ui/core/Avatar';
 import axios from "axios";
 

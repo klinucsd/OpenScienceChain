@@ -19,7 +19,7 @@ let getCoditionForCancerEndpoint = (cancer_endpoint) => {
             sql += ' AND HISTOLOGIC_ICDO3_TYP=\'' + item.HISTOLOGIC_ICDO3_TYP + '\'';
         }
 
-        if (site_group_name !== 'Breast') {
+        if (site_group_name !== 'Breast' || cancer_endpoint.length > 1) {
             sql += ' AND NOT BREAST_CANCER_RES_ONLY_IND = 1 ';
         }
         // AND (SITE_GROUP_NME = 'Breast' OR NOT BREAST_CANCER_RES_ONLY_IND = 1)
@@ -44,6 +44,19 @@ let getConditionForStartFollowup = (start_of_follow_up) => {
 }
 
 let getConditionForExcludePrevalent = () => {
+
+    let sql = " NOT brca_selfsurvey='Y' ";
+    sql += " AND NOT endoca_self_q1='A' ";
+    sql += " AND NOT cervca_self_q1='A'  ";
+    sql += " AND NOT ovryca_self_q1='A' ";
+    sql += " AND NOT lungca_self_q1='A' ";
+    sql += " AND NOT leuk_self_q1='A' ";
+    sql += " AND NOT hodg_self_q1='A' ";
+    sql += " AND NOT colnca_self_q1='A' ";
+    sql += " AND NOT thyrca_self_q1='A' ";
+    sql += " AND NOT meln_self_q1='A' ";
+
+    /*
     let sql = " NOT BRCANLX = 'Y' ";
     sql += " AND NOT ENDOSELF = 'A' ";
     sql += " AND NOT CERVSELF = 'A' ";
@@ -54,13 +67,15 @@ let getConditionForExcludePrevalent = () => {
     sql += " AND NOT THYRSELF = 'A' ";
     sql += " AND NOT MELNSELF = 'A' ";
     sql += " AND NOT OVRYSELF = 'A' ";
+     */
+
     return sql;
 }
 
 let getConditionForExcludeInterest = (cancer_endpoint, start_of_follow_up) => {
 
     let sql = "NOT SSAP_ID IN (";
-    sql += " SELECT SSAP_ID FROM ssap_data ";
+    sql += " SELECT SSAP_ID FROM ssap_data_2 ";
     sql += " WHERE " + getDefaultCondition();
     if (cancer_endpoint) {
         sql += " AND " + getCoditionForCancerEndpoint(cancer_endpoint);
@@ -68,10 +83,27 @@ let getConditionForExcludeInterest = (cancer_endpoint, start_of_follow_up) => {
     if (start_of_follow_up) {
         sql += " AND NOT ( " + getConditionForStartFollowup(start_of_follow_up) + ")";
     }
+
+    /*
     sql += " AND (BRCANLX = 'Y' OR ENDOSELF = 'A' OR CERVSELF = 'A' OR LUNGSELF = 'A' OR ";
     sql += " LEUKSELF = 'A' OR HODGSELF = 'A' OR COLNSELF = 'A' OR THYRSELF = 'A' OR ";
     sql += " MELNSELF = 'A' OR OVRYSELF = 'A') ";
-    sql += ")";
+    */
+
+    sql += " AND ( brca_selfsurvey='Y' ";
+    sql += "  or endoca_self_q1='A' ";
+    sql += "  or cervca_self_q1='A' ";
+    sql += "  or ovryca_self_q1='A' ";
+    sql += "  or lungca_self_q1='A' ";
+    sql += "  or leuk_self_q1='A' ";
+    sql += "  or hodg_self_q1='A' ";
+    sql += "  or colnca_self_q1='A' ";
+    sql += "  or thyrca_self_q1='A' ";
+    sql += "  or meln_self_q1='A' ";
+    sql += " ) ";
+
+    sql += ") "
+
     return sql;
 }
 
@@ -79,7 +111,7 @@ let getConditionForCensoringRules = (censoring_rules) => {
     let sql = "";
     if (censoring_rules) {
         if (censoring_rules.through_2015_12_31) {
-            sql += ' AND DATE_DT <= \'2015-12-31\' ';
+            sql += ' AND DATE_DT <= \'2017-12-31\' ';
         } else if (censoring_rules.end_of_follow_up.startsWith("QNR_")) {
             sql += " AND DATE_DT <= " + censoring_rules.end_of_follow_up +
                 " AND " + censoring_rules.end_of_follow_up + " IS NOT NULL " +

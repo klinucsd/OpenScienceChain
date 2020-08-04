@@ -1,7 +1,6 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography/index';
-import {Button, Input, Tabs, Card, Divider} from 'antd';
-import {Collapse} from 'antd';
+import {Button, Input, Tabs, Card } from 'antd';
 import 'antd/dist/antd.css';
 import '../index.css';
 import './questionnarie.css';
@@ -95,9 +94,13 @@ class QuestionnaireData extends React.Component {
     }
 
     setSelectedVariables = (questionnarie, values) => {
-        this.state.selected_variables[questionnarie] = values;
-        //console.log("setSelectedVariables = " + JSON.stringify(this.state.selected_variables));
-        this.props.save_questionnarie(this.state.selected_variables);
+
+        //this.state.selected_variables[questionnarie] = values;
+        //this.props.save_questionnarie(this.state.selected_variables);
+
+        let selected_variables = this.state.selected_variables;
+        selected_variables[questionnarie] = values;
+        this.props.save_questionnarie(selected_variables);
     }
 
     setSelectedVariablesWithQuestionnarie = (map) => {
@@ -105,8 +108,10 @@ class QuestionnaireData extends React.Component {
         //console.log("before ==== " + JSON.stringify(this.state.selected_variables));
         //console.log("after ==== " + JSON.stringify(map));
 
+        let selected_variables = this.state.selected_variables;
         for (let [questionnarie, selected] of Object.entries(map)) {
-            this.state.selected_variables[questionnarie] = selected;
+            //this.state.selected_variables[questionnarie] = selected;
+            selected_variables[questionnarie] = selected;
         }
         this.props.save_questionnarie(this.state.selected_variables);
         //console.log("final ==== " + JSON.stringify(this.state.selected_variables));
@@ -215,7 +220,6 @@ class QuestionnaireData extends React.Component {
                 result.push(variable);
             }
         }
-
         return result;
     }
 
@@ -225,7 +229,6 @@ class QuestionnaireData extends React.Component {
     }
 
     render() {
-        let thisState = this.state;
         return (
             <div style={root_style}>
                 <Typography style={{padding: '10pt 10pt 0pt 10pt', width: '100%'}}>
@@ -311,7 +314,7 @@ class QuestionnaireData extends React.Component {
                                                           ref={this.sectionQ4Ref}
                                             />
                                         </TabPane>
-                                        <TabPane tab="Q4mini" key="41" forceRender={true}>
+                                        <TabPane tab="Q4 Mini" key="41" forceRender={true}>
                                             <SectionTable type={'Q4mini'}
                                                           selectedVariables={this.state.selected_variables['Q4mini']}
                                                           setSelectedVariables={this.setSelectedVariables}
@@ -327,7 +330,7 @@ class QuestionnaireData extends React.Component {
                                                           ref={this.sectionQ5Ref}
                                             />
                                         </TabPane>
-                                        <TabPane tab="Q5mini" key="51" forceRender={true}>
+                                        <TabPane tab="Q5 Mini" key="51" forceRender={true}>
                                             <SectionTable type={'Q5mini'}
                                                           selectedVariables={this.state.selected_variables['Q5mini']}
                                                           setSelectedVariables={this.setSelectedVariables}
@@ -442,7 +445,17 @@ class QuestionnaireData extends React.Component {
                                                     <span style={{
                                                         fontWeight: 'bold',
                                                         fontSize: 12
-                                                    }}>{questionnarie}</span>
+                                                    }}>
+                                                        {
+                                                            questionnarie === 'Q4mini' ?
+                                                                'Q4 Mini'
+                                                                :
+                                                                questionnarie === 'Q5mini' ?
+                                                                    'Q5 Mini'
+                                                                    :
+                                                                    questionnarie
+                                                        }
+                                                    </span>
                                                     {
                                                         Object.keys(this.state.selected_variables[questionnarie]).sort().map((variable, j) => (
                                                             <div key={'variable-' + i + '-' + j}

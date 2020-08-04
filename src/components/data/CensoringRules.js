@@ -3,8 +3,6 @@ import Typography from '@material-ui/core/Typography/index';
 import 'antd/dist/antd.css';
 import {Radio, DatePicker} from 'antd';
 import moment from 'moment';
-import Button from "@material-ui/core/Button";
-import Tooltip from "@material-ui/core/Tooltip/Tooltip";
 
 const dateFormat = 'MM/DD/YYYY';
 

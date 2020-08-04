@@ -206,13 +206,12 @@ class ProjectList extends React.Component {
                                         this.state.projects.length === 0 ?
                                             <div>
                                                 <Text style={{
-                                                    fontSize: 18
+                                                    fontSize: 16
                                                 }}>Your project list is empty.</Text>
                                             </div>
                                             :
                                             null
                                     }
-
 
                                     {
                                         this.state.projects.map((project, i) => (

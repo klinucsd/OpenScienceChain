@@ -12,7 +12,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import IconButton from '@material-ui/core/IconButton';
-import users from '../../model/users';
+//import users from '../../model/users';
 import EditUser from './EditUser';
 import CreateUser from './CreateUser';
 
@@ -53,6 +53,9 @@ const small_style = {
     height: theme.spacing(5),
     marginRight: '5pt'
 };
+
+let users = [];
+
 
 class UserList extends React.Component {
 

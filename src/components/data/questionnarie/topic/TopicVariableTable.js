@@ -2,16 +2,13 @@ import React from 'react';
 import 'antd/dist/antd.css';
 import '../../index.css';
 import '../questionnarie.css';
-import {Checkbox, Collapse, Table, Card, Input, Button} from "antd";
+import {Checkbox, Table, Card, Input, Button} from "antd";
 import QuestionnariePane from "./QuestionnariePane";
 import TopicPane from "./TopicPane";
 import Tooltip from "@material-ui/core/Tooltip/Tooltip";
 import preselected_variables from '../../../../model/preselected_variables';
-
-import all_topic_to_variable from '../../../../model/topic_variables';
 import axios from "axios";
 
-const {Panel} = Collapse;
 const {Search} = Input;
 
 class TopicVariableTable extends React.Component {
@@ -165,7 +162,7 @@ class TopicVariableTable extends React.Component {
             this.props.setSelectedVariablesWithQuestionnarie(variable_selected);
         } else {
             let variable_selected = this.state.variable_selected;
-            for (var i = 0; i < this.state.data.length; i++) {
+            for (i = 0; i < this.state.data.length; i++) {
                 let variable = this.state.data[i].variable;
                 let questionnarie = this.state.data[i].questionnarie;
 
@@ -275,7 +272,16 @@ class TopicVariableTable extends React.Component {
                                      title={
                                          <React.Fragment>
                                              {
-                                                 row.questionnarie + " : " +
+                                                 (
+                                                     row.questionnarie === 'Q4mini' ?
+                                                         'Q4 Mini'
+                                                         :
+                                                         row.questionnarie === 'Q5mini' ?
+                                                             'Q5 Mini'
+                                                             :
+                                                             row.questionnarie
+                                                 )
+                                                 + " : " +
                                                  row.section.charAt(0).toUpperCase() +
                                                  row.section.slice(1).toLowerCase()
                                              }

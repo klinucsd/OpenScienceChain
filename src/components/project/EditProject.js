@@ -14,9 +14,12 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import DualListBox from 'react-dual-listbox';
 import 'react-dual-listbox/lib/react-dual-listbox.css';
-import users from '../../model/users';
 import axios from "axios";
 import './project.css';
+import 'antd/dist/antd.css';
+import {Input} from 'antd';
+
+const {Search} = Input;
 
 const theme = createMuiTheme({
     overrides: {
@@ -56,14 +59,6 @@ const formControlStyle = {
     minWidth: '100%',
 }
 
-let options = [];
-for (var i = 0; i < users.length; i++) {
-    options.push({
-        value: users[i].id,
-        label: users[i].first_name + " " + users[i].last_name + ", " + users[i].email
-    });
-}
-
 class EditProject extends React.Component {
 
     constructor(props) {
@@ -80,7 +75,8 @@ class EditProject extends React.Component {
             //users: this.props.project.users,
             users: [],
             available: [],
-            original_users: {}
+            original_users: {},
+            searchAvailableTerm: null
         }
     }
 
@@ -104,6 +100,7 @@ class EditProject extends React.Component {
                         label: response.data[i].first_name + " " + response.data[i].last_name + ", " + response.data[i].email
                     });
                 }
+
                 thisState.setState({
                     users: users,
                     available: options,
@@ -116,6 +113,59 @@ class EditProject extends React.Component {
             .then(function () {
                 // always executed
             });
+
+    }
+
+    onSearchAvailableTermChange = (evt) => {
+        this.setState({
+            searchAvailableTerm: evt.target.value
+        });
+    };
+
+    onSearchAvailable = () => {
+        let options = [];
+        for (var i = 0; i < 150; i++) {
+            let id = i + "";
+            if (this.state.original_users[id]) {
+                let user = {
+                    value: this.state.original_users[id].id,
+                    label: this.state.original_users[id].first_name + " " + this.state.original_users[id].last_name + ", " + this.state.original_users[id].email
+                };
+
+                if (this.state.searchAvailableTerm) {
+                    if (this.state.original_users[id].first_name.toLowerCase().indexOf(this.state.searchAvailableTerm.toLowerCase()) !== -1 ||
+                        this.state.original_users[id].last_name.toLowerCase().indexOf(this.state.searchAvailableTerm.toLowerCase()) !== -1 ||
+                        this.state.original_users[id].email.toLowerCase().indexOf(this.state.searchAvailableTerm.toLowerCase()) !== -1) {
+                        options.push(user);
+                    }
+                } else {
+                    options.push(user);
+                }
+            }
+        }
+
+        for (var j=0; j<this.state.users.length; j++) {
+            let found = false;
+            for (i=0; i<options.length; i++) {
+                if (options[i].value === this.state.users[j]) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                let user = this.state.original_users[this.state.users[j]];
+                options.push({
+                    value: user.id,
+                    label: user.first_name + " " + user.last_name + ", " + user.email
+                });
+
+            }
+        }
+
+        this.setState({
+            available: options,
+        });
 
     }
 
@@ -178,7 +228,6 @@ class EditProject extends React.Component {
     onChange = (users) => {
         this.setState({users});
     }
-
 
     render() {
         return (
@@ -299,6 +348,24 @@ class EditProject extends React.Component {
                                         selected={this.state.users}
                                         onChange={this.onChange}
                                     />
+                                    <table style={{width: '100%', fontSize: '12px', color: 'black'}}>
+                                        <tbody>
+                                        <tr>
+                                            <td style={{textAlign: 'center', width: '282pt'}}>
+                                                <Search placeholder="input text to search available users"
+                                                        allowClear
+                                                        onSearch={this.onSearchAvailable}
+                                                        value={this.state.searchAvailableTerm}
+                                                        onChange={this.onSearchAvailableTermChange}
+                                                        style={{width: '100%', marginTop: '5pt'}}
+                                                />
+                                            </td>
+                                            <td style={{width: '42pt'}}></td>
+                                            <td style={{textAlign: 'center', width: 'calc(50%-21)'}}>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
 

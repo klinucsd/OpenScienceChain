@@ -1,8 +1,8 @@
 import React from 'react';
-import {List, Typography, Divider, Card} from 'antd';
+import {Typography, Card} from 'antd';
 import axios from "axios";
 
-const {Title, Text} = Typography;
+const {Text} = Typography;
 
 class Summary extends React.Component {
 
@@ -379,7 +379,15 @@ class Summary extends React.Component {
                                                     fontSize: 12,
                                                     paddingTop: '4pt'
                                                 }}>
-                                                {questionnarie}
+                                                {
+                                                    questionnarie === 'Q4mini' ?
+                                                        'Q4 Mini'
+                                                        :
+                                                        questionnarie === 'Q5mini' ?
+                                                            'Q5 Mini'
+                                                            :
+                                                            questionnarie
+                                                }
                                                 </span>
 
                                     <table style={{width: '100%'}}>

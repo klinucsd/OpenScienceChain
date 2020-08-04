@@ -1,17 +1,7 @@
 import React from 'react';
-import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import WarningIcon from '@material-ui/icons/Warning';
-import {withStyles} from '@material-ui/core/styles';
-import MuiExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Tooltip from '@material-ui/core/Tooltip';
 import StartOfFollowUp from './StartOfFollowUp';
 import CensoringRules from './CensoringRules';
@@ -22,10 +12,8 @@ import Summary from './Summary';
 import axios from "axios";
 import MuiButton from "@material-ui/core/Button";
 import Paper from '@material-ui/core/Paper';
-
-import {Tabs, Button, Space} from 'antd';
+import {Tabs, Button, Space, Modal, Progress} from 'antd';
 import 'antd/dist/antd.css';
-
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -52,6 +40,7 @@ const ExpansionPanel2 = withStyles({
 })(MuiExpansionPanel);
 */
 
+/*
 const ExpansionPanelSummary2 = withStyles({
     root: {
         //backgroundColor: 'rgba(0, 0, 0, .03)',
@@ -70,6 +59,7 @@ const ExpansionPanelSummary2 = withStyles({
     },
     expanded: {},
 })(MuiExpansionPanelSummary);
+*/
 
 /*
 const ExpansionPanelDetails2 = withStyles((theme) => ({
@@ -166,7 +156,10 @@ class ProjectConfigPane extends React.Component {
 
             activeTabKey: "config",  // manage tabs
             activeStep: 0,
-            next_step_valid: false
+            next_step_valid: false,
+
+            showWaitDowwnload: false,
+            percent: 30,
 
         }
         this.summaryRef = React.createRef();
@@ -177,7 +170,7 @@ class ProjectConfigPane extends React.Component {
     }
 
     componentDidMount() {
-        if (this.state.activeStep == 0) {
+        if (this.state.activeStep === 0) {
             this.setState({
                 next_step_valid: this.validate('cancer endpoint')
             });
@@ -444,28 +437,28 @@ class ProjectConfigPane extends React.Component {
                 "birthplace_dad": true,
                 "participant_race": true,
                 "nih_ethnic_cat": true,
-                "age_mom": true,
-                "age_dad": true,
-                "FMP": true,
-                "ROCYN15": true,
-                "RTOCYRS15": true,
-                "EVPRG": true,
-                "AGEFFTP": true,
-                "TOTPRG": true,
-                "RMENOVARC": true,
-                "HEIGHTX": true,
-                "WEIGHTX": true,
-                "bmi": true,
-                "DIABSELF": true,
-                "HIPFSELF": true,
-                "SPMP3YR": true,
-                "SPMHRLT": true,
-                "vitgrp": true,
-                "ALCYRC": true,
-                "SMKEXP": true,
-                "TYRSSMK": true,
-                "AVGCIGDY": true,
-                "TPACKYRS": true
+                "age_mom_atbirth": true,
+                "age_dad_atbirth": true,
+                "menarche_age": true,
+                "oralcntr_ever_q1": true,
+                "oralcntr_yrs": true,
+                "fullterm_age1st": true,
+                "preg_ever_q1": true,
+                "preg_total_q1": true,
+                "meno_stattype": true,
+                "height_q1": true,
+                "weight_q1": true,
+                "bmi_q1": true,
+                "diab_self_q1": true,
+                "hbp_self_q1": true,
+                "allex_hrs_q1": true,
+                "allex_life_hrs": true,
+                "vit_mulvit_q1": true,
+                "alchl_analyscat": true,
+                "smoke_expocat": true,
+                "smoke_totyrs": true,
+                "smoke_totpackyrs": true,
+                "cig_day_avg": true,
             }, "Q2": {}, "Q3": {}, "Q4": {}, "Q4mini": {}, "Q5": {}, "Q5mini": {}, "Q6": {}
         };
 
@@ -504,12 +497,16 @@ class ProjectConfigPane extends React.Component {
     }
 
     nextStep = () => {
-        if (this.state.activeStep < 3) {
+        if (this.state.activeStep < 4) {
             let activeStep = this.state.activeStep + 1;
             this.setState({
                 activeStep,
-                next_step_valid: activeStep === 1 ? this.validate('start of follow-up') :
-                    activeStep === 2 ? this.validate('censoring rules') : false
+                next_step_valid:
+                    activeStep === 1 ?
+                        this.validate('start of follow-up') :
+                        activeStep === 2 ?
+                            this.validate('censoring rules') :
+                            true
             });
         }
     }
@@ -529,6 +526,59 @@ class ProjectConfigPane extends React.Component {
     stepTo = (step) => {
         this.setState({
             activeStep: step
+        });
+    }
+
+    makeProgress = () => {
+        if (this.state.percent < 100) {
+            if (this.state.percent < 99) {
+                setTimeout(this.makeProgress, 1500);
+            }
+
+            this.setState({
+                percent: this.state.percent + 1
+            });
+        }
+    }
+
+    downloadData = () => {
+
+        // show dialog
+        this.setState({
+            showWaitDowwnload: true,
+            percent: 0
+        });
+
+        setTimeout(this.makeProgress, 1500);
+
+        axios({
+            url: `/api/download/data/${this.state.project.id}/${this.state.project.abbrev}`,
+            method: 'GET',
+            responseType: 'blob', // important
+        }).then((response) => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download',
+                `${this.state.project.abbrev}_` + new Date().getTime() + '.csv');
+            document.body.appendChild(link);
+            link.click();
+
+            this.setState({
+                showWaitDowwnload: false
+            });
+        });
+    }
+
+    handleOk = () => {
+        this.setState({
+            showWaitDowwnload: false
+        });
+    }
+
+    handleCancel = () => {
+        this.setState({
+            showWaitDowwnload: false
         });
     }
 
@@ -855,26 +905,154 @@ class ProjectConfigPane extends React.Component {
 
                                     <div style={{width: '100%', textAlign: 'center'}}>
                                         <Space>
-                                            <MuiButton variant="contained"
-                                                       color="primary"
-                                                       disabled={this.state.activeStep === 0}
-                                                       onClick={this.backStep}
-                                                       style={{margin: '10pt 0pt 8pt 0pt', textTransform: 'none'}}>
-                                                BACK
-                                            </MuiButton>
-                                            <MuiButton variant="contained"
-                                                       color="primary"
-                                                       disabled={this.state.activeStep === 4}
-                                                       onClick={this.nextStep}
-                                                       style={{margin: '10pt 0pt 8pt 0pt', textTransform: 'none'}}>
-                                                NEXT
-                                            </MuiButton>
+                                            {
+                                                this.state.activeStep > 0 ?
+                                                    <MuiButton variant="contained"
+                                                               color="primary"
+                                                               disabled={this.state.activeStep === 0}
+                                                               onClick={this.backStep}
+                                                               style={{
+                                                                   margin: '10pt 0pt 8pt 0pt',
+                                                                   textTransform: 'none'
+                                                               }}>
+                                                        BACK
+                                                    </MuiButton>
+                                                    :
+                                                    null
+                                            }
+
+                                            {
+                                                this.state.activeStep < 4 ?
+                                                    <MuiButton variant="contained"
+                                                               color="primary"
+                                                               disabled={this.state.activeStep === 4}
+                                                               onClick={this.nextStep}
+                                                               style={{
+                                                                   margin: '10pt 0pt 8pt 0pt',
+                                                                   textTransform: 'none'
+                                                               }}>
+                                                        NEXT
+                                                    </MuiButton> :
+                                                    null
+                                            }
+
+                                            {
+                                                this.state.activeStep === 4 ?
+                                                    <MuiButton variant="contained"
+                                                               color="primary"
+
+
+                                                               disabled={ !(
+                                                                   this.state.cancer_endpoint &&
+                                                                   this.state.cancer_endpoint.length > 0 &&
+                                                                   this.state.start_of_follow_up !== undefined &&
+                                                                   this.state.start_of_follow_up !== null &&
+                                                                   this.state.start_of_follow_up.start_of_follow_up !== undefined &&
+                                                                   this.state.start_of_follow_up.start_of_follow_up !== null &&
+                                                                   (
+                                                                       (
+                                                                           this.state.start_of_follow_up.start_of_follow_up === 'Other' &&
+                                                                           this.state.start_of_follow_up.start_of_follow_up_specified !== undefined &&
+                                                                           this.state.start_of_follow_up.start_of_follow_up_specified !== null
+                                                                       )
+                                                                       ||
+                                                                       (
+                                                                           this.state.start_of_follow_up.start_of_follow_up !== 'Other' &&
+                                                                           this.state.start_of_follow_up.start_of_follow_up_exclude !== undefined &&
+                                                                           this.state.start_of_follow_up.start_of_follow_up_exclude !== null
+                                                                       )
+                                                                   ) &&
+                                                                   this.state.censoring_rules !== undefined &&
+                                                                   this.state.censoring_rules !== null &&
+                                                                   this.state.censoring_rules.through_2015_12_31 !== undefined &&
+                                                                   this.state.censoring_rules.through_2015_12_31 !== null &&
+                                                                   (
+                                                                       (
+                                                                           this.state.censoring_rules.through_2015_12_31 === true &&
+                                                                           this.state.censoring_rules.end_of_follow_up_exclude !== undefined &&
+                                                                           this.state.censoring_rules.end_of_follow_up_exclude !== null
+                                                                       )
+                                                                       ||
+                                                                       (
+                                                                           this.state.censoring_rules.through_2015_12_31 === false &&
+                                                                           this.state.censoring_rules.end_of_follow_up !== undefined &&
+                                                                           this.state.censoring_rules.end_of_follow_up !== null &&
+                                                                           (
+                                                                               (
+                                                                                   this.state.censoring_rules.end_of_follow_up === 'Other' &&
+                                                                                   this.state.censoring_rules.end_of_follow_up_specified !== undefined &&
+                                                                                   this.state.censoring_rules.end_of_follow_up_specified !== null
+                                                                               )
+                                                                               ||
+                                                                               (
+                                                                                   this.state.censoring_rules.end_of_follow_up !== 'Other' &&
+                                                                                   this.state.censoring_rules.end_of_follow_up_exclude !== undefined &&
+                                                                                   this.state.censoring_rules.end_of_follow_up_exclude !== null
+                                                                               )
+                                                                           )
+                                                                       )
+                                                                   ) &&
+                                                                   this.state.questionnarie &&
+                                                                   (
+                                                                       (
+                                                                           this.state.questionnarie['Q1'] &&
+                                                                           JSON.stringify(this.state.questionnarie['Q1']) !== '{}'
+                                                                       )
+                                                                       ||
+                                                                       (
+                                                                           this.state.questionnarie['Q2'] &&
+                                                                           JSON.stringify(this.state.questionnarie['Q2']) !== '{}'
+                                                                       )
+                                                                       ||
+                                                                       (
+                                                                           this.state.questionnarie['Q3'] &&
+                                                                           JSON.stringify(this.state.questionnarie['Q3']) !== '{}'
+                                                                       )
+                                                                       ||
+                                                                       (
+                                                                           this.state.questionnarie['Q4'] &&
+                                                                           JSON.stringify(this.state.questionnarie['Q4']) !== '{}'
+                                                                       )
+                                                                       ||
+                                                                       (
+                                                                           this.state.questionnarie['Q4mini'] &&
+                                                                           JSON.stringify(this.state.questionnarie['Q4mini']) !== '{}'
+                                                                       )
+                                                                       ||
+                                                                       (
+                                                                           this.state.questionnarie['Q5'] &&
+                                                                           JSON.stringify(this.state.questionnarie['Q5']) !== '{}'
+                                                                       )
+                                                                       ||
+                                                                       (
+                                                                           this.state.questionnarie['Q5mini'] &&
+                                                                           JSON.stringify(this.state.questionnarie['Q5mini']) !== '{}'
+                                                                       )
+                                                                       ||
+                                                                       (
+                                                                           this.state.questionnarie['Q6'] &&
+                                                                           JSON.stringify(this.state.questionnarie['Q6']) !== '{}'
+                                                                       )
+                                                                   )
+                                                               )}
+
+
+                                                               onClick={this.downloadData}
+                                                               style={{
+                                                                   margin: '10pt 0pt 8pt 0pt',
+                                                                   textTransform: 'none'
+                                                               }}>
+                                                        DOWNLOAD DATA
+                                                    </MuiButton>
+                                                    :
+                                                    null
+                                            }
+
                                         </Space>
                                     </div>
 
                                 </Paper>
 
-                                <div style={{height: '200px'}}></div>
 
                             </TabPane>
                             <TabPane key="summary"
@@ -896,6 +1074,37 @@ class ProjectConfigPane extends React.Component {
 
                     </div>
                 </div>
+
+                <Modal
+                    title="Please wait for downloading data"
+                    visible={this.state.showWaitDowwnload}
+                    centered
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                    footer={[
+                        <Button key="back" onClick={this.handleCancel}>
+                            Cancel
+                        </Button>,
+                    ]}
+                >
+                    <div style={{textAlign: 'center'}}>
+                        <Typography>
+                            It may take 1-2 minutes to generate the data.
+                        </Typography>
+                        {/*
+                        <CircularProgress
+                            variant={"indeterminate"}
+                            value={100}
+                            style={{color: 'green', marginTop: '10pt'}}/>
+                        */}
+                        <Progress type="circle"
+                                  width={60}
+                                  percent={this.state.percent}
+                                  style={{color: 'green', marginTop: '10pt'}}
+                        />
+
+                    </div>
+                </Modal>
             </div>
         );
     }

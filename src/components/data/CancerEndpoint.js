@@ -6,6 +6,7 @@ import './index.css';
 import './cancer_endpoint.css';
 import site_groups_name from '../../model/site_group_name';
 import axios from 'axios';
+import Tooltip from "@material-ui/core/Tooltip/Tooltip";
 
 const {Option, OptGroup} = Select;
 
@@ -157,7 +158,7 @@ const cancer_endpoint_info_columns = [
                 props: {
                     style: {fontWeight: 'normal', verticalAlign: 'top', fontSize: 12},
                 },
-                children: <div>{text}</div>
+                children: <div>{text.toLowerCase()}</div>
             };
         }
     }, {
@@ -172,7 +173,7 @@ const cancer_endpoint_info_columns = [
                     <div>
                         {
                             text.split('\n').map((string, i) => (
-                                <div>{string}</div>
+                                <div key={'row-'+index+'-'+i}>{string}</div>
                             ))
                         }
                     </div>
@@ -183,505 +184,583 @@ const cancer_endpoint_info_columns = [
 
 const cancer_endpoint_info_data = [
     {
-        name: 'DATE_DT',
-        description: 'Cancer diagnosis date'
+        name: 'date_dt',
+        description: `Cancer diagnosis date`
     },
     {
-        name: 'SITE_GROUP_NME',
-        description: 'This is the site group name for the SEERWHO recode'
+        name: 'site_group_nme',
+        description: `This is the site group name for the SEERWHO recode`
     },
     {
-        name: 'SEER_ID',
-        description: 'Surveillance, Epidemiology, and End Results ( SEER ) program of the National Cancer Institute (NCI)' +
-            '\nValues: 20010-99999'
+        name: 'seer_id',
+        description: `Surveillance, Epidemiology, and End Results ( SEER ) program of the National Cancer Institute (NCI)
+
+Values: 20010-99999`
     },
     {
-        name: 'HISTOLOGIC_ICDO3_TYP',
-        description: 'Tumor histology - The first four digits of the ICD-O-3 morphology code, indicates the histology/cell type of this tumor. Coded directly for cases diagnosed 2001 and forward. Cases coded prior to 2001 were converted to ICDO-3.'
+        name: 'site_sub_cat1_nme',
+        description: `This is the Site subcategory name for SEERWHO recode`
     },
     {
-        name: 'ICD_O3_CDE',
-        description: 'Tumor site - Location where this tumor originated in as much detail as is known and for which a code is provided in ICD-O-2 for cases 1988-2000 and ICDO-3 for cases 2001 forward.'
+        name: 'histologic_icdo2_typ',
+        description: `The first four digits of the ICD-O-2 morphology code, indicates the histology/cell type of this tumor.`
     },
     {
-        name: 'TUMOR_GRADE_ID',
-        description: 'Tumor grade - Sixth digit of ICD-O-3; designates the grade or differentiation of the tumor.'
+        name: 'histologic_icdo3_typ',
+        description: `Tumor histology - The first four digits of the ICD-O-3 morphology code, indicates the histology/cell type of this tumor. Coded directly for cases diagnosed 2001 and forward. Cases coded prior to 2001 were converted to ICDO-3.`
     },
     {
-        name: 'STAGE_CDE',
-        description: 'In CCR: STAGE\n' +
-            'Combined AJCC stage variable. EOD converted to AJCC 3rd edition stage for cervical, colon, rectum, ovarian, vulva, vagina, and lung cancers for 1994-2003; breast cancer for 1988-2003; CS converted to AJCC 6th edition stage for 2004-2009; CS converted to AJCC 7th edition stage for 2010 and forward.'
+        name: 'icd_o3_cde',
+        description: `Tumor site - Location where this tumor originated in as much detail as is known and for which a code is provided in ICD-O-2 for cases 1988-2000 and ICDO-3 for cases 2001 forward.`
     },
     {
-        name: 'STAGE_BEHAVIOUR_IND',
-        description: 'This is the CCR code used for HISTO_M3 (fifth digit) of the ICD-O-3 or HISTO_M2 (fifth digit) of the ICD-O-2 indicating behavior of the tumor.'
+        name: 'tumor_grade_id',
+        description: `Tumor grade - Sixth digit of ICD-O-3; designates the grade or differentiation of the tumor.`
     },
     {
-        name: 'STAGE_BEHAVIOUR_NME',
-        description: 'This is the descriptive name for the CCR code used for STAGE_BEHAVIOUR_IND'
+        name: 'stage_cde',
+        description: `In CCR: STAGE
+Combined AJCC stage variable. EOD converted to AJCC 3rd edition stage for cervical, colon, rectum, ovarian, vulva, vagina, and lung cancers for 1994-2003; breast cancer for 1988-2003; CS converted to AJCC 6th edition stage for 2004-2009; CS converted to AJCC 7th edition stage for 2010 and forward.`
     },
     {
-        name: 'STAGE_SEER_CDE',
-        description: 'In CCR: STAGE_SEER\n' +
-            'Combined AJCC stage variable. EOD converted to SEER-Modified AJCC 3rd edition stage for cervical, colon, rectum, ovarian, vulva, vagina, and lung cancers for 1994-2003; breast cancer for 1988- 2003; CS converted to AJCC 6th edition stage for 2004-2009; CS converted to AJCC 7th edition stage for 2010 and forward.'
+        name: 'stage_behaviour_ind',
+        description: `This is the CCR code used for HISTO_M3 (fifth digit) of the ICD-O-3 or HISTO_M2 (fifth digit) of the ICD-O-2 indicating behavior of the tumor.`
     },
     {
-        name: 'CANCER_CONFIRM_IND',
-        description: 'In CCR: DXCONF\n' +
-            'Indicates whether at any time during the patient’s medical history there was microscopic confirmation of this cancer.'
+        name: 'stage_behaviour_nme',
+        description: `This is the descriptive name for the CCR code used for STAGE_BEHAVIOUR_IND`
     },
     {
-        name: 'CHEMO_SUM_CDE',
-        description: 'In CCR: CHEMOSUM\n' +
-            'Identifies the type of chemotherapy given as first course of treatment at any facility, or the reason it was not given. RXDATEC records the date of initation for chemotherapy.'
+        name: 'stage_sum_ind',
+        description: `In CCR : SUMSTAGE 
+Summary stage at time of diagnosis`
     },
     {
-        name: 'HORM_SUM_CDE',
-        description: 'In CCR: HORMSUM\n' +
-            'Records whether systemic hormonal agents were given as first course of treatment at any facility, or the reason why they were not given. RXDATEH provides the date hormone therapy started.\n' +
-            'TYPEREP indicates which facility had the best source of information about the patient’s neoplasm.'
+        name: 'stage_seer_cde',
+        description: `In CCR: STAGE_SEER
+Combined AJCC stage variable. EOD converted to SEER-Modified AJCC 3rd edition stage for cervical, colon, rectum, ovarian, vulva, vagina, and lung cancers for 1994-2003; breast cancer for 1988- 2003; CS converted to AJCC 6th edition stage for 2004-2009; CS converted to AJCC 7th edition stage for 2010 and forward.`
     },
     {
-        name: 'IMMUNO_SUM_CDE',
-        description: 'In CCR: IMMUSUM\n' +
-            'Records whether systemic immunotherapy was given as first course of treatment at any facility, or the reason why it was not given. RXDATEI records the date of initiation for immunotherapy (a.k.a. biological response modifier) that is part of the first course of treatment.\n' +
-            'TYPEREP indicates which facility had the best source of information about the patient’s neoplasm.'
+        name: 'cancer_confirm_ind',
+        description: `In CCR: DXCONF 
+Indicates whether at any time during the patient’s medical history there was microscopic confirmation of this cancer.`
     },
     {
-        name: 'OTHER_SUM_CDE',
-        description: 'In CCR: OTHSUM\n' +
-            'Indicates whether the first course of treatment included other types of therapy. RXDATEO provides the date that the other type of therapy started.'
+        name: 'lag_birth_day_qty',
+        description: `Current AGE in days at event`
     },
     {
-        name: 'RAD_SUM_CDE',
-        description: 'In CCR: RADSUM\n' +
-            'Summary of radiation therapy given as first course of treatment. RXDATER identifies the date radiation therapy started.'
+        name: 'lag_death_day_qty',
+        description: `The number of days from this event to the death of the participant.`
     },
     {
-        name: 'NORAD_REASON_CDE',
-        description: 'In CCR: NORAD\n' +
-            'Reason why the first course of treatment did not include radiation.'
+        name: 'lag_from_first_event_day_qty',
+        description: `This is the difference in days from the current event date and the date of the first event`
     },
     {
-        name: 'NOSURG_REASON_CDE',
-        description: 'In CCR: NOSURG\n' +
-            'Reason why the first course of treatment did not include definitive surgery. Reason for No Surgery only applies to surgery of the primary site.'
+        name: 'lag_from_qnr1_day_qty',
+        description: `This is the difference in days from the current event date and the date the participant filled in the Questionnaire 1`
     },
     {
-        name: 'RAD_SEQ_CDE',
-        description: 'In CCR: RADSEQ\n' +
-            'Indicates the sequence of radiation therapy with surgery (pre-op, post-op, etc.) during the first course of treatment.'
+        name: 'lag_from_qnr2_day_qty',
+        description: `This is the difference in days from the current event date and the date the participant filled in the Questionnaire 2`
     },
     {
-        name: 'RX_DT',
-        description: 'In CCR: RXDATE_CCYYMMDD\n' +
-            'In CCR: RXDATE\n' +
-            'Date first course of definitive treatment started for this tumor. Based on earliest date reported for surgery, radiation, chemotherapy, hormone therapy, immunotherapy, or transplant/endocrine procedure.'
+        name: 'lag_from_qnr3_day_qty',
+        description: `This is the difference in days from the current event date and the date the participant filled in the Questionnaire 3`
     },
     {
-        name: 'RX_NODATE_CDE',
-        description: 'In CCR: DATEOFINITIALRXFLAG\n' +
-            'Indicates why there is no appropriate value in the corresponding date field,RXDATE.'
+        name: 'lag_from_qnr3m_day_qty',
+        description: `This is the difference in days from the current event date and the date the participant filled in the Questionnaire 3 Mini`
     },
     {
-        name: 'RX_CHEMO_DT',
-        description: 'In CCR: RXDATEC, RXDATEC_CCYYMMDD\n' +
-            'Date chemotherapy started. CHEMOSUM identifies the type of chemotherapy given as first course of treatment.'
+        name: 'lag_from_qnr4_day_qty',
+        description: `This is the difference in days from the current event date and the date the participant filled in the Questionnaire 4`
     },
     {
-        name: 'RX_CHEMO_NODATE_CDE',
-        description: 'In CCR: RXDATECHEMOFLAG\n' +
-            'Explains why there is no appropriate value in the corresponding date field, RXDATEC.'
+        name: 'lag_from_qnr4m_day_qty',
+        description: `This is the difference in days from the current event date and the date the participant filled in the Questionnaire 4 Mini`
     },
     {
-        name: 'RX_HORM_DT',
-        description: 'In CCR: RXDATEH , RXDATEH_CCYYMMDD\n' +
-            'Date hormone therapy started. HORMSUM identifies the type of hormone therapy given as first course of treatment.'
+        name: 'lag_from_qnr5_day_qty',
+        description: `This is the difference in days from the current event date and the date the participant filled in the Questionnaire 5`
     },
     {
-        name: 'RX_HORM_NODATE_CDE',
-        description: 'In CCR: RXDATEHORMONEFLAG\n' +
-            'Explains why there is no appropriate value in the corresponding date field, RXDATEH.'
+        name: 'lag_from_qnr5m_day_qty',
+        description: `This is the difference in days from the current event date and the date the participant filled in the Questionnaire 5 Mini`
     },
     {
-        name: 'RX_IMMUNO_DT',
-        description: 'In CCR: RXDATEI , RXDATEI_CCYYMMDD\n' +
-            'Date immunotherapy started. IMMUSUM identifies the type of immunotherapy given as first course of treatment.'
+        name: 'lag_from_qnr6_day_qty',
+        description: `This is the difference in days from the current event date and the date the participant filled in the Questionnaire 6`
     },
     {
-        name: 'RX_IMMUNO_NODATE_CDE',
-        description: 'In CCR: RXDATEBRMFLAG\n' +
-            'Explains why there is no appropriate value in the corresponding date field, RXDATEI.'
+        name: 'lymph_node_pos_nbr_cde',
+        description: `In CCR:PNODETU 
+Number of regional lymph nodes with evidence of involvement (positive).`
     },
     {
-        name: 'RX_OTHER_DT',
-        description: 'In CCR: RXDATEO , RXDATEO_CCYYMMDD\n' +
-            'Date other therapy started. OTHSUM identifies the \'other\' type of therapy given as first course of treatment.'
+        name: 'tumor_multi_asone_primary_cde',
+        description: `In CCR:MULTTUMRPTASONEPRIM 
+Identifies cases with multiple tumors that are abstracted and reported as a single primary using the SEER, IARC, or Canadian Cancer Registry multiple primary rules. Multiple tumors may individually exhibit in situ, invasive, or any combination of in situ and invasive behaviors. Multiple intracranial and central nervous system tumors may individually exhibit benign, borderline, malignant, or any combination of these behaviors.
+ Multiple tumors found in the same organ or in a single primary site may occur at the time of initial diagnosis or within one year of the initial diagnosis.`
     },
     {
-        name: 'RX_OTHER_NODATE_CDE',
-        description: 'In CCR: RXDATEOTHERFLAG\n' +
-            'This flag explains why there is no appropriate value in the corresponding date field, RXDATEO.'
+        name: 'tumor_multi_count_cde',
+        description: `In CCR:MULTIPLICITYCOUNTER 
+This data item is used to count the number of individual reportable tumors (multiplicity) that are present at the time of diagnosis or the number of reportable tumors that occur within one year of the original diagnosis reported as a single primary using the SEER, IARC, or Canadian Cancer Registry multiple primary rules.`
     },
     {
-        name: 'RAD_BOOST_MODE_CDE',
-        description: 'In CCR: RADBSTMOD\n' +
-            'Identifies the volume or anatomic target of the most clinically significant boost radiation therapy delivered to the patient during the first course of treatment. See also RADREGMOD. Radiation treatment is frequently delivered in two or more phases which can be summarized as “regional” and “boost” treatments. To evaluate patterns of radiation oncology care, it is necessary to know which radiation resources were employed in the delivery of therapy. For outcomes analysis, the modalities used for each of these phases can be very important.'
+        name: 'chemo_sum_cde',
+        description: `In CCR: CHEMOSUM
+Identifies the type of chemotherapy given as first course of treatment at any facility, or the reason it was not given. RXDATEC records the date of initation for chemotherapy.`
     },
     {
-        name: 'RAD_REGIONAL_MODE_CDE',
-        description: 'In CCR: RADREGMOD\n' +
-            'Records the dominant modality of radiation therapy used to deliver the most clinically significant regional dose to the primary volume of interest during the first course of treatment. Radiation treatment is frequently delivered in two or more phases which can be summarized as “regional” and “boost” treatments. To evaluate patterns of radiation oncology care, it is necessary to know which radiation resources were employed in the delivery of therapy. For outcomes analysis, the modalities used for each of these phases can be very important.'
+        name: 'horm_sum_cde',
+        description: `In CCR: HORMSUM 
+Records whether systemic hormonal agents were given as first course of treatment at any facility, or the reason why they were not given. RXDATEH provides the date hormone therapy started.
+TYPEREP indicates which facility had the best source of information about the patient’s neoplasm.`
     },
     {
-        name: 'RX_RAD_DT',
-        description: 'In CCR: RXDATER , RXDATER_CCYYMMDD\n' +
-            'Date radiation therapy started (including radiation to central nervous system).\n' +
-            'RADSUM identifies the type of radiation therapy used for first course of treatment.'
+        name: 'immuno_sum_cde',
+        description: `In CCR: IMMUSUM
+Records whether systemic immunotherapy was given as first course of treatment at any facility, or the reason why it was not given. RXDATEI records the date of initiation for immunotherapy (a.k.a. biological response modifier) that is part of the first course of treatment.
+TYPEREP indicates which facility had the best source of information about the patient’s neoplasm.`
     },
     {
-        name: 'RX_RAD_NODATE_CDE',
-        description: 'In CCR: RXDATERADIATIONFLAG\n' +
-            'This flag explains why there is no appropriate value in the corresponding date field, RXDATER.'
+        name: 'other_sum_cde',
+        description: `In CCR: OTHSUM 
+Indicates whether the first course of treatment included other types of therapy. RXDATEO provides the date that the other type of therapy started.`
     },
     {
-        name: 'RX_STG_PROC_DT',
-        description: 'In CCR: RXDATESN , RXDATESN_CCYYMMDD\n' +
-            'Date of diagnostic or staging procedure'
+        name: 'rad_sum_cde',
+        description: `In CCR: RADSUM
+Summary of radiation therapy given as first course of treatment. RXDATER identifies the date radiation therapy started.`
     },
     {
-        name: 'RX_STG_PROC_NODATE_CDE',
-        description: 'In CCR: RXDATEDXSTGPROCFLAG\n' +
-            'Date of diagnostic or staging procedure'
+        name: 'norad_reason_cde',
+        description: `In CCR: NORAD
+Reason why the first course of treatment did not include radiation.`
     },
     {
-        name: 'RX_SYSTEMIC_DT',
-        description: 'In CCR: DTSYSTEMIC , DTSYSTEMIC_CCYYMMDD\n' +
-            'Records the date of initiation for systemic therapy that is part of the first course of treatment. Systemic therapy is considered to be: chemotherapy agents, hormonal agents, biological response modifiers, bone marrow transplants, stem cell harvests, and surgical and/or radiation endocrine therapy.'
+        name: 'nosurg_reason_cde',
+        description: `In CCR: NOSURG
+Reason why the first course of treatment did not include definitive surgery. Reason for No Surgery only applies to surgery of the primary site.`
     },
     {
-        name: 'RX_SYSTEMIC_NODATE_CDE',
-        description: 'In CCR: RXDATESYSTEMICFLAG\n' +
-            'This flag explains why there is no appropriate value in the corresponding date field, DTSYSTEMIC'
+        name: 'rad_seq_cde',
+        description: `In CCR: RADSEQ
+Indicates the sequence of radiation therapy with surgery (pre-op, post-op, etc.) during the first course of treatment.`
     },
     {
-        name: 'RX_SYSTEMIC_SUM_SEQ_CDE',
-        description: 'In CCR: RXSUMMSYSTEMICSURSEQ\n' +
-            'Records the sequencing of systemic therapy (Chemosum [1390], Hormsum [1400], Immusum [1410], and transsum [3250]) and surgical procedures given as part of the first course of treatment. For cases with a 2006+ diagnosis date.'
+        name: 'rx_dt',
+        description: `In CCR: RXDATE_CCYYMMDD 
+In CCR: RXDATE 
+Date first course of definitive treatment started for this tumor. Based on earliest date reported for surgery, radiation, chemotherapy, hormone therapy, immunotherapy, or transplant/endocrine procedure.`
     },
     {
-        name: 'NNODES_CDE',
-        description: 'In CCR: NNODES\n' +
-            'Number of regional lymph nodes identified in the pathology report during surgical procedure- this variable is only valid for cases diagnosed prior to Jan. 2004.\n' +
-            'Information in NNODES from 1988-2003 was incorporated into the variable SCOPE.'
+        name: 'rx_nodate_cde',
+        description: `In CCR: DATEOFINITIALRXFLAG
+Indicates why there is no appropriate value in the corresponding date field,RXDATE.`
     },
     {
-        name: 'SURG_SUM_CDE',
-        description: 'In CCR: SURG_SUM \n' +
-            'Most extensive surgery during first course of RX'
+        name: 'rx_chemo_dt',
+        description: `In CCR: RXDATEC, RXDATEC_CCYYMMDD
+Date chemotherapy started. CHEMOSUM identifies the type of chemotherapy given as first course of treatment.`
     },
     {
-        name: 'SURG_OTHER_CDE',
-        description: 'In CCR: SURGOTH \n' +
-            'Surgical removal of tissue other than the primary tumor or organ of origin (i.e., regional nodes or distant nodes).'
+        name: 'rx_chemo_nodate_cde',
+        description: `In CCR: RXDATECHEMOFLAG
+Explains why there is no appropriate value in the corresponding date field, RXDATEC.`
     },
     {
-        name: 'SURG_PRIMARY_CDE',
-        description: 'In CCR: SURGPRIM\n' +
-            'Most extensive type of surgery performed during the first course of treatment for the tumor.'
+        name: 'rx_horm_dt',
+        description: `In CCR: RXDATEH , RXDATEH_CCYYMMDD
+Date hormone therapy started. HORMSUM identifies the type of hormone therapy given as first course of treatment.`
     },
     {
-        name: 'SURG_RECON_CDE',
-        description: 'In CCR: SURGRCON\n' +
-            'Most extensive reconstructive surgery performed during first course of treatment, for cases diagnosed before 2003. For cases diagnosed 2003 forward, information was incorporated into SURGPRIM.'
+        name: 'rx_horm_nodate_cde',
+        description: `In CCR: RXDATEHORMONEFLAG
+Explains why there is no appropriate value in the corresponding date field, RXDATEH.`
     },
     {
-        name: 'SURG_DT',
-        description: 'In CCR: SURGDATE , SURGDATE_CCYYMMDD\n' +
-            'Date the earliest definitive surgery was performed. Different from DTDEFSURG, which is the date when the most extensive surgery was performed.'
+        name: 'rx_immuno_dt',
+        description: `In CCR: RXDATEI , RXDATEI_CCYYMMDD 
+Date immunotherapy started. IMMUSUM identifies the type of immunotherapy given as first course of treatment.`
     },
     {
-        name: 'SURG_NODATE_CDE',
-        description: 'In CCR: RXDATESURGERYFLAG\n' +
-            'This flag explains why there is no appropriate value in the corresponding date field, SURGDATE [NAACCR #1200].'
+        name: 'rx_immuno_nodate_cde',
+        description: `In CCR: RXDATEBRMFLAG 
+Explains why there is no appropriate value in the corresponding date field, RXDATEI.`
     },
     {
-        name: 'SURG_DEFIN_DT',
-        description: 'In CCR: DTDEFSURG , DTDEFSURG_CCYYMMDD\n' +
-            'Records the date of SURGPRIM, the most definitive surgical resection of the primary site performed as the first course of treatment. Different from SURGDATE, which is the date the earliest surgical procedure was performed. Collected directly from cases diagnosed in 2003 forward. For cases diagnosed from 1998- 2002, date taken from the three surgery fields (which are no longer required).\n' +
-            ' Dates before 1997-1998 are mostly unknown. “Valid” means surgery performed; unknown includes no surgery.'
+        name: 'rx_other_dt',
+        description: `In CCR: RXDATEO , RXDATEO_CCYYMMDD 
+Date other therapy started. OTHSUM identifies the 'other' type of therapy given as first course of treatment.`
     },
     {
-        name: 'SURG_DEFIN_NODATE_CDE',
-        description: 'In CCR: RXDATEMSTDEFNSRGFLAG\n' +
-            'Explains why there is no appropriate value in the corresponding date field, DTDEFSURG (date of the most definitive surgery).'
+        name: 'rx_other_nodate_cde',
+        description: `In CCR: RXDATEOTHERFLAG 
+This flag explains why there is no appropriate value in the corresponding date field, RXDATEO.`
     },
     {
-        name: 'SURG_OTHER_98_CDE',
-        description: 'In CCR: SURGOTH98\n' +
-            'Cancer surgery other site, highest 98-00'
+        name: 'rad_boost_mode_cde',
+        description: `In CCR: RADBSTMOD 
+Identifies the volume or anatomic target of the most clinically significant boost radiation therapy delivered to the patient during the first course of treatment. See also RADREGMOD. Radiation treatment is frequently delivered in two or more phases which can be summarized as “regional” and “boost” treatments. To evaluate patterns of radiation oncology care, it is necessary to know which radiation resources were employed in the delivery of therapy. For outcomes analysis, the modalities used for each of these phases can be very important.`
     },
     {
-        name: 'SURG_PRIMARY_98_CDE',
-        description: 'In CCR: SURGPRIM98\n' +
-            'CA Surgery primary site, highest 98-00'
+        name: 'rad_regional_mode_cde',
+        description: `In CCR: RADREGMOD 
+Records the dominant modality of radiation therapy used to deliver the most clinically significant regional dose to the primary volume of interest during the first course of treatment. Radiation treatment is frequently delivered in two or more phases which can be summarized as “regional” and “boost” treatments. To evaluate patterns of radiation oncology care, it is necessary to know which radiation resources were employed in the delivery of therapy. For outcomes analysis, the modalities used for each of these phases can be very important.`
     },
     {
-        name: 'SCOPE_IND',
-        description: 'In CCR: SCOPE\n' +
-            'Records surgery removing regional lymph nodes during the first course of treatment. Introduced (required) for cases diagnosed in 2003 forward; for earlier diagnoses information was taken from the variable NNODES.'
+        name: 'rx_rad_dt',
+        description: `In CCR: RXDATER , RXDATER_CCYYMMDD
+Date radiation therapy started (including radiation to central nervous system).
+RADSUM identifies the type of radiation therapy used for first course of treatment.`
     },
     {
-        name: 'SCOPE1_CDE',
-        description: 'In CCR: SCOPE1\n' +
-            'Earliest surgery, scope of nodes'
+        name: 'rx_rad_nodate_cde',
+        description: `In CCR: RXDATERADIATIONFLAG 
+This flag explains why there is no appropriate value in the corresponding date field, RXDATER.`
     },
     {
-        name: 'SCOPE2_CDE',
-        description: 'In CCR: SCOPE2\n' +
-            'Most extensive surgery, scope of nodes'
+        name: 'rx_stg_proc_dt',
+        description: `In CCR: RXDATESN , RXDATESN_CCYYMMDD 
+Date of diagnostic or staging procedure`
     },
     {
-        name: 'SCOPE3_CDE',
-        description: 'In CCR: SCOPE3\n' +
-            'Other surgery, scope of nodes'
+        name: 'rx_stg_proc_nodate_cde',
+        description: `In CCR: RXDATEDXSTGPROCFLAG 
+Date of diagnostic or staging procedure`
     },
     {
-        name: 'SURG1_DT',
-        description: 'In CCR: SURGDT1 , SURGDT1_CCYYMMDD\n' +
-            'Date earliest procedure performed (MMDDCCYY)'
+        name: 'rx_systemic_dt',
+        description: `In CCR: DTSYSTEMIC , DTSYSTEMIC_CCYYMMDD
+Records the date of initiation for systemic therapy that is part of the first course of treatment. Systemic therapy is considered to be: chemotherapy agents, hormonal agents, biological response modifiers, bone marrow transplants, stem cell harvests, and surgical and/or radiation endocrine therapy.`
     },
     {
-        name: 'SURG1_OTHER_CDE',
-        description: 'In CCR: SURGO1\n' +
-            'Earliest surgery of other site'
+        name: 'rx_systemic_nodate_cde',
+        description: `In CCR: RXDATESYSTEMICFLAG 
+This flag explains why there is no appropriate value in the corresponding date field, DTSYSTEMIC`
     },
     {
-        name: 'SURG1_PRIMARY_CDE',
-        description: 'In CCR: SURGP1\n' +
-            'Earliest surgery of primary site'
+        name: 'rx_systemic_sum_seq_cde',
+        description: `In CCR: RXSUMMSYSTEMICSURSEQ 
+Records the sequencing of systemic therapy (Chemosum [1390], Hormsum [1400], Immusum [1410], and transsum [3250]) and surgical procedures given as part of the first course of treatment. For cases with a 2006+ diagnosis date.`
     },
     {
-        name: 'SURG2_DT',
-        description: 'In CCR: SURGDT2 , SURGDT2_CCYYMMDD\n' +
-            'Date most extensive surgery of primary site (MMDDCCYY)'
+        name: 'nnodes_cde',
+        description: `In CCR: NNODES 
+Number of regional lymph nodes identified in the pathology report during surgical procedure- this variable is only valid for cases diagnosed prior to Jan. 2004.
+Information in NNODES from 1988-2003 was incorporated into the variable SCOPE.`
     },
     {
-        name: 'SURG2_OTHER_CDE',
-        description: 'In CCR: SURGO2\n' +
-            'Most extensive surgery of other site'
+        name: 'surg_sum_cde',
+        description: `In CCR: SURG_SUM 
+Most extensive surgery during first course of RX`
     },
     {
-        name: 'SURG2_PRIMARY_CDE',
-        description: 'In CCR: SURGP2\n' +
-            'Most extensive surgery of primary site'
+        name: 'surg_other_cde',
+        description: `In CCR: SURGOTH 
+Surgical removal of tissue other than the primary tumor or organ of origin (i.e., regional nodes or distant nodes).`
     },
     {
-        name: 'SURG3_DT',
-        description: 'In CCR: SURGDT3 , SURGDT3_CCYYMMDD\n' +
-            'Date other cancer surgery primary site (MMDDCCYY)'
+        name: 'surg_primary_cde',
+        description: `In CCR: SURGPRIM 
+Most extensive type of surgery performed during the first course of treatment for the tumor.`
     },
     {
-        name: 'SURG3_OTHER_CDE',
-        description: 'In CCR: SURGO3\n' +
-            'Other cancer surgery of other site'
+        name: 'surg_recon_cde',
+        description: `In CCR: SURGRCON 
+Most extensive reconstructive surgery performed during first course of treatment, for cases diagnosed before 2003. For cases diagnosed 2003 forward, information was incorporated into SURGPRIM.`
     },
     {
-        name: 'SURG3_PRIMARY_CDE',
-        description: 'In CCR: SURGP3\n' +
-            'Other cancer surgery primary site'
+        name: 'surg_dt',
+        description: `In CCR: SURGDATE , SURGDATE_CCYYMMDD 
+Date the earliest definitive surgery was performed. Different from DTDEFSURG, which is the date when the most extensive surgery was performed.`
     },
     {
-        name: 'TRANSP_DT',
-        description: 'In CCR: DTTRANSP , DTTRANSP_CCYYMMDD\n' +
-            'Date that TRANSSUM, the transplant/endocrine procedure, was performed. If multiple records exist, consolidation for item involves comparing codes and selecting most extensive procedure. Required for cases diagnosed 2003 and forward.'
+        name: 'surg_nodate_cde',
+        description: `In CCR: RXDATESURGERYFLAG 
+This flag explains why there is no appropriate value in the corresponding date field, SURGDATE [NAACCR #1200].`
     },
     {
-        name: 'TRANSP_NODATE_CDE',
-        description: 'In CCR: DATETRANSPENDOFLAG\n' +
-            'This flag explains why there is no corresponding date in the related field, DTTRANSP.'
+        name: 'surg_defin_dt',
+        description: `In CCR: DTDEFSURG , DTDEFSURG_CCYYMMDD 
+Records the date of SURGPRIM, the most definitive surgical resection of the primary site performed as the first course of treatment. Different from SURGDATE, which is the date the earliest surgical procedure was performed. Collected directly from cases diagnosed in 2003 forward. For cases diagnosed from 1998- 2002, date taken from the three surgery fields (which are no longer required).
+ Dates before 1997-1998 are mostly unknown. “Valid” means surgery performed; unknown includes no surgery.`
     },
     {
-        name: 'LATERAL_SITE_CDE',
-        description: 'For some specific primary sites, the side of the body in which the tumor originated.'
+        name: 'surg_defin_nodate_cde',
+        description: `In CCR: RXDATEMSTDEFNSRGFLAG 
+Explains why there is no appropriate value in the corresponding date field, DTDEFSURG (date of the most definitive surgery).`
     },
     {
-        name: 'ESTROGEN_RCPTR_IND',
-        description: 'Estrogen Receptor Indicator :\n' +
-            'Single digit values are from SAS source MARKER1\n' +
-            'Multiple digit values are from SAS Source CS_SITE_SPEC_F1\n' +
-            'Attribute is null unless SEER Code = 26000'
+        name: 'surg_other_98_cde',
+        description: `In CCR: SURGOTH98 
+Cancer surgery other site, highest 98-00`
     },
     {
-        name: 'ESTROGEN_RCPTR_DSC',
-        description: 'Short descriptions for ESTROGEN receptor status indicator values.\n' +
-            'Description created from logic :\n' +
-            ' If SEERWHO = 26000 and\n' +
-            ' Marker1=3 or CS_SITE_SPEC_F1=030 then "BORDERLINE"\n' +
-            ' Marker1=2 or CS_SITE_SPEC_F1=020 then "NEGATIVE"\n' +
-            ' Marker1=1 or CS_SITE_SPEC_F1=010 then "POSITIVE"\n' +
-            ' Marker1 in (0,8,9) or\n' +
-            ' CS_SITE_SPEC_F1 in (996,997,998,999) then "UNKNOWN"'
+        name: 'surg_primary_98_cde',
+        description: `In CCR: SURGPRIM98 
+CA Surgery primary site, highest 98-00`
     },
     {
-        name: 'PROGESTERONE_RCPTR_IND',
-        description: 'Progesterone Receptor Indicator :\n' +
-            'Single digit values are from SAS source MARKER2\n' +
-            'Multiple digit values are from SAS Source CS_SITE_SPEC_F2\n' +
-            '\n' +
-            'Attribute is null unless SEER Code = 26000'
+        name: 'scope_ind',
+        description: `In CCR: SCOPE 
+Records surgery removing regional lymph nodes during the first course of treatment. Introduced (required) for cases diagnosed in 2003 forward; for earlier diagnoses information was taken from the variable NNODES.`
     },
     {
-        name: 'PROGESTERONE_RCPTR_DSC',
-        description: 'Short descriptions for PROGESTERONE receptor status indicator values.\n' +
-            'Description created from logic :\n' +
-            ' If SEERWHO = 26000 and\n' +
-            ' Marker2=3 or CS_SITE_SPEC_F2=030 then "BORDERLINE"\n' +
-            ' Marker2=2 or CS_SITE_SPEC_F2=020 then "NEGATIVE"\n' +
-            ' Marker2=1 or CS_SITE_SPEC_F2=010 then "POSITIVE"\n' +
-            ' Marker2 in (0,8,9) or\n' +
-            ' CS_SITE_SPEC_F2 in (996,997,998,999) then "UNKNOWN"'
+        name: 'scope1_cde',
+        description: `In CCR: SCOPE1 
+Earliest surgery, scope of nodes`
     },
     {
-        name: 'HER2_RCPTR_IND',
-        description: 'HER2 (from human epidermal growth factor receptor 2) or HER2/neu, Receptor Status\n' +
-            'Single digit values are from SAS source MARKERCA\n' +
-            'Multiple digit values are from SAS Source CSSITESPECIFICFACTOR15\n' +
-            '\n' +
-            ' Attribute is null unless SEER Code = 26000'
+        name: 'scope2_cde',
+        description: `In CCR: SCOPE2 
+Most extensive surgery, scope of nodes`
     },
     {
-        name: 'HER2_RCPTR_DSC',
-        description: 'Short descriptions for HER2 receptor status indicator values.\n' +
-            'Description created from logic :\n' +
-            ' If SEERWHO = 26000 and\n' +
-            ' MarkerCA=3 or CSSITESPECIFICFACTOR15=030 then ""BORDERLINE""\n' +
-            ' MarkerCA=2 orCSSITESPECIFICFACTOR15=020 then ""NEGATIVE""\n' +
-            ' MarkerCA=1 or CSSITESPECIFICFACTOR15=010 then ""POSITIVE""\n' +
-            ' MarkerCA in (0,8,9) or\n' +
-            ' CSSITESPECIFICFACTOR15 in (996,997,998,999) then ""UNKNOWN""'
+        name: 'scope3_cde',
+        description: `In CCR: SCOPE3 
+Other surgery, scope of nodes`
     },
     {
-        name: 'PARTICIPANT_KEY',
-        description: 'This is the primary key for a CTS participant.'
+        name: 'surg1_dt',
+        description: `In CCR: SURGDT1 , SURGDT1_CCYYMMDD 
+Date earliest procedure performed (MMDDCCYY)`
     },
     {
-        name: 'analysis_start_date',
-        description: 'This is the analysis start date chosen by the researcher.'
+        name: 'surg1_other_cde',
+        description: `In CCR: SURGO1 
+Earliest surgery of other site`
     },
     {
-        name: 'analysis_end_date',
-        description: 'This date is the minimum of death date, move out of CA date, risk-eliminating surgery date if applicable, diagnosis of interest date, other diagnosis date, or end of follow up date for each participant. Researcher can choose to not include other cancer diagnosis as a censoring criteria.'
+        name: 'surg1_primary_cde',
+        description: `In CCR: SURGP1 
+Earliest surgery of primary site`
     },
     {
-        name: 'event',
-        description: 'Event to end follow up. Can be used with analysis_end_date to see when and why participant follow-up ended.'
+        name: 'surg2_dt',
+        description: `In CCR: SURGDT2 , SURGDT2_CCYYMMDD
+Date most extensive surgery of primary site (MMDDCCYY)`
+    },
+    {
+        name: 'surg2_other_cde',
+        description: `In CCR: SURGO2 
+Most extensive surgery of other site`
+    },
+    {
+        name: 'surg2_primary_cde',
+        description: `In CCR: SURGP2 
+Most extensive surgery of primary site`
+    },
+    {
+        name: 'surg3_dt',
+        description: `In CCR: SURGDT3 , SURGDT3_CCYYMMDD 
+Date other cancer surgery primary site (MMDDCCYY)`
+    },
+    {
+        name: 'surg3_other_cde',
+        description: `In CCR: SURGO3 
+Other cancer surgery of other site`
+    },
+    {
+        name: 'surg3_primary_cde',
+        description: `In CCR: SURGP3 
+Other cancer surgery primary site`
+    },
+    {
+        name: 'transp_dt',
+        description: `In CCR: DTTRANSP , DTTRANSP_CCYYMMDD 
+Date that TRANSSUM, the transplant/endocrine procedure, was performed. If multiple records exist, consolidation for item involves comparing codes and selecting most extensive procedure. Required for cases diagnosed 2003 and forward.`
+    },
+    {
+        name: 'transp_nodate_cde',
+        description: `In CCR: DATETRANSPENDOFLAG 
+This flag explains why there is no corresponding date in the related field, DTTRANSP.`
+    },
+    {
+        name: 'lateral_site_cde',
+        description: `For some specific primary sites, the side of the body in which the tumor originated.`
+    },
+    {
+        name: 'estrogen_rcptr_ind',
+        description: `Estrogen Receptor Indicator :
+Single digit values are from SAS source MARKER1
+Multiple digit values are from SAS Source CS_SITE_SPEC_F1
+Attribute is null unless SEER Code = 26000`
+    },
+    {
+        name: 'estrogen_rcptr_dsc',
+        description: `Short descriptions for ESTROGEN receptor status indicator values.
+Description created from logic :
+ If SEERWHO = 26000 and 
+ Marker1=3 or CS_SITE_SPEC_F1=030 then "BORDERLINE"
+ Marker1=2 or CS_SITE_SPEC_F1=020 then "NEGATIVE"
+ Marker1=1 or CS_SITE_SPEC_F1=010 then "POSITIVE"
+ Marker1 in (0,8,9) or 
+ CS_SITE_SPEC_F1 in (996,997,998,999) then "UNKNOWN"`
+    },
+    {
+        name: 'progesterone_rcptr_ind',
+        description: `Progesterone Receptor Indicator :
+Single digit values are from SAS source MARKER2
+Multiple digit values are from SAS Source CS_SITE_SPEC_F2
+
+Attribute is null unless SEER Code = 26000`
+    },
+    {
+        name: 'progesterone_rcptr_dsc',
+        description: `Short descriptions for PROGESTERONE receptor status indicator values.
+Description created from logic :
+ If SEERWHO = 26000 and 
+ Marker2=3 or CS_SITE_SPEC_F2=030 then "BORDERLINE"
+ Marker2=2 or CS_SITE_SPEC_F2=020 then "NEGATIVE"
+ Marker2=1 or CS_SITE_SPEC_F2=010 then "POSITIVE"
+ Marker2 in (0,8,9) or 
+ CS_SITE_SPEC_F2 in (996,997,998,999) then "UNKNOWN"`
+    },
+    {
+        name: 'her2_rcptr_ind',
+        description: `HER2 (from human epidermal growth factor receptor 2) or HER2/neu, Receptor Status 
+Single digit values are from SAS source MARKERCA
+Multiple digit values are from SAS Source CSSITESPECIFICFACTOR15
+
+ Attribute is null unless SEER Code = 26000`
+    },
+    {
+        name: 'her2_rcptr_dsc',
+        description: `Short descriptions for HER2 receptor status indicator values.
+Description created from logic :
+ If SEERWHO = 26000 and 
+ MarkerCA=3 or CSSITESPECIFICFACTOR15=030 then "BORDERLINE"
+ MarkerCA=2 orCSSITESPECIFICFACTOR15=020 then "NEGATIVE"
+ MarkerCA=1 or CSSITESPECIFICFACTOR15=010 then "POSITIVE"
+ MarkerCA in (0,8,9) or 
+ CSSITESPECIFICFACTOR15 in (996,997,998,999) then "UNKNOWN"`
+    },
+    {
+        name: 'participant_key',
+        description: `This is the unique identifier for each CTS participant`
+    },
+    {
+        name: 'date_of_birth_dt',
+        description: `Participant date of birth`
+    },
+    {
+        name: 'date_of_death_dt',
+        description: `Participant date of death`
+    },
+    {
+        name: 'cause_of_death_cde',
+        description: `Cause of death code (typically ICD 9)`
+    },
+    {
+        name: 'cause_of_death_dsc',
+        description: `Cause of Death description - short code`
+    },
+    {
+        name: 'qnr_1_fill_dt',
+        description: `Date questionnaire 1 was filled out by the participant`
+    },
+    {
+        name: 'qnr_2_fill_dt',
+        description: `Date questionnaire 2 was filled out by the participant`
+    },
+    {
+        name: 'qnr_3_fill_dt',
+        description: `Date questionnaire 3 was filled out by the participant`
+    },
+    {
+        name: 'qnr_4_fill_dt',
+        description: `Date questionnaire 4 was filled out by the participant`
+    },
+    {
+        name: 'qnr_4_mini_fill_dt',
+        description: `Date questionnaire 4 mini was filled out by the participant`
+    },
+    {
+        name: 'qnr_5_fill_dt',
+        description: `Date questionnaire 5 was filled out by the participant`
+    },
+    {
+        name: 'qnr_5_mini_fill_dt',
+        description: `Date questionnaire 5 mini was filled out by the participant`
+    },
+    {
+        name: 'qnr_6_fill_dt',
+        description: `Date questionnaire 6 was filled out by the participant`
+    },
+    {
+        name: 'breast_cancer_res_only_ind',
+        description: `This indicator determines which participants should only be used for Breast Cancer only research.`
+    },
+    {
+        name: 'ses_quartile_ind',
+        description: `SES population-based quartiles (A summary SES metric was created incorporating three 1990 census block group variables (occupation, education and income). To do this we first ranked all block groups in the state by level of education (% of adults over the age of 25 completing a college degree or higher), income (median family income), and occupation (% of adults employed in managerial/professional occupations) according to quartiles based on the statewide adult population. This resulted in a score of one through four for each of these SES attributes. We then created a summary SES metric by summing the scores across each of these attributes and categorizing into four groups based on the quartiles of this score for the statewide population.)`
+    },
+    {
+        name: 'blockgroup90_urban_cat',
+        description: `Urbanization categories of 1990 census block groups`
+    },
+    {
+        name: 'hysterectomy_dt',
+        description: `This is the earliest recorded date a participant had an hysterectomy`
+    },
+    {
+        name: 'hysterectomy_ind',
+        description: `This is an indicator used to define if a participant had a hysterectomy`
+    },
+    {
+        name: 'bilateral_mastectomy_dt',
+        description: `This is the earliest recorded date the participant had a bilateral mastectomy`
+    },
+    {
+        name: 'bilateral_mastectomy_ind',
+        description: `This is an indicator used to define if a participant had a bilateral mastectomy`
+    },
+    {
+        name: 'bilateral_oophorectomy_dt',
+        description: `This is the earliest date recorded for a bilateral oophorectomy.
+If derived from two separate unilateral oophorectomy surgeries, it is the date from the second surgery
+If derived from Questionaire 1 answers, then it is the fill date for the Questionnaire`
+    },
+    {
+        name: 'bilateral_oophorectomy_ind',
+        description: `This is an indicator used to define if a participant had a bilateral oophorectomy`
+    },
+    {
+        name: 'first_moveout_ca_dt',
+        description: `Date that participant moved out of California. Only state moves longer than 4 months were considered as true moves in an attempt to avoid vacations, temporary moves or relative/family moves.`
     },
     {
         name: 'case_indicator',
-        description: 'A 1/0 indicator of if a row for a participant is a case of the cancer of interest.'
+        description: `This indicator marks cases of the cancer of interest at the row level. If your selections do not include multiple cancers, this will mark participants with the cancer of interest. If your selections include multiple cancers per participant, this indicator will mark which of their cancers is or is not your cancer of interest.`
     },
     {
-        name: ' end_of_followup_date',
-        description: 'This date is either the administrative censoring date or an earlier date, as chosen by the researcher.'
+        name: 'analysis_start_date',
+        description: `Analysis start date is either the fill date of the first CTS questionnaire or another date as selected by the researcher.`
     },
     {
-        name: ' first_othercancerdiag_date',
-        description: 'Date of first cancer diagnosis that is not the cancer of interest. Used to create the analysis_end_date variable.'
+        name: 'end_of_followup_date',
+        description: `The end of follow-up date is either the current administrative censoring date, or an earlier date as selected by the researcher.`
     },
     {
-        name: ' first_selectedcancerdiag_date',
-        description: 'Date of first cancer diagnosis of the cancer of interest. Used to create the analysis_end_date variable.'
+        name: 'firstothercancer_date',
+        description: `The first diagnosis date within the chosen analytic time frame for a cancer that is not the cancer of interest.`
     },
     {
-        name: 'HYSTERECTOMY_DT',
-        description: 'This is the earliest recorded date a participant had an hysterectomy'
+        name: 'firstselectedcancer_date',
+        description: `The first diagnosis date within the chosen analytic time frame for the selected cancer of interest.`
     },
     {
-        name: 'HYSTERECTOMY_IND',
-        description: 'This is an indicator used to define if a participant had a hysterectomy'
+        name: 'analysis_end_date',
+        description: `The analysis end date is the date follow-up ends for a participant. Follow-up ends at diagnosis with any other cancer; diagnosis of the cancer of interest; death; move out of CA; if applicable, risk-eliminating surgery (hysterectomy, bilateral oophorectomy, or bilateral mastectomy for analyses of uterine, ovarian, or breast cancers, respectively); or the end of follow-up date. Research can choose to not include other cancer diagnosis as a censoring criteria.`
     },
     {
-        name: 'BILATERAL_MASTECTOMY_DT',
-        description: 'This is the earliest recorded date the participant had a bilateral mastectomy'
-    },
-    {
-        name: 'BILATERAL_MASTECTOMY_IND',
-        description: 'This is an indicator used to define if a participant had a bilateral mastectomy'
-    },
-    {
-        name: 'BILATERAL_OOPHORECTOMY_DT',
-        description: 'This is the earliest date recorded for a bilateral oophorectomy.\n' +
-            'If derived from two separate unilateral oophorectomy surgeries, it is the date from the second surgery\n' +
-            'If derived from Questionaire 1 answers, then it is the fill date for the Questionnaire'
-    },
-    {
-        name: 'BILATERAL_OOPHORECTOMY_IND',
-        description: 'This is an indicator used to define if a participant had a bilateral oophorectomy'
-    },
-    {
-        name: 'MOVE_DT',
-        description: 'Date participant moved out of California'
-    },
-    {
-        name: 'DATE_OF_BIRTH_DT',
-        description: 'Participant date of birth'
-    },
-    {
-        name: 'DATE_OF_DEATH_DT',
-        description: 'Participant date of death'
-    },
-    {
-        name: 'CAUSE_OF_DEATH_CDE',
-        description: 'Cause of death code (typically ICD 9)'
-    },
-    {
-        name: 'CAUSE_OF_DEATH_DSC',
-        description: 'Cause of Death description - short code'
-    },
-    {
-        name: 'QNR_1_FILL_DT',
-        description: 'The date the questionnaire was filled out by the participant'
-    },
-    {
-        name: 'QNR_2_FILL_DT',
-        description: 'The date the questionnaire was filled out by the participant'
-    },
-    {
-        name: 'QNR_3_FILL_DT',
-        description: 'The date the questionnaire was filled out by the participant'
-    },
-    {
-        name: 'QNR_4_FILL_DT',
-        description: 'The date the questionnaire was filled out by the participant'
-    },
-    {
-        name: 'QNR_4_MINI_FILL_DT',
-        description: 'The date the questionnaire was filled out by the participant'
-    },
-    {
-        name: 'QNR_5_FILL_DT',
-        description: 'The date the questionnaire was filled out by the participant'
-    },
-    {
-        name: 'QNR_5_MINI_FILL_DT',
-        description: 'The date the questionnaire was filled out by the participant'
-    },
-    {
-        name: 'QNR_6_FILL_DT',
-        description: 'The date the questionnaire was filled out by the participant'
-    },
-    {
-        name: 'BREAST_CANCER_RES_ONLY_IND',
-        description: 'This indicator determines which participants should only be used for Breast Cancer only research.'
-    },
-    {
-        name: 'SES_QUARTILE_IND',
-        description: 'SES population-based quartiles (A summary SES metric was created incorporating three 1990 census block group variables (occupation, education and income). To do this we first ranked all block groups in the state by level of education (% of adults over the age of 25 completing a college degree or higher), income (median family income), and occupation (% of adults employed in managerial/professional occupations) according to quartiles based on the statewide adult population. This resulted in a score of one through four for each of these SES attributes. We then created a summary SES metric by summing the scores across each of these attributes and categorizing into four groups based on the quartiles of this score for the statewide population.)'
-    },
-    {
-        name: 'BLOCKGROUP90_URBAN_CAT',
-        description: 'Urbanization categories of 1990 census block groups'
+        name: 'event',
+        description: `The event that ends a participant's follow-up. This is the event that occurs on the analysis_end_date.`
     }
 ];
 
@@ -751,11 +830,80 @@ class CancerEndpoint extends React.Component {
         if (this.props.project && this.props.project.cancer_endpoint) {
             let cancer_endpoints = JSON.parse(this.props.project.cancer_endpoint);
             if (cancer_endpoints && cancer_endpoints.length > 0) {
+
+                let values = [];
+                for (var i=0; i<cancer_endpoints.length; i++) {
+                    if (!values.includes(cancer_endpoints[i].SITE_GROUP_NME)) {
+                        values.push(cancer_endpoints[i].SITE_GROUP_NME);
+                    }
+                }
+
+                // setup selected data
+                let selected_data = [];
+                for (i=0; i<cancer_endpoints.length; i++) {
+                    //console.log("setup: " + JSON.stringify(cancer_endpoints[i]));
+                    selected_data.push(JSON.stringify(cancer_endpoints[i]));
+                }
+                //console.log("selected data: " + JSON.stringify(selected_data));
+
+                this.uncheckControlCheckbox();
+
+                this.setState({
+                    options: all_options,
+                    loading: true,
+                    auto_values: values,
+                    old_auto_values: values,
+                    control_checkbox_checked: false
+                }, () => {
+                    let search = [];
+                    for (i = 0; i < this.state.auto_values.length; i++) {
+                        search.push(this.state.auto_values[i]);
+                    }
+                    //console.log("doSearchOnAutoValues: " + JSON.stringify(search));
+
+                    let thisState = this;
+                    axios.post('/api/cancer_endpoints', {search})
+                        .then(function (response) {
+                            //console.log(JSON.stringify(response.data));
+
+                            let row_selects = [];
+                            for (var i = 0; i < response.data.length - 1; i++) {
+                                //console.log("is selected: " + JSON.stringify(response.data[i]));
+                                if (selected_data.indexOf(JSON.stringify(response.data[i])) !== -1) {
+                                    row_selects.push(true);
+                                } else {
+                                    row_selects.push(false);
+                                }
+                            }
+
+                            thisState.setState({
+                                data: response.data,
+                                data_backup: response.data,
+                                selected_rows: row_selects,  //thisState.initSelectedRows(response.data),
+                                selected_rows_backup: row_selects, //thisState.initSelectedRows(response.data),
+                                columns: thisState.getColumns(response.data, response.data),
+                                loading: false,
+                                control_checkbox_checked: false
+                            });
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        })
+                        .then(function () {
+                            // always executed
+                        });
+                });
+
+
+
+                /*
                 let site_group_name = cancer_endpoints[0].SITE_GROUP_NME;
                 this.setState({
                     options: all_options,
                     searchInput: site_group_name,
                     loading: true,
+                    auto_values: values,
+                    old_auto_values: values,
                 }, () => {
                     let thisState = this;
                     axios.post('/api/cancer_endpoint', {search: this.state.searchInput})
@@ -785,6 +933,7 @@ class CancerEndpoint extends React.Component {
                             // always executed
                         });
                 });
+                 */
             }
         }
     }
@@ -1317,7 +1466,10 @@ class CancerEndpoint extends React.Component {
                 <div style={{margin: '0px 2px 16px 5px', fontWeight: 'bold'}}>
 
                     <div style={{textAlign: 'right', width: '100%', paddingRight: '10pt'}}>
-                        <InfoCircleOutlined onClick={this.reviewCancerVariables} style={{fontSize:20, color:'rgb(57, 116, 207, 0.5)'}}/>
+                        <Tooltip title="Review Pre-selected Cancer Variables">
+                            <InfoCircleOutlined onClick={this.reviewCancerVariables}
+                                                style={{fontSize: 20, color: 'rgb(57, 116, 207, 0.5)'}}/>
+                        </Tooltip>
                     </div>
 
                     <span style={{display: 'flex'}}>
@@ -1379,6 +1531,7 @@ class CancerEndpoint extends React.Component {
                            pagination={false}
                            scroll={{y: '60vh'}}
                            bordered
+                           rowKey={() => 'info-' + new Date().getTime() + "-" + Math.random()}
                     />
                 </Modal>
 

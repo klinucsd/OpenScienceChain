@@ -15,6 +15,10 @@ import Checkbox from '@material-ui/core/Checkbox';
 import DualListBox from 'react-dual-listbox';
 import 'react-dual-listbox/lib/react-dual-listbox.css';
 import axios from "axios";
+import 'antd/dist/antd.css';
+import {Input} from 'antd';
+
+const {Search} = Input;
 
 const theme = createMuiTheme({
     overrides: {
@@ -68,7 +72,8 @@ class CreateProject extends React.Component {
             data_sharing: false,
             users: [],
             available: [],
-            original_users: {}
+            original_users: {},
+            searchAvailableTerm: null
         }
     }
 
@@ -120,6 +125,59 @@ class CreateProject extends React.Component {
         }
     };
 
+    onSearchAvailable = () => {
+        let options = [];
+        for (var i = 0; i < 150; i++) {
+            let id = i + "";
+            if (this.state.original_users[id]) {
+                let user = {
+                    value: this.state.original_users[id].id,
+                    label: this.state.original_users[id].first_name + " " + this.state.original_users[id].last_name + ", " + this.state.original_users[id].email
+                };
+
+                if (this.state.searchAvailableTerm) {
+                    if (this.state.original_users[id].first_name.toLowerCase().indexOf(this.state.searchAvailableTerm.toLowerCase()) !== -1 ||
+                        this.state.original_users[id].last_name.toLowerCase().indexOf(this.state.searchAvailableTerm.toLowerCase()) !== -1 ||
+                        this.state.original_users[id].email.toLowerCase().indexOf(this.state.searchAvailableTerm.toLowerCase()) !== -1) {
+                        options.push(user);
+                    }
+                } else {
+                    options.push(user);
+                }
+            }
+        }
+
+        for (var j=0; j<this.state.users.length; j++) {
+            let found = false;
+            for (i=0; i<options.length; i++) {
+                if (options[i].value === this.state.users[j]) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                let user = this.state.original_users[this.state.users[j]];
+                options.push({
+                    value: user.id,
+                    label: user.first_name + " " + user.last_name + ", " + user.email
+                });
+
+            }
+        }
+
+        this.setState({
+            available: options,
+        });
+
+    }
+
+    onSearchAvailableTermChange = (evt) => {
+        this.setState({
+            searchAvailableTerm: evt.target.value
+        });
+    };
+
     isValid = () => {
         return this.state.name.length > 0 &&
             this.state.abbrev.length > 0 &&
@@ -130,7 +188,7 @@ class CreateProject extends React.Component {
     createProject = () => {
 
         let selected_users = [];
-        for (var i=0; i<this.state.users.length; i++) {
+        for (var i = 0; i < this.state.users.length; i++) {
             selected_users.push(this.state.original_users[this.state.users[i]]);
         }
 
@@ -274,6 +332,24 @@ class CreateProject extends React.Component {
                                         selected={this.state.users}
                                         onChange={this.onChange}
                                     />
+                                    <table style={{width: '100%', fontSize: '12px', color: 'black'}}>
+                                        <tbody>
+                                        <tr>
+                                            <td style={{textAlign: 'center', width: '245pt'}}>
+                                                <Search placeholder="input text to search available users"
+                                                        allowClear
+                                                        onSearch={this.onSearchAvailable}
+                                                        value={this.state.searchAvailableTerm}
+                                                        onChange={this.onSearchAvailableTermChange}
+                                                        style={{width: '100%', marginTop: '5pt'}}
+                                                />
+                                            </td>
+                                            <td style={{width: '42pt'}}></td>
+                                            <td style={{textAlign: 'center', width: 'calc(50%-21)'}}>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
 

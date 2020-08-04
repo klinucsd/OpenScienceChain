@@ -70,6 +70,12 @@ class Login extends React.Component {
         });
     };
 
+    keyPress = (e) => {
+        if (e.keyCode === 13) {
+            this.loadUserByEmail();
+        }
+    }
+
     render() {
         return (
             <div style={root_style}>
@@ -83,12 +89,14 @@ class Login extends React.Component {
                         </Typography>
                         <TextField
                             required
+                            autoFocus
                             style={{marginTop: '20pt', width: '300px'}}
                             id="login_email"
                             label="Email"
                             variant="outlined"
                             value={this.state.email}
                             onChange={this.handleChange('email')}
+                            onKeyDown={this.keyPress}
                             helperText={this.state.email_error_message}
                             FormHelperTextProps={{style: {color: 'red'}}}
                         />

@@ -5,6 +5,7 @@ import Password from "./components/login/Password";
 import UserList from "./components/user/UserList";
 import ProjectList from "./components/project/ProjectList";
 import UserProjectList from "./components/data/UserProjectList";
+import axios from "axios";
 
 class App extends React.Component {
 
@@ -19,6 +20,7 @@ class App extends React.Component {
     }
 
     componentDidMount() {
+        /*
         let userStr = localStorage.getItem("user");
         if (userStr) {
             let user = JSON.parse(userStr);
@@ -29,6 +31,28 @@ class App extends React.Component {
             });
             this.headerRef.current.setUser(user);
         }
+        */
+
+        let thisState = this;
+        axios.get('/api/ping')
+            .then(function (response) {
+                if (response.data.email) {
+                    let user = response.data;
+                    user['authenticated'] = true;
+                    thisState.setState({
+                        user: user,
+                        operation: 'list_projects',
+                        project: null
+                    });
+                    thisState.headerRef.current.setUser(user);
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+            .then(function () {
+                // always executed
+            });
     }
 
     setUser = (user) => {
@@ -116,7 +140,7 @@ class App extends React.Component {
                             ) : (
                                 <div style={{padding: '0pt 0pt 0pt 0pt'}}>
 
-                                    <UserProjectList projects={this.state.user.projects} />
+                                    <UserProjectList projects={this.state.user.projects}/>
 
                                     {/*
                                     <ProjectConfigPane project={this.state.user.projects[0]} />

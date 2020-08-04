@@ -22,6 +22,10 @@ import {Typography} from 'antd';
 //import VisibilityIcon from '@material-ui/icons/Visibility';
 import SettingsIcon from '@material-ui/icons/Settings';
 
+import 'antd/dist/antd.css';
+import {Input} from 'antd';
+const {Search} = Input;
+
 const {Title} = Typography;
 const {Text} = Typography;
 
@@ -82,7 +86,8 @@ class ProjectList extends React.Component {
         this.state = {
             projects: [],
             action: 'list_projects',
-            edit: null
+            edit: null,
+            searchTerm: null
         }
     }
 
@@ -100,6 +105,29 @@ class ProjectList extends React.Component {
             .then(function () {
                 // always executed
             });
+    }
+
+    onSearch = () => {
+        let thisState = this;
+        axios.post('/api/project/search', {
+            searchTerm: this.state.searchTerm
+        }).then(function (response) {
+            thisState.setState({
+                projects: response.data
+            });
+        }).catch(function (error) {
+            console.log(error);
+        }).then(function () {
+            // always executed
+        });
+    }
+
+    onSearchTermChange = (evt) => {
+        this.setState({
+            searchTerm: evt.target.value
+        }, evt.type === 'click' ? this.onSearch : null);
+
+
     }
 
     createProject = () => {
@@ -244,7 +272,7 @@ class ProjectList extends React.Component {
 
     updateProjectInList = (project) => {
         let projects = [];
-        for (var i=0; i<this.state.projects.length; i++) {
+        for (var i = 0; i < this.state.projects.length; i++) {
             if (this.state.projects[i].id === project.id) {
                 projects.push(project);
             } else {
@@ -261,7 +289,7 @@ class ProjectList extends React.Component {
         if (name) {
             var elements = name.split(' ');
             let candidate = '';
-            for (var i=0; i<elements.length; i++) {
+            for (var i = 0; i < elements.length; i++) {
                 let letter = elements[i].charAt(0);
                 if (letter.toUpperCase() === letter) {
                     result += letter;
@@ -294,17 +322,40 @@ class ProjectList extends React.Component {
                                 </Title>
                             </td>
                             <td style={{textAlign: 'right', paddingRight: '20px'}}>
+
+                                <Search placeholder="input text to search projects"
+                                        allowClear
+                                        onSearch={this.onSearch}
+                                        value={this.state.searchTerm}
+                                        onChange={this.onSearchTermChange}
+                                        style={{width: '300px', marginRight: '3pt'}}
+                                />
+
                                 <Tooltip title="Create Project" placement="right">
                                     <IconButton edge="end"
                                                 aria-label="projectAdd"
                                                 onClick={() => this.createProject()}>
-                                        <AddCircleOutlineIcon  style={{fill: 'rgb(57, 116, 207, 0.5)'}}/>
+                                        <AddCircleOutlineIcon style={{fill: 'rgb(57, 116, 207, 0.5)'}}/>
                                     </IconButton>
                                 </Tooltip>
+
+
                             </td>
                         </tr>
                         <tr>
                             <td colSpan="2">
+
+                                {
+                                    this.state.projects.length === 0 ?
+                                        <div>
+                                            <Text style={{
+                                                fontSize: 16
+                                            }}>No projects were found.</Text>
+                                        </div>
+                                        :
+                                        null
+                                }
+
                                 <List style={{width: '100%', minWidth: '60vw'}}>
                                     {this.state.projects.map((project, i) => (
                                         <div key={"project-" + i}>
@@ -321,7 +372,7 @@ class ProjectList extends React.Component {
                                                             }
                                                             onClick={() => this.viewProject(project)}
                                                         >
-                                                            { this.getLettersForAvatar(project.name) }
+                                                            {this.getLettersForAvatar(project.name)}
                                                         </Avatar>
                                                     </Tooltip>
                                                 </ListItemAvatar>
@@ -393,7 +444,7 @@ class ProjectList extends React.Component {
                                                         </React.Fragment>
                                                     }/>
                                                 <ListItemSecondaryAction style={{top: '14%'}}>
-                                                    <Tooltip title="Configure Project Data" >
+                                                    <Tooltip title="Configure Project Data">
                                                         <IconButton edge="end"
                                                                     aria-label="config"
                                                                     size="small"

@@ -49,7 +49,7 @@ class Password extends React.Component {
                 password: this.state.password
             }
         }).then(function (response) {
-            console.log(response.data);
+            //console.log(response.data);
             if (response.data !== null) {
                 thisProps.set_authenticated(true);
                 localStorage.setItem("user", JSON.stringify(thisState.state.user));
@@ -64,9 +64,6 @@ class Password extends React.Component {
             // always executed
         });
 
-
-
-
         /*
         if (this.state.password === this.state.user.password) {
             this.props.set_authenticated(true);
@@ -79,6 +76,12 @@ class Password extends React.Component {
          */
     }
 
+    keyPress = (e) => {
+        if (e.keyCode === 13) {
+            this.checkPassword();
+        }
+    }
+
     render() {
         return (
             <div style={root_style}>
@@ -89,6 +92,7 @@ class Password extends React.Component {
                         </Typography>
                         <TextField
                             required
+                            autoFocus
                             style={{marginTop: '20pt', width: '300px'}}
                             id="login_password"
                             label="Enter your password"
@@ -96,6 +100,7 @@ class Password extends React.Component {
                             type="password"
                             value={this.state.password}
                             onChange={this.handleChange('password')}
+                            onKeyDown={this.keyPress}
                             helperText={this.state.password_error_message}
                         />
                         <div style={{width: '100%', textAlign: 'right'}}>

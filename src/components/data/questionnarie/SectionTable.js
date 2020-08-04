@@ -1,5 +1,5 @@
 import React from 'react';
-import {Checkbox, Table, Tabs} from 'antd';
+import {Checkbox, Table } from 'antd';
 import {PlusSquareOutlined, MinusSquareOutlined} from '@ant-design/icons';
 import Tooltip from "@material-ui/core/Tooltip/Tooltip";
 import axios from "axios";
@@ -174,7 +174,7 @@ class QuestionnaireTable extends React.Component {
             }
         } else {
             section_selected[evt.target.value] = undefined;
-            for (var i = 0; i < this.state.section_to_variable[evt.target.value].length; i++) {
+            for (i = 0; i < this.state.section_to_variable[evt.target.value].length; i++) {
                 if (this.props.type === 'Q1' && preselected_variables.includes(this.state.section_to_variable[evt.target.value][i])) {
                     variable_selected[this.state.section_to_variable[evt.target.value][i]] = true;
                 } else {
