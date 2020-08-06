@@ -1027,6 +1027,33 @@ app.post('/api/topic_variable', (req, res) => {
 });
 
 
+
+app.post('/api/topic_search', (req, res) => {
+
+    let sql =
+        "SELECT DISTINCT topic_name FROM topic_2 WHERE NOT topic_name = '' ";
+
+    if (req.body.searchTerm) {
+        sql += ` AND ( topic_name LIKE '%${req.body.searchTerm}%' OR  description LIKE '%${req.body.searchTerm}%' ) `
+    }
+
+    console.log("sql = " + sql);
+
+    sequelize.query(sql)
+        .then(topics => {
+            console.log("\n\n\n--------------------------");
+            console.log(JSON.stringify(topics, null, 2));
+            let result = [];
+            for (var i=0; i<topics[0].length; i++) {
+                result.push(topics[0][i].topic_name);
+            }
+            console.log("------------");
+            console.log(result)
+            res.json(result);
+        });
+
+});
+
 app.post('/api/topic_for_original_design', (req, res) => {
 
     let sql =
@@ -1196,7 +1223,7 @@ app.get('/api/download/data/:id/:abbrev', (req, res) => {
         var db = new sqlite3.Database(file);
         db.serialize(function () {
 
-            let table_name = `ssap_data_${id}_${abbrev}`;
+            let table_name = `ssap_data_${id}_${new Date().getTime()}`;
 
             let sql = `PRAGMA temp_store = 2`;
             console.log("---------------------------------------------------");

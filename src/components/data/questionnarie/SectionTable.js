@@ -36,6 +36,7 @@ class QuestionnaireTable extends React.Component {
                 }
             })
             .then(function (response) {
+                thisState.props.setSearchResult(thisState.props.type, response.data.length === 0);
                 thisState.setState({
                     data: response.data,
                     columns: thisState.getColumns(response.data),
@@ -95,6 +96,7 @@ class QuestionnaireTable extends React.Component {
                 }
             })
             .then(function (response) {
+                thisState.props.setSearchResult(thisState.props.type, response.data.length === 0);
                 thisState.setState({
                     data: response.data,
                     columns: thisState.getColumns(response.data),
@@ -138,6 +140,7 @@ class QuestionnaireTable extends React.Component {
                 }
             })
             .then(function (response) {
+                thisState.props.setSearchResult(thisState.props.type, response.data.length === 0);
                 thisState.setState({
                     data: response.data,
                     columns: thisState.getColumns(response.data),
@@ -218,6 +221,7 @@ class QuestionnaireTable extends React.Component {
                 }
             })
             .then(function (response) {
+                thisState.props.setSearchResult(thisState.props.type, response.data.length === 0);
                 thisState.setState({
                     data: response.data,
                     columns: thisState.getColumns(response.data),

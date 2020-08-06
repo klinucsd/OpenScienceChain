@@ -26,6 +26,8 @@ class TopicVariableTable extends React.Component {
             checkedAll: true,
             searchTerm: this.props.searchTerm,
         };
+
+        this.topicRef = React.createRef();
     }
 
     componentDidMount() {
@@ -51,6 +53,8 @@ class TopicVariableTable extends React.Component {
                 });
 
             });
+
+        this.topicRef.current.setSearchTerm(this.state.searchTerm);
     }
 
     reset = () => {
@@ -99,7 +103,10 @@ class TopicVariableTable extends React.Component {
                     columns: thisState.getColumns(response.data),
                     loading: false,
                 });
-            })
+            });
+
+        this.topicRef.current.setSearchTerm(searchTerm);
+
     }
 
     onQuestionnarieChanged = (questionnarie) => {
@@ -202,7 +209,6 @@ class TopicVariableTable extends React.Component {
                 });
             });
     }
-
 
     isAllChecked = (data) => {
         let variable_selected = this.state.variable_selected;
