@@ -58,10 +58,57 @@ class TopicVariableTable extends React.Component {
     }
 
     reset = () => {
+        /*
         let variable_selected = {};
         Object.keys(this.state.variable_selected).forEach(function (key) {
             variable_selected[key] = {};
         });
+        */
+
+        let variable_selected = {
+            "Q1": {
+                'age_at_baseline': true,
+                'adopted': true,
+                'twin': true,
+                'birthplace': true,
+                'birthplace_mom': true,
+                'birthplace_dad': true,
+                'participant_race': true,
+                'nih_ethnic_cat': true,
+                'age_mom_atbirth': true,
+                'age_dad_atbirth': true,
+                'menarche_age': true,
+                'oralcntr_ever_q1': true,
+                'oralcntr_yrs': true,
+                'fullterm_age1st': true,
+                'preg_ever_q1': true,
+                'preg_total_q1': true,
+                'meno_stattype': true,
+                'height_q1': true,
+                'weight_q1': true,
+                'bmi_q1': true,
+                'endoca_self_q1': true,
+                'cervca_self_q1': true,
+                'ovryca_self_q1': true,
+                'lungca_self_q1': true,
+                'leuk_self_q1': true,
+                'hodg_self_q1': true,
+                'colnca_self_q1': true,
+                'thyrca_self_q1': true,
+                'meln_self_q1': true,
+                'diab_self_q1': true,
+                'hbp_self_q1': true,
+                'brca_selfsurvey': true,
+                'allex_hrs_q1': true,
+                'allex_life_hrs': true,
+                'vit_mulvit_q1': true,
+                'alchl_analyscat': true,
+                'smoke_expocat': true,
+                'smoke_totyrs': true,
+                'smoke_totpackyrs': true,
+                'cig_day_avg': true,
+            }, "Q2": {}, "Q3": {}, "Q4": {}, "Q4mini": {}, "Q5": {}, "Q5mini": {}, "Q6": {}
+        };
 
         this.setState({
             variable_selected: variable_selected,
@@ -229,6 +276,11 @@ class TopicVariableTable extends React.Component {
 
     getColumns = (data) => {
         let thisState = this;
+
+        console.log("----------------------------------");
+        console.log(JSON.stringify(thisState.state.variable_selected, null, 2));
+
+
         return [
             {
                 title: 'Topic',

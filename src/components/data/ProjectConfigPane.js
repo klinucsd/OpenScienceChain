@@ -1,7 +1,7 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
-import CircularProgress from '@material-ui/core/CircularProgress';
+//import CircularProgress from '@material-ui/core/CircularProgress';
 import Tooltip from '@material-ui/core/Tooltip';
 import StartOfFollowUp from './StartOfFollowUp';
 import CensoringRules from './CensoringRules';
@@ -18,88 +18,8 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 
-
 const {TabPane} = Tabs;
-
-/*
-const ExpansionPanel2 = withStyles({
-    root: {
-        border: '1px solid rgba(0, 0, 0, .125)',
-        boxShadow: 'none',
-        '&:not(:last-child)': {
-            borderBottom: 0,
-        },
-        '&:before': {
-            display: 'none',
-        },
-        '&$expanded': {
-            margin: 'auto',
-        },
-    },
-    expanded: {},
-})(MuiExpansionPanel);
-*/
-
-/*
-const ExpansionPanelSummary2 = withStyles({
-    root: {
-        //backgroundColor: 'rgba(0, 0, 0, .03)',
-        backgroundColor: 'rgba(128, 128, 128, .18)',
-        borderBottom: '1px solid rgba(0, 0, 0, .125)',
-        marginBottom: -1,
-        minHeight: 46,
-        '&$expanded': {
-            minHeight: 46,
-        },
-    },
-    content: {
-        '&$expanded': {
-            margin: '12px 0',
-        },
-    },
-    expanded: {},
-})(MuiExpansionPanelSummary);
-*/
-
-/*
-const ExpansionPanelDetails2 = withStyles((theme) => ({
-    root: {
-        padding: theme.spacing(2),
-    },
-}))(MuiExpansionPanelDetails);
-*/
-
-/*
-const getModules = (project) => {
-    let modules = [];
-    if (project.study_design === 'Cohort') {
-        if (project.endpoint === 'Cancer') {
-            modules = ['cancer endpoint', 'start of follow-up', 'censoring rules', 'questionnaire data'];
-        } else if (project.endpoint === 'Hospitalization') {
-            modules = ['start of follow-up', 'questionnaire data'];
-        } else if (project.endpoint === 'Mortality') {
-            modules = ['start of follow-up', 'questionnaire data'];
-        }
-    } else if (project.study_design === 'Case-Control') {
-        if (project.endpoint === 'Cancer') {
-            modules = ['cancer endpoint', 'questionnaire data'];
-        } else if (project.endpoint === 'Hospitalization') {
-            modules = ['questionnaire data'];
-        } else if (project.endpoint === 'Mortality') {
-            modules = ['questionnaire data'];
-        }
-    } else if (project.study_design === 'Cross-Sectional') {
-        if (project.endpoint === 'Cancer') {
-            modules = ['cancer endpoint', 'questionnaire data'];
-        } else if (project.endpoint === 'Hospitalization') {
-            modules = ['questionnaire data'];
-        } else if (project.endpoint === 'Mortality') {
-            modules = ['questionnaire data'];
-        }
-    }
-    return modules;
-}
- */
+const moment = require('moment');
 
 const getExpanded = (project) => {
     let size = 0;
@@ -167,6 +87,8 @@ class ProjectConfigPane extends React.Component {
         this.startOfFollowUpRef = React.createRef();
         this.censoringRulesRef = React.createRef();
         this.questionnarieRef = React.createRef();
+
+        this.makeProgressFunct = null;
     }
 
     componentDidMount() {
@@ -313,6 +235,9 @@ class ProjectConfigPane extends React.Component {
             questionnarie: this.state.questionnarie ? JSON.stringify(this.state.questionnarie) : null,
         }
 
+        console.log("questionnarie = " + JSON.stringify(this.state.questionnarie, null, 2));
+        console.log("updates = " + JSON.stringify(updates, null, 2));
+
         await axios.put('/api/project/' + this.state.project.id, updates)
             .then(function (response) {
                 let result = response.data;
@@ -429,36 +354,46 @@ class ProjectConfigPane extends React.Component {
 
         let preselected = {
             "Q1": {
-                "age_at_baseline": true,
-                "adopted": true,
-                "twin": true,
-                "birthplace": true,
-                "birthplace_mom": true,
-                "birthplace_dad": true,
-                "participant_race": true,
-                "nih_ethnic_cat": true,
-                "age_mom_atbirth": true,
-                "age_dad_atbirth": true,
-                "menarche_age": true,
-                "oralcntr_ever_q1": true,
-                "oralcntr_yrs": true,
-                "fullterm_age1st": true,
-                "preg_ever_q1": true,
-                "preg_total_q1": true,
-                "meno_stattype": true,
-                "height_q1": true,
-                "weight_q1": true,
-                "bmi_q1": true,
-                "diab_self_q1": true,
-                "hbp_self_q1": true,
-                "allex_hrs_q1": true,
-                "allex_life_hrs": true,
-                "vit_mulvit_q1": true,
-                "alchl_analyscat": true,
-                "smoke_expocat": true,
-                "smoke_totyrs": true,
-                "smoke_totpackyrs": true,
-                "cig_day_avg": true,
+                'age_at_baseline': true,
+                'adopted': true,
+                'twin': true,
+                'birthplace': true,
+                'birthplace_mom': true,
+                'birthplace_dad': true,
+                'participant_race': true,
+                'nih_ethnic_cat': true,
+                'age_mom_atbirth': true,
+                'age_dad_atbirth': true,
+                'menarche_age': true,
+                'oralcntr_ever_q1': true,
+                'oralcntr_yrs': true,
+                'fullterm_age1st': true,
+                'preg_ever_q1': true,
+                'preg_total_q1': true,
+                'meno_stattype': true,
+                'height_q1': true,
+                'weight_q1': true,
+                'bmi_q1': true,
+                'endoca_self_q1': true,
+                'cervca_self_q1': true,
+                'ovryca_self_q1': true,
+                'lungca_self_q1': true,
+                'leuk_self_q1': true,
+                'hodg_self_q1': true,
+                'colnca_self_q1': true,
+                'thyrca_self_q1': true,
+                'meln_self_q1': true,
+                'diab_self_q1': true,
+                'hbp_self_q1': true,
+                'brca_selfsurvey': true,
+                'allex_hrs_q1': true,
+                'allex_life_hrs': true,
+                'vit_mulvit_q1': true,
+                'alchl_analyscat': true,
+                'smoke_expocat': true,
+                'smoke_totyrs': true,
+                'smoke_totpackyrs': true,
+                'cig_day_avg': true,
             }, "Q2": {}, "Q3": {}, "Q4": {}, "Q4mini": {}, "Q5": {}, "Q5mini": {}, "Q6": {}
         };
 
@@ -473,7 +408,7 @@ class ProjectConfigPane extends React.Component {
             start_of_follow_up: null,
             censoring_rules: null,
             questionnarie: preselected,
-            project,
+            project: project,
             activeTabKey: 'config',
             activeStep: 0,
             next_step_valid: false
@@ -531,9 +466,20 @@ class ProjectConfigPane extends React.Component {
 
     makeProgress = () => {
         if (this.state.percent < 100) {
-            if (this.state.percent < 99) {
-                setTimeout(this.makeProgress, 1500);
-            }
+            let thisState = this;
+            axios.get('/api/task_status/' + this.state.task_id)
+                .then(function (response) {
+                    console.log("task status: " + JSON.stringify(response.data));
+                    thisState.setState({
+                        task_status: response.data.status
+                    });
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
+                .then(function () {
+                    // always executed
+                });
 
             this.setState({
                 percent: this.state.percent + 1
@@ -543,40 +489,75 @@ class ProjectConfigPane extends React.Component {
 
     downloadData = () => {
 
+        let task_id = new Date().getTime();
+
         // show dialog
         this.setState({
             showWaitDowwnload: true,
-            percent: 0
+            percent: 0,
+            task_id: task_id,
+            task_status: 'wait for processing your task.'
         });
 
-        setTimeout(this.makeProgress, 1500);
+        this.makeProgressFunct = setInterval(this.makeProgress, 1800);
+        let thisState = this;
 
+        const format = "YYYYMMDD_HHmm";
+        let date_rep = moment(new Date()).format(format);
         axios({
-            url: `/api/download/data/${this.state.project.id}/${this.state.project.abbrev}`,
+            url: `/api/download/data/${this.state.project.id}/${this.state.project.abbrev}/${task_id}/${date_rep}`,
             method: 'GET',
             responseType: 'blob', // important
         }).then((response) => {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download',
-                `${this.state.project.abbrev}_` + new Date().getTime() + '.csv');
+            let filename =
+                `${thisState.state.project.project_number}_${thisState.state.project.abbrev}_v${thisState.state.project.version < 10 ? '0' + thisState.state.project.version : thisState.state.project.version}_${date_rep}.csv`;
+            link.setAttribute('download', filename);
             document.body.appendChild(link);
             link.click();
 
+            clearInterval(this.makeProgressFunct);
+            let project = thisState.state.project;
+            project.version = project.version + 1;
             this.setState({
-                showWaitDowwnload: false
+                showWaitDowwnload: false,
+                project
             });
+        }).catch(function (error) {
+
+            if (thisState.makeProgressFunct) {
+                clearInterval(thisState.makeProgressFunct);
+            }
+
+            thisState.setState({
+                showWaitDowwnload: false
+                //task_status: 'Server is busy. Please wait...'
+            });
+
+            Modal.warning(
+                {
+                    title: 'Warning',
+                    content:
+                        `The server is too busy to generate data for other users. 
+                         An out of memory error may crush the system.
+                         Please wait for two minutes to request again. 
+                        `
+                });
+
         });
     }
 
     handleOk = () => {
+        clearInterval(this.makeProgressFunct);
         this.setState({
             showWaitDowwnload: false
         });
     }
 
     handleCancel = () => {
+        clearInterval(this.makeProgressFunct);
         this.setState({
             showWaitDowwnload: false
         });
@@ -942,7 +923,7 @@ class ProjectConfigPane extends React.Component {
                                                                color="primary"
 
 
-                                                               disabled={ !(
+                                                               disabled={!(
                                                                    this.state.cancer_endpoint &&
                                                                    this.state.cancer_endpoint.length > 0 &&
                                                                    this.state.start_of_follow_up !== undefined &&
@@ -1052,9 +1033,8 @@ class ProjectConfigPane extends React.Component {
                                     </div>
 
                                 </Paper>
-
-
                             </TabPane>
+
                             <TabPane key="summary"
                                      tab={
                                          <span style={{padding: '0pt 32pt 0pt 32pt'}}>Summary Charts</span>
@@ -1070,6 +1050,17 @@ class ProjectConfigPane extends React.Component {
                                     />
                                 </div>
                             </TabPane>
+
+                            {/*
+                            <TabPane key="datalog"
+                                     tab={
+                                         <span style={{padding: '0pt 32pt 0pt 32pt'}}>Data Generation Log</span>
+                                     }>
+                                <div style={{minHeight: '90vh'}}>
+                                    <Datalog project={this.state.project} />
+                                </div>
+                            </TabPane>
+                            */}
                         </Tabs>
 
                     </div>
@@ -1091,18 +1082,14 @@ class ProjectConfigPane extends React.Component {
                         <Typography>
                             It may take 1-2 minutes to generate the data.
                         </Typography>
-                        {/*
-                        <CircularProgress
-                            variant={"indeterminate"}
-                            value={100}
-                            style={{color: 'green', marginTop: '10pt'}}/>
-                        */}
                         <Progress type="circle"
                                   width={60}
                                   percent={this.state.percent}
                                   style={{color: 'green', marginTop: '10pt'}}
                         />
-
+                        <Typography style={{paddingTop: '5pt'}}>
+                            {this.state.task_status}
+                        </Typography>
                     </div>
                 </Modal>
             </div>

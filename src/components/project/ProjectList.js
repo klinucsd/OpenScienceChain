@@ -23,7 +23,8 @@ import {Typography} from 'antd';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 import 'antd/dist/antd.css';
-import {Input} from 'antd';
+import {Input, Modal} from 'antd';
+
 const {Search} = Input;
 
 const {Title} = Typography;
@@ -141,8 +142,6 @@ class ProjectList extends React.Component {
         let thisState = this;
         axios.delete('/api/project/' + id)
             .then(function (response) {
-                console.log("delete response: " + response.data);
-
                 for (var i = 0; i < thisState.state.projects.length; i++) {
                     if (thisState.state.projects[i].id === id) {
                         thisState.state.projects.splice(i, 1);
@@ -198,7 +197,10 @@ class ProjectList extends React.Component {
 
             })
             .catch(function (error) {
-                console.log(error);
+                Modal.error({
+                    title: 'Error',
+                    content: JSON.stringify(error.response.data.error),
+                });
             })
             .then(function () {
                 // always executed
@@ -216,36 +218,46 @@ class ProjectList extends React.Component {
 
                 let preselected = {
                     "Q1": {
-                        "age_at_baseline": true,
-                        "adopted": true,
-                        "twin": true,
-                        "birthplace": true,
-                        "birthplace_mom": true,
-                        "birthplace_dad": true,
-                        "participant_race": true,
-                        "nih_ethnic_cat": true,
-                        "age_mom": true,
-                        "age_dad": true,
-                        "FMP": true,
-                        "ROCYN15": true,
-                        "RTOCYRS15": true,
-                        "EVPRG": true,
-                        "AGEFFTP": true,
-                        "TOTPRG": true,
-                        "RMENOVARC": true,
-                        "HEIGHTX": true,
-                        "WEIGHTX": true,
-                        "bmi": true,
-                        "DIABSELF": true,
-                        "HIPFSELF": true,
-                        "SPMP3YR": true,
-                        "SPMHRLT": true,
-                        "vitgrp": true,
-                        "ALCYRC": true,
-                        "SMKEXP": true,
-                        "TYRSSMK": true,
-                        "AVGCIGDY": true,
-                        "TPACKYRS": true
+                        'age_at_baseline': true,
+                        'adopted': true,
+                        'twin': true,
+                        'birthplace': true,
+                        'birthplace_mom': true,
+                        'birthplace_dad': true,
+                        'participant_race': true,
+                        'nih_ethnic_cat': true,
+                        'age_mom_atbirth': true,
+                        'age_dad_atbirth': true,
+                        'menarche_age': true,
+                        'oralcntr_ever_q1': true,
+                        'oralcntr_yrs': true,
+                        'fullterm_age1st': true,
+                        'preg_ever_q1': true,
+                        'preg_total_q1': true,
+                        'meno_stattype': true,
+                        'height_q1': true,
+                        'weight_q1': true,
+                        'bmi_q1': true,
+                        'endoca_self_q1': true,
+                        'cervca_self_q1': true,
+                        'ovryca_self_q1': true,
+                        'lungca_self_q1': true,
+                        'leuk_self_q1': true,
+                        'hodg_self_q1': true,
+                        'colnca_self_q1': true,
+                        'thyrca_self_q1': true,
+                        'meln_self_q1': true,
+                        'diab_self_q1': true,
+                        'hbp_self_q1': true,
+                        'brca_selfsurvey': true,
+                        'allex_hrs_q1': true,
+                        'allex_life_hrs': true,
+                        'vit_mulvit_q1': true,
+                        'alchl_analyscat': true,
+                        'smoke_expocat': true,
+                        'smoke_totyrs': true,
+                        'smoke_totpackyrs': true,
+                        'cig_day_avg': true
                     }, "Q2": {}, "Q3": {}, "Q4": {}, "Q4mini": {}, "Q5": {}, "Q5mini": {}, "Q6": {}
                 };
                 project.questionnarie = JSON.stringify(preselected);
@@ -256,7 +268,10 @@ class ProjectList extends React.Component {
                 });
             })
             .catch(function (error) {
-                console.log(error);
+                Modal.error({
+                    title: 'Error',
+                    content: JSON.stringify(error.response.data.error),
+                });
             })
             .then(function () {
                 // always executed
@@ -388,6 +403,10 @@ class ProjectList extends React.Component {
                                                         <React.Fragment>
                                                             <Text style={subtitle_style}>Abbreviation: </Text>
                                                             <Text>{project.abbrev}</Text>
+                                                            <br/>
+
+                                                            <Text style={subtitle_style}>Project Number: </Text>
+                                                            <Text>{project.project_number}</Text>
                                                             <br/>
 
                                                             <Text style={subtitle_style}>Study Design: </Text>

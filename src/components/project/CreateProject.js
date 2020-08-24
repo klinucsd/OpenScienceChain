@@ -65,6 +65,7 @@ class CreateProject extends React.Component {
         this.state = {
             name: '',
             abbrev: '',
+            project_number: '',
             study_design: 'Cohort',
             endpoint: 'Cancer',
             biospecimens: false,
@@ -147,9 +148,9 @@ class CreateProject extends React.Component {
             }
         }
 
-        for (var j=0; j<this.state.users.length; j++) {
+        for (var j = 0; j < this.state.users.length; j++) {
             let found = false;
-            for (i=0; i<options.length; i++) {
+            for (i = 0; i < options.length; i++) {
                 if (options[i].value === this.state.users[j]) {
                     found = true;
                     break;
@@ -181,6 +182,9 @@ class CreateProject extends React.Component {
     isValid = () => {
         return this.state.name.length > 0 &&
             this.state.abbrev.length > 0 &&
+            this.state.project_number !== null &&
+            this.state.project_number.trim().length > 0 &&
+            !isNaN(this.state.project_number) &&
             this.state.study_design.length > 0 &&
             this.state.endpoint.length > 0;
     }
@@ -195,6 +199,7 @@ class CreateProject extends React.Component {
         let project = {
             name: this.state.name,
             abbrev: this.state.abbrev,
+            project_number: this.state.project_number,
             study_design: this.state.study_design,
             endpoint: this.state.endpoint,
             biospecimens: this.state.biospecimens,
@@ -245,6 +250,29 @@ class CreateProject extends React.Component {
                                 value={this.state.abbrev}
                                 error={this.state.abbrev.length === 0}
                                 onChange={this.handleChange('abbrev')}
+                                margin="normal"
+                                variant="filled"
+                            />
+
+                            <TextField
+                                required
+                                fullWidth
+                                id="project_number"
+                                label="Project Number"
+                                style={{margin: 8}}
+                                value={this.state.project_number}
+                                error={
+                                    this.state.project_number === null ||
+                                    this.state.project_number.trim().length === 0 ||
+                                    isNaN(this.state.project_number)
+                                }
+                                helperText={
+                                    this.state.project_number !== null &&
+                                    this.state.project_number.trim().length > 0 &&
+                                    isNaN(this.state.project_number) ?
+                                        'Invalid project number. Please enter a number.' : null
+                                }
+                                onChange={this.handleChange('project_number')}
                                 margin="normal"
                                 variant="filled"
                             />

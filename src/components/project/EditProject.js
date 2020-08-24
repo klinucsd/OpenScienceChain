@@ -67,6 +67,7 @@ class EditProject extends React.Component {
             id: this.props.project.id,
             name: this.props.project.name,
             abbrev: this.props.project.abbrev,
+            project_number: this.props.project.project_number ? `${this.props.project.project_number}` : null,
             study_design: this.props.project.study_design,
             endpoint: this.props.project.endpoint,
             biospecimens: this.props.project.biospecimens,
@@ -194,6 +195,9 @@ class EditProject extends React.Component {
     isValid = () => {
         return this.state.name.length > 0 &&
             this.state.abbrev.length > 0 &&
+            this.state.project_number !== null &&
+            this.state.project_number.trim().length > 0 &&
+            !isNaN(this.state.project_number) &&
             this.state.study_design.length > 0 &&
             this.state.endpoint.length > 0;
     }
@@ -202,13 +206,16 @@ class EditProject extends React.Component {
 
         let selected_users = [];
         for (var i=0; i<this.state.users.length; i++) {
-            selected_users.push(this.state.original_users[this.state.users[i]]);
+            let	user = this.state.original_users[this.state.users[i]];
+            user.projects = undefined;
+            selected_users.push(user);
         }
 
         let project = {
             id: this.state.id,
             name: this.state.name,
             abbrev: this.state.abbrev,
+            project_number: this.state.project_number,
             study_design: this.state.study_design,
             endpoint: this.state.endpoint,
             biospecimens: this.state.biospecimens,
@@ -261,6 +268,29 @@ class EditProject extends React.Component {
                                 value={this.state.abbrev}
                                 error={this.state.abbrev.length === 0}
                                 onChange={this.handleChange('abbrev')}
+                                margin="normal"
+                                variant="filled"
+                            />
+
+                            <TextField
+                                required
+                                fullWidth
+                                id="project_number"
+                                label="Project Number"
+                                style={{margin: 8}}
+                                value={this.state.project_number}
+                                error={
+                                    this.state.project_number === null ||
+                                    this.state.project_number.trim().length === 0 ||
+                                    isNaN(this.state.project_number)
+                                }
+                                helperText={
+                                    this.state.project_number !== null &&
+                                    this.state.project_number.trim().length > 0 &&
+                                    isNaN(this.state.project_number) ?
+                                        'Invalid project number. Please enter a number.' : null
+                                }
+                                onChange={this.handleChange('project_number')}
                                 margin="normal"
                                 variant="filled"
                             />

@@ -137,7 +137,7 @@ class QuestionnaireData extends React.Component {
 
     reset = () => {
         if (this.topicRef.current) {
-            this.topicRef.current.reset();
+            //this.topicRef.current.reset();
         }
         if (this.allTopicRef.current) {
             this.allTopicRef.current.reset();
@@ -171,7 +171,7 @@ class QuestionnaireData extends React.Component {
     onSearch = (searchTerm) => {
         console.log("search term = " + searchTerm);
         if (this.topicRef.current) {
-            this.topicRef.current.onSearchTermChanged(searchTerm);
+            //this.topicRef.current.onSearchTermChanged(searchTerm);
         }
         if (this.sectionQ1Ref.current) {
             this.sectionQ1Ref.current.onSearchTermChanged(searchTerm);
