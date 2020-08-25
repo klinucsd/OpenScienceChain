@@ -17,7 +17,7 @@
     "clickhouse": "^2.1.4",
     "d3": "^5.15.0",
     "fontsource-roboto": "^2.1.4",
-    "highcharts": "8.0.0",
+    "highcharts": "8.2.0",
     "highcharts-react-official": "3.0.0",
     "json2csv": "^5.0.1",
     "normalize.css": "^8.0.0",
