@@ -15,7 +15,12 @@ const {
     getPrevalent
 } = require('./data_generation_condition');
 
-const createPDF = require('./pdf/createPDF');
+const createPDF = require('./output_file/createPDF');
+const createSAS = require('./output_file/createSAS');
+const createFormatCSV = require('./output_file/createFormatCSV');
+const createSASDataCall = require('./output_file/createSASDataCall');
+const createRDataCall = require('./output_file/createRDataCall');
+const createSSAPDictionary = require('./output_file/createSSAPDictionary');
 
 /* ---------------------------------
    setup database
@@ -1172,7 +1177,8 @@ app.get('/api/task_status/:task_id', (req, res) => {
 });
 
 var fs = require('fs');
-const data_folder = '/Users/kailin/Downloads/Datasets';
+const output_folder = '/Users/kailin/Downloads/Datasets';
+const shared_folder = '/Users/kailin/Downloads/CTS Shared/Research Projects/Self Service Analysis Projects';
 
 app.get('/api/download/data/:id/:abbrev/:task_id/:date_rep', (req, res) => {
     const id = req.params.id;
@@ -2449,25 +2455,27 @@ app.get('/api/download/data/:id/:abbrev/:task_id/:date_rep', (req, res) => {
                     console.log(sql);
                     db.run(sql);
 
-                    let dir = `${data_folder}/${project.project_number}_${project.abbrev}/v${project.version < 10 ? '0' + project.version : project.version}`;
-                    if (!fs.existsSync(dir)){
-                        fs.mkdirSync(dir, { recursive: true });
+                    let output_dir = `${output_folder}/${project.project_number}_${project.abbrev}/v${project.version < 10 ? '0' + project.version : project.version}`;
+                    if (!fs.existsSync(output_dir)){
+                        fs.mkdirSync(output_dir, { recursive: true });
+                    }
+
+                    let shared_dir = `${shared_folder}/${project.project_number}_${project.abbrev}/v${project.version < 10 ? '0' + project.version : project.version}`
+                    if (!fs.existsSync(shared_dir)){
+                        fs.mkdirSync(shared_dir, { recursive: true });
                     }
 
                     // download
                     // filename : ####_PROJECT_v##_YYYYMMDD_hhmm
                     let filename = `${project.project_number}_${project.abbrev}_v${project.version < 10 ? '0' + project.version : project.version}_${date_rep}`;
 
-                    console.log("\n\n\n---------------------")
-                    console.log("=========> "+filename);
-
-                    var csvFile = fs.createWriteStream(`${dir}/${filename}.csv`, {
+                    var csvFile = fs.createWriteStream(`${output_dir}/${filename}_analytic_data.csv`, {
                         flags: 'a'
                     });
 
                     res.header('Content-Type', 'text/csv');
                     //res.attachment(abbrev + '_' + new Date().getTime() + '.csv');
-                    res.attachment(filename + '.csv');
+                    res.attachment(filename + '_analytic_data.csv');
                     var count = 1;
                     var page_size = 20000;
                     var done = false;
@@ -2545,7 +2553,7 @@ app.get('/api/download/data/:id/:abbrev/:task_id/:date_rep', (req, res) => {
                     console.log(sql);
                     db.run(sql);
 
-                    // create a pdf file for the user's selection
+                    // create a output_file file for the user's selection
                     sql = "SELECT `Variable name`, Description from questionnarie_metadata_2";
                     sequelize.query(sql)
                         .then(result => {
@@ -2555,10 +2563,24 @@ app.get('/api/download/data/:id/:abbrev/:task_id/:date_rep', (req, res) => {
                                 map[data[i]['Variable name']] = data[i].Description;
                             }
 
-                            let path = `${dir}/${filename}_summary.pdf` ;
+                            let path = `${shared_dir}/${filename}_summary.pdf` ;
                             createPDF(project, map, path);
                         });
 
+                    // create SAS file
+                    createSAS(project, final_columns, output_dir, filename);
+
+                    // create Format CSV file
+                    createFormatCSV(project, final_columns, output_dir, filename);
+
+                    // create SAS Data Call
+                    createSASDataCall(project, output_dir, filename, shared_dir);
+
+                    // create R Data Call
+                    createRDataCall(project, output_dir, filename, shared_dir);
+
+                    // create Dictionary
+                    createSSAPDictionary(project, final_columns, output_dir, filename, shared_dir);
                 });
             }
             db.close();
@@ -2569,7 +2591,31 @@ app.get('/api/download/data/:id/:abbrev/:task_id/:date_rep', (req, res) => {
 });
 
 
+/*
+Project.findOne({
+    where: {id: 1},
+}).then(project => {
 
+    // build columns
+    let selected_columns = [];
+    for (const [questionnarie, variables] of Object.entries(project.questionnarie)) {
+        for (const [variable, value] of Object.entries(variables)) {
+            selected_columns.push(variable);
+        }
+    }
+    let no_need_columns = questionnarie_columns.filter(x => !selected_columns.includes(x));
+    let final_columns = all_columns.filter(x => !no_need_columns.includes(x));
+    final_columns = final_columns.filter(x => x !== 'breast_cancer_res_only_ind');
+
+    let date_rep = "20200824_2316";
+    let dir = `${data_folder}/${project.project_number}_${project.abbrev}/v${project.version < 10 ? '0' + project.version : project.version}`;
+    if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir, { recursive: true });
+    }
+    let filename = `${project.project_number}_${project.abbrev}_v${project.version < 10 ? '0' + project.version : project.version}_${date_rep}`;
+    createSSAPDictionary(project, final_columns, dir, filename);
+}).catch(error => console.log(error));
+*/
 
 app.listen(3001, () =>
     console.log('Express server is running on localhost:3001')
