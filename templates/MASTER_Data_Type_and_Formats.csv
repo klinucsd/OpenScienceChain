@@ -1,0 +1,1327 @@
+Variable,RType,SASType,SASLen,SASFormat,SASInformat,SASLabel
+ssap_id,numeric,Num,8,11.,11.,Unique identifier for each participant
+date_of_birth_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Date of birth
+date_of_death_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Date of death
+cause_of_death_cde,character,Char,7,$7.00 ,$7.00 ,Cause of death code
+cause_of_death_dsc,character,Char,60,$60.00 ,$60.00 ,Cause of death description
+qnr_1_fill_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Q1 fill date
+qnr_2_fill_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Q2 fill date
+qnr_3_fill_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Q3 fill date
+qnr_4_fill_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Q4 fill date
+qnr_4_mini_fill_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Q4 mini fill date
+qnr_5_fill_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Q5 fill date
+qnr_5_mini_fill_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Q5 mini fill date
+qnr_6_fill_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Q6 fill date
+ses_quartile_ind,numeric,Num,8,4.,4.,SES quartiles - 1990 census blocks
+blockgroup90_urban_cat,character,Char,2,$2.00 ,$2.00 ,Urbanization categories - 1990 census blocks
+hysterectomy_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Date of hysterectomy
+hysterectomy_ind,numeric,Num,8,4.,4.,Hysterectomy indicator
+bilateral_mastectomy_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Date of bilateral mastectomy
+bilateral_mastectomy_ind,numeric,Num,8,4.,4.,Bilateral mastectomy indicator
+bilateral_oophorectomy_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Date of bilateral oophorectomy
+bilateral_oophorectomy_ind,numeric,Num,8,4.,4.,Bilateral oophorectomy indicator
+first_moveout_ca_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Date first moved out of CA
+prevalent,numeric,Num,8,4.,4.,Prevalent cancer before analysis start date
+case_indicator,numeric,Num,8,4.,4.,Case indicator
+analysis_start_date,Date,Num,8,MMDDYY10.,anydtdte10.,Analysis start date
+end_of_followup_date,Date,Num,8,MMDDYY10.,anydtdte10.,End of follow-up date
+firstselectedcancer_date,Date,Num,8,MMDDYY10.,anydtdte10.,First selected cancer date
+firstothercancer_date,Date,Num,8,MMDDYY10.,anydtdte10.,First other cancer date
+analysis_end_date,Date,Num,8,MMDDYY10.,anydtdte10.,Analysis end date
+event,numeric,Num,8,4.,4.,Event to end follow-up
+date_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Cancer diagnosis date
+seer_id,numeric,Num,8,11.,11.,Seer ID
+site_sub_cat1_nme,character,Char,40,$40.00 ,$40.00 ,Site sub category 1 name
+site_group_nme,character,Char,50,$50.00 ,$50.00 ,Site group name
+histologic_icdo2_typ,character,Char,4,$4.00 ,$4.00 ,Histologic ICD-O-2 type
+histologic_icdo3_typ,character,Char,4,$4.00 ,$4.00 ,Histologic ICD-O-3 type
+icd_o3_cde,character,Char,4,$4.00 ,$4.00 ,ICD-O-3 code
+tumor_grade_id,numeric,Num,8,4.,4.,Tumor grade id
+stage_cde,character,Char,2,$2.00 ,$2.00 ,Stage code
+stage_behaviour_ind,numeric,Num,8,6.,6.,Stage behaviour ind
+stage_behaviour_nme,character,Char,20,$20.00 ,$20.00 ,Stage behaviour name
+stage_sum_ind,numeric,Num,8,4.,4.,Stage sum indicator
+stage_seer_cde,character,Char,2,$2.00 ,$2.00 ,Stage seer code
+cancer_confirm_ind,numeric,Num,8,4.,4.,Cancer confirm indicator
+lag_birth_day_qty,numeric,Num,8,11.,11.,Lag birthday qty
+lag_death_day_qty,numeric,Num,8,11.,11.,Lag death day qty
+lag_from_first_event_day_qty,numeric,Num,8,11.,11.,Lag from first event day qty
+lag_from_qnr1_day_qty,numeric,Num,8,11.,11.,Lag from qnr1 day qty
+lag_from_qnr2_day_qty,numeric,Num,8,11.,11.,Lag from qnr2 day qty
+lag_from_qnr3_day_qty,numeric,Num,8,11.,11.,Lag from qnr3 day qty
+lag_from_qnr3m_day_qty,numeric,Num,8,11.,11.,Lag from qnr3m day qty
+lag_from_qnr4_day_qty,numeric,Num,8,11.,11.,Lag from qnr4 day qty
+lag_from_qnr4m_day_qty,numeric,Num,8,11.,11.,Lag from qnr4m day qty
+lag_from_qnr5_day_qty,numeric,Num,8,11.,11.,Lag from qnr5 day qty
+lag_from_qnr5m_day_qty,numeric,Num,8,11.,11.,Lag from qnr5m day qty
+lag_from_qnr6_day_qty,numeric,Num,8,11.,11.,Lag from qnr6 day qty
+lymph_node_pos_nbr_cde,character,Char,2,$2.00 ,$2.00 ,Lymph node pos nbr code
+tumor_multi_asone_primary_cde,character,Char,2,$2.00 ,$2.00 ,Tumor multi asone primary code
+tumor_multi_count_cde,character,Char,2,$2.00 ,$2.00 ,Tumor multi count code
+chemo_sum_cde,character,Char,2,$2.00 ,$2.00 ,Chemo sum code
+horm_sum_cde,character,Char,2,$2.00 ,$2.00 ,Horm sum code
+immuno_sum_cde,character,Char,2,$2.00 ,$2.00 ,Immuno sum code
+other_sum_cde,numeric,Num,8,4.,4.,Other sum code
+rad_sum_cde,numeric,Num,8,4.,4.,Rad sum code
+norad_reason_cde,numeric,Num,8,4.,4.,Norad reason code
+nosurg_reason_cde,numeric,Num,8,4.,4.,Nosurg reason code
+rad_seq_cde,numeric,Num,8,4.,4.,Rad seq code
+rx_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Rx date
+rx_nodate_cde,character,Char,2,$2.00 ,$2.00 ,Rx nodate code
+rx_chemo_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Rx chemo date
+rx_chemo_nodate_cde,character,Char,2,$2.00 ,$2.00 ,Rx chemo nodate code
+rx_horm_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Rx horm date
+rx_horm_nodate_cde,character,Char,2,$2.00 ,$2.00 ,Rx horm nodate code
+rx_immuno_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Rx immunodate
+rx_immuno_nodate_cde,character,Char,2,$2.00 ,$2.00 ,Rx immuno nodate code
+rx_other_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Rx other date
+rx_other_nodate_cde,character,Char,2,$2.00 ,$2.00 ,Rx other nodate code
+rad_boost_mode_cde,character,Char,2,$2.00 ,$2.00 ,Rad boost mode code
+rad_regional_mode_cde,character,Char,2,$2.00 ,$2.00 ,Rad regional mode code
+rx_rad_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Rx rad date
+rx_rad_nodate_cde,character,Char,2,$2.00 ,$2.00 ,Rx rad nodate code
+rx_stg_proc_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Rx stg proc date
+rx_stg_proc_nodate_cde,character,Char,2,$2.00 ,$2.00 ,Rx stg proc nodate code
+rx_systemic_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Rx systemic date
+rx_systemic_nodate_cde,character,Char,2,$2.00 ,$2.00 ,Rx systemic nodate code
+rx_systemic_sum_seq_cde,character,Char,1,$1.00 ,$1.00 ,Rx systemic sum seq code
+nnodes_cde,character,Char,2,$2.00 ,$2.00 ,Nnodes code
+surg_sum_cde,character,Char,2,$2.00 ,$2.00 ,Surg sum code
+surg_other_cde,numeric,Num,8,4.,4.,Surg other code
+surg_primary_cde,character,Char,2,$2.00 ,$2.00 ,Surg primary code
+surg_recon_cde,numeric,Num,8,4.,4.,Surg reconstructive code
+surg_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Surg date
+surg_nodate_cde,character,Char,2,$2.00 ,$2.00 ,Surg nodate code
+surg_defin_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Surg defin date
+surg_defin_nodate_cde,character,Char,2,$2.00 ,$2.00 ,Surg defin nodate code
+surg_other_98_cde,character,Char,1,$1.00 ,$1.00 ,Surg other 98 code
+surg_primary_98_cde,character,Char,2,$2.00 ,$2.00 ,Surg primary 98 code
+scope_ind,numeric,Num,8,4.,4.,Scope indicator
+scope1_cde,numeric,Num,8,4.,4.,Scope1 code
+scope2_cde,numeric,Num,8,4.,4.,Scope2 code
+scope3_cde,numeric,Num,8,4.,4.,Scope3 code
+surg1_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Surg1 date
+surg1_other_cde,numeric,Num,8,4.,4.,Surg1 other code
+surg1_primary_cde,character,Char,2,$2.00 ,$2.00 ,Surg1 primary code
+surg2_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Surg2 date
+surg2_other_cde,numeric,Num,8,4.,4.,Surg2 other code
+surg2_primary_cde,character,Char,2,$2.00 ,$2.00 ,Surg2 primary code
+surg3_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Surg3 date
+surg3_other_cde,numeric,Num,8,4.,4.,Surg3 other code
+surg3_primary_cde,character,Char,2,$2.00 ,$2.00 ,Surg3 primary code
+transp_dt,Date,Num,8,MMDDYY10.,anydtdte10.,Transplant date
+transp_nodate_cde,character,Char,2,$2.00 ,$2.00 ,Transp nodate code
+lateral_site_cde,character,Char,1,$1.00 ,$1.00 ,Lateral site code
+estrogen_rcptr_ind,numeric,Num,8,6.,6.,Estrogen receptor indicator
+estrogen_rcptr_dsc,character,Char,20,$20.00 ,$20.00 ,Estrogen receptor description
+progesterone_rcptr_ind,numeric,Num,8,6.,6.,Progesterone receptor indicator
+progesterone_rcptr_dsc,character,Char,20,$20.00 ,$20.00 ,Progesterone receptor description
+her2_rcptr_ind,numeric,Num,8,6.,6.,Her2 receptor indicator
+her2_rcptr_dsc,character,Char,20,$20.00 ,$20.00 ,Her2 receptor description
+age_at_baseline,numeric,Num,8,11.,11.,Age at baseline
+adopted,character,Char,50,$50.00 ,$50.00 ,Was participant adopted
+twin,character,Char,50,$50.00 ,$50.00 ,Is participant a twin
+birthplace,character,Char,50,$50.00 ,$50.00 ,Place participant was born
+birthplace_mom,character,Char,50,$50.00 ,$50.00 ,Place participant's mom was born
+birthplace_dad,character,Char,50,$50.00 ,$50.00 ,Place participant's dad was born
+participant_race,numeric,Num,8,11.,11.,Participant's race
+dad_race,numeric,Num,8,11.,11.,Father's race
+mom_race,numeric,Num,8,11.,11.,Mother's race
+nih_ethnic_cat,character,Char,50,$50.00 ,$50.00 ,For grant inclusion enrollment report: part a-ethnic category
+nih_race_cat,character,Char,50,$50.00 ,$50.00 ,For grant inclusion enrollment report: part a-racial category
+nih_hisp_enroll,character,Char,50,$50.00 ,$50.00 ,For grant inclusion enrollment report: part b-hispanic enrollment
+age_mom_atbirth,character,Char,50,$50.00 ,$50.00 ,Age of mom at participant's birth
+age_dad_atbirth,character,Char,50,$50.00 ,$50.00 ,Age of dad at participant's birth
+older_bros_num,character,Char,50,$50.00 ,$50.00 ,Number of brothers born before participant
+older_sis_num,character,Char,50,$50.00 ,$50.00 ,Number of sisters born before participant
+younger_bros_num,character,Char,50,$50.00 ,$50.00 ,Number of brothers born after participant
+younger_sis_num,character,Char,50,$50.00 ,$50.00 ,Number of sisters born after participant
+employ_currschl,character,Char,50,$50.00 ,$50.00 ,Type of employment in CA schools current
+employ_longschl,character,Char,50,$50.00 ,$50.00 ,Type of employment in CA schools longest
+teacher_type,character,Char,50,$50.00 ,$50.00 ,Teacher type
+employ_numschl,character,Char,50,$50.00 ,$50.00 ,Number of schools employed at
+employ_schlyrs,character,Char,50,$50.00 ,$50.00 ,Total years employed in CA school sys
+near_chemplnt,character,Char,50,$50.00 ,$50.00 ,Live/work near chemical plant
+near_powerplnt,character,Char,50,$50.00 ,$50.00 ,Live/work near power plant
+near_pulpmill,character,Char,50,$50.00 ,$50.00 ,Live/work near pulp mill
+near_oilrefine,character,Char,50,$50.00 ,$50.00 ,Live/work near oil refinery
+near_landfill,character,Char,50,$50.00 ,$50.00 ,Live/work near landfill
+powerln_currschl,character,Char,50,$50.00 ,$50.00 ,Power lines near current school
+powerln_longschl,character,Char,50,$50.00 ,$50.00 ,Power lines near longest school
+powerln_currres,character,Char,50,$50.00 ,$50.00 ,Power lines near current residence
+powerln_longres,character,Char,50,$50.00 ,$50.00 ,Power lines near longest residence
+pstcideskn_undr15,character,Char,50,$50.00 ,$50.00 ,Insect repell on skin - under age 15
+pstcideskn15_35,character,Char,50,$50.00 ,$50.00 ,Insect repell on skin - age 15-35
+pstcideskn_ovr35,character,Char,50,$50.00 ,$50.00 ,Insect repell on skin - over age 35
+pstcidehm_undr15,character,Char,50,$50.00 ,$50.00 ,Pest/herbicides in home - under 15?
+pstcidehm15_35,character,Char,50,$50.00 ,$50.00 ,Pest/herbicides in home - 15-35?
+pstcidehm_ovr35,character,Char,50,$50.00 ,$50.00 ,Pest/herbicides in home - over 35?
+pstcidecloud_undr15,character,Char,50,$50.00 ,$50.00 ,Cloud of pest spray - under 15?
+pstcidecloud15_35,character,Char,50,$50.00 ,$50.00 ,Cloud of pest spray - 15-35?
+pstcidecloud_ovr35,character,Char,50,$50.00 ,$50.00 ,Cloud of pest spray - over 35?
+pstcidefarm_undr15,character,Char,50,$50.00 ,$50.00 ,Pest/herbicides on farm - under 15?
+pstcidefarm15_35,character,Char,50,$50.00 ,$50.00 ,Pest/herbicides on farm - 15-35?
+pstcidefarm_ovr35,character,Char,50,$50.00 ,$50.00 ,Pest/herbicides on farm - over 35?
+elecblnket,character,Char,50,$50.00 ,$50.00 ,Elect blanket while sleep
+elecwatrbed,character,Char,50,$50.00 ,$50.00 ,Elect water bed while sleep
+elecrmheat,character,Char,50,$50.00 ,$50.00 ,Elect room heat while sleep
+eleclight,character,Char,50,$50.00 ,$50.00 ,Elect light while sleep
+sunskn_noprotec,character,Char,50,$50.00 ,$50.00 ,Skin in sun w/o protection
+sunskn_repeat,character,Char,50,$50.00 ,$50.00 ,Skin in sun repeatedly
+sunbrnblist,character,Char,50,$50.00 ,$50.00 ,Burned enough to cause blist
+sunbrnblist_age,character,Char,50,$50.00 ,$50.00 ,Age this first occurred
+sunbrnblist_num,character,Char,50,$50.00 ,$50.00 ,Number of times this occurred
+menarche_age,numeric,Num,8,11.,11.,Age at menarche
+period_timetoreg,numeric,Num,8,11.,11.,Time to regular periods
+period_daysbtwn,character,Char,50,$50.00 ,$50.00 ,Days from start of period to next
+oralcntr_ever_q1,numeric,Num,8,11.,11.,Ever used oral contraceptives
+oralcntr_yrs,numeric,Num,8,11.,11.,Total yrs used oral contraceptives
+bc_1stage,numeric,Num,8,11.,11.,Age 1st birth control
+bc_lastage,numeric,Num,8,11.,11.,Age last birth control
+fullterm_age1st,numeric,Num,8,11.,11.,"Age 1st full term preg(lb,sb)"
+preg_age1st,numeric,Num,8,11.,11.,Age 1st pregnancy
+livbirth_total,numeric,Num,8,11.,11.,Total num of live births
+stilbirth_total,numeric,Num,8,11.,11.,Total num of still births
+miscarr_total,numeric,Num,8,11.,11.,Total num of miscarriages
+abort_total,numeric,Num,8,11.,11.,Total num of abortions
+tubalpreg_total,numeric,Num,8,11.,11.,Total num of tubal pregs
+fullterm_total,numeric,Num,8,11.,11.,Total live births+still births
+preg_ever_q1,numeric,Num,8,11.,11.,Ever pregnant
+preg_curr_q1,numeric,Num,8,11.,11.,Currently pregnant
+miscarr_age1st,numeric,Num,8,11.,11.,Age 1st miscarriage
+abort_age1st,numeric,Num,8,11.,11.,Age 1st abortion
+preg_agelast,numeric,Num,8,11.,11.,Age last pregnancy(all outcomes)
+preg_total_q1,numeric,Num,8,11.,11.,Total number of pregnancies
+livbirth_age1st,numeric,Num,8,11.,11.,Age at first live birth
+breastfd_age1st,numeric,Num,8,11.,11.,Age 1st breast fed
+breastfd_mo,numeric,Num,8,11.,11.,Total months breast fed
+des_stopmiscarr,character,Char,50,$50.00 ,$50.00 ,Taken DES to prevent miscarriage
+preg_failed,character,Char,50,$50.00 ,$50.00 ,Couldn't get pregnant
+fertdrug_clomid,character,Char,50,$50.00 ,$50.00 ,Taken fertility drug - clomid
+fertdrug_danazol,character,Char,50,$50.00 ,$50.00 ,Taken fertility drug - danazol
+fertdrug_danocrn,character,Char,50,$50.00 ,$50.00 ,Taken fertility drug - danocrine
+fertdrug_hcg,character,Char,50,$50.00 ,$50.00 ,Taken fertility drug - hcg
+fertdrug_milophn,character,Char,50,$50.00 ,$50.00 ,Taken fertility drug - milophene
+fertdrug_lupron,character,Char,50,$50.00 ,$50.00 ,Taken fertility drug - lupron
+fertdrug_nolvadx,character,Char,50,$50.00 ,$50.00 ,Taken fertility drug - nolvadex
+fertdrug_pergonl,character,Char,50,$50.00 ,$50.00 ,Taken fertility drug - pergonal
+fertdrug_serophn,character,Char,50,$50.00 ,$50.00 ,Taken fertility drug - serophene
+fertdrug_synarel,character,Char,50,$50.00 ,$50.00 ,Taken fertility drug - synarel
+fertdrug_other,character,Char,50,$50.00 ,$50.00 ,Taken fertility drug - other
+fertdrug_none,character,Char,50,$50.00 ,$50.00 ,Taken fertility drug - none
+period_stop,character,Char,50,$50.00 ,$50.00 ,Periods stopped permanently
+meno_statbasic,numeric,Num,8,11.,11.,Menopausal status basic grouping
+meno_stattype,numeric,Num,8,11.,11.,Menopausal status include type of menopause
+meno_stattype_age,numeric,Num,8,11.,11.,Menopausal status type and age
+agelastperiod_q1,character,Char,50,$50.00 ,$50.00 ,Age of last period
+whyperiodstop_q1,character,Char,50,$50.00 ,$50.00 ,Why did periods stop
+hysterectomy_age_q1,character,Char,50,$50.00 ,$50.00 ,Age at hysterectomy
+ovaryremoved_q1,character,Char,50,$50.00 ,$50.00 ,Ovary removed
+ovaryremoved_age_q1,character,Char,50,$50.00 ,$50.00 ,Age first had ovary removed
+tuballig_age_q1,character,Char,50,$50.00 ,$50.00 ,Age at tubal ligation
+estroalone,numeric,Num,8,11.,11.,"Estrogen alone never, past, current"
+eplusp,numeric,Num,8,11.,11.,"E+p overlap never, past, current"
+progalone,numeric,Num,8,11.,11.,"P alone never, past, current"
+ht_revusepattern,numeric,Num,8,11.,11.,Ht reviewed pattern of use
+ht_allpast_curr,numeric,Num,8,11.,11.,"Ht all past, cur e, cur e+p, p only"
+estroalone_dur,numeric,Num,8,11.,11.,Duration of e alone final var
+progalone_dur,numeric,Num,8,11.,11.,Duration of p alone final var
+eplusp_dur,numeric,Num,8,11.,11.,Duration of e+p overlap final var
+estroalone_start,numeric,Num,8,11.,11.,Age begin e alone final var
+progalone_start,numeric,Num,8,11.,11.,Age begin p alone final var
+eplusp_start,numeric,Num,8,11.,11.,Age begin e+p overlap final var
+estroalone_end,numeric,Num,8,11.,11.,Age end e alone final var
+progalone_end,numeric,Num,8,11.,11.,Age end p alone final var
+eplusp_end,numeric,Num,8,11.,11.,Age end e+p overlap final var
+premarn_age1st,character,Char,50,$50.00 ,$50.00 ,Age first took premarin
+premarn_agelast,character,Char,50,$50.00 ,$50.00 ,Age last took premarin
+premarn_totyrs,numeric,Num,8,11.,11.,Total years taking prem
+premarn_grn_q1,character,Char,50,$50.00 ,$50.00 ,Use of premarin - green
+premarn_brwn_q1,character,Char,50,$50.00 ,$50.00 ,Use of premarin - brown/red
+premarn_wht_q1,character,Char,50,$50.00 ,$50.00 ,Use of premarin - white
+premarn_yelorn_q1,character,Char,50,$50.00 ,$50.00 ,Use of premarin - yellow/orange
+premarn_prpl_q1,character,Char,50,$50.00 ,$50.00 ,Use of premarin - purple
+premarn_longest,character,Char,50,$50.00 ,$50.00 ,Longest use of premarin - type
+estro_mouth,character,Char,50,$50.00 ,$50.00 ,Estrogen by mouth
+estro_inject,character,Char,50,$50.00 ,$50.00 ,Estrogen by injection
+estro_patch_impl,character,Char,50,$50.00 ,$50.00 ,Estrogen by patch/implant
+estro_vag,character,Char,50,$50.00 ,$50.00 ,Estrogen by vaginal cream/supp
+prog_ever,character,Char,50,$50.00 ,$50.00 ,Use of progesterone/progestin
+meno_ht_statcomb,numeric,Num,8,11.,11.,Combination of menopausal status and past or current ht
+prog_age1st,character,Char,50,$50.00 ,$50.00 ,Age first use of progesterone
+prog_agelast,character,Char,50,$50.00 ,$50.00 ,Age last use of progesterone
+prog_totyrs,character,Char,50,$50.00 ,$50.00 ,Total years taking progesterone
+prog_days_mo_q1,numeric,Num,8,11.,11.,Days/month using progestin
+provera_dose_q1,numeric,Num,8,11.,11.,Usual dose of provera
+brca,character,Char,50,$50.00 ,$50.00 ,Breast cancer
+brca_age1st,numeric,Num,8,11.,11.,Age 1st dx breast ca.
+brimplant,character,Char,50,$50.00 ,$50.00 ,Breast implants
+brimplant_age1st,character,Char,50,$50.00 ,$50.00 ,Age first had breast implants
+brimplant_type,character,Char,50,$50.00 ,$50.00 ,Kind of breast implants
+mammo_ever_q1,character,Char,50,$50.00 ,$50.00 ,Mammogram
+brexam,character,Char,50,$50.00 ,$50.00 ,Breast exam
+papsmr,character,Char,50,$50.00 ,$50.00 ,Pap smear
+mammo_yrssnce_ques62,numeric,Num,8,11.,11.,Years since last mammogram
+brexam_yrssnce_ques62,numeric,Num,8,11.,11.,Years since last breast exam
+papsmr_yrssnce_ques62,numeric,Num,8,11.,11.,Years since last pap smear
+brexam_lastyr,character,Char,50,$50.00 ,$50.00 ,# of breast exams in last yr
+bldtrans_never,character,Char,50,$50.00 ,$50.00 ,Blood transfusion - no
+bldtrans_undr35,character,Char,50,$50.00 ,$50.00 ,Blood transfusion - before age 35
+bldtrans35_44,character,Char,50,$50.00 ,$50.00 ,Blood transfusion - 35-44
+bldtrans45_54,character,Char,50,$50.00 ,$50.00 ,Blood transfusion - 45-54
+bldtrans55_64,character,Char,50,$50.00 ,$50.00 ,Blood transfusion - 55-64
+bldtrans_ovr64,character,Char,50,$50.00 ,$50.00 ,Blood transfusion - after 64
+height_q1,numeric,Num,8,11.,11.,Height today
+weight_q1,numeric,Num,8,11.,11.,Weight today
+height_age18,numeric,Num,8,11.,11.,Height age 18
+weight_age18,numeric,Num,8,11.,11.,Weight age 18
+bmi_q1,numeric,Num,8,20.1,20.1,Body mass index (kg/m**2)
+bmi_age18,numeric,Num,8,20.1,20.1,Body mass index (kg/m**2) age 18
+aspr_totyrs,character,Char,50,$50.00 ,$50.00 ,Total years taking aspirin
+aspr_days_wk,character,Char,50,$50.00 ,$50.00 ,Days/wk taking aspirin
+acetm_totyrs,character,Char,50,$50.00 ,$50.00 ,Total years taking acetaminophen
+acetm_days_wk,character,Char,50,$50.00 ,$50.00 ,Days/wk taking acetaminophen
+ibupf_totyrs,character,Char,50,$50.00 ,$50.00 ,Total years taking ibuprofen
+ibupf_days_wk,character,Char,50,$50.00 ,$50.00 ,Days/wk taking ibuprofen
+tagam_totyrs,character,Char,50,$50.00 ,$50.00 ,Total years taking tagamet
+tagam_days_wk,character,Char,50,$50.00 ,$50.00 ,Days/wk taking tagamet
+resprn_totyrs,character,Char,50,$50.00 ,$50.00 ,Total years taking reserpine
+resprn_days_wk,character,Char,50,$50.00 ,$50.00 ,Days/wk taking reserpine
+wtrpil_totyrs,character,Char,50,$50.00 ,$50.00 ,Total years taking water pills/hi bp
+wtrpil_days_wk,character,Char,50,$50.00 ,$50.00 ,Days/wk taking water pills/hi bp
+hbpmed_totyrs,character,Char,50,$50.00 ,$50.00 ,Total years taking high blood press
+hbpmed_days_wk,character,Char,50,$50.00 ,$50.00 ,Days/wk taking high blood pressure
+calcium_totyrs,character,Char,50,$50.00 ,$50.00 ,Total years taking calcium
+calcium_days_wk,character,Char,50,$50.00 ,$50.00 ,Days/wk taking calcium
+nsaid_totyrs,character,Char,50,$50.00 ,$50.00 ,Total years taking any nsaid
+nsaid_days,character,Char,50,$50.00 ,$50.00 ,Days/wk taking any nsaid
+brca_self_ovr50_q1,character,Char,50,$50.00 ,$50.00 ,You - breast cancer over 50
+brca_self_undr50_q1,character,Char,50,$50.00 ,$50.00 ,You - breast cancer under 50
+endoca_self_q1,character,Char,50,$50.00 ,$50.00 ,You - endometrial cancer
+cervca_self_q1,character,Char,50,$50.00 ,$50.00 ,You - cervical cancer
+ovryca_self_q1,character,Char,50,$50.00 ,$50.00 ,You - ovarian cancer
+lungca_self_q1,character,Char,50,$50.00 ,$50.00 ,You - lung cancer
+leuk_self_q1,character,Char,50,$50.00 ,$50.00 ,You - leukemia
+hodg_self_q1,character,Char,50,$50.00 ,$50.00 ,You - hodgkins dis
+colnca_self_q1,character,Char,50,$50.00 ,$50.00 ,You - colon/rect cancer
+thyrca_self_q1,character,Char,50,$50.00 ,$50.00 ,You - thyroid cancer
+meln_self_q1,character,Char,50,$50.00 ,$50.00 ,You - malig melanoma
+nevrca_self_q1,character,Char,50,$50.00 ,$50.00 ,You - never had cancer
+nevrca_mom_q1,character,Char,50,$50.00 ,$50.00 ,Mom - never had cancer
+nevrca_dad_q1,character,Char,50,$50.00 ,$50.00 ,Dad - never had cancer
+gallstn_self,character,Char,50,$50.00 ,$50.00 ,You - gall stones
+diab_self_q1,character,Char,50,$50.00 ,$50.00 ,You - diabetes
+hipfrac_self,character,Char,50,$50.00 ,$50.00 ,You - hip fracture
+fibroid_self,character,Char,50,$50.00 ,$50.00 ,You - fibroids/womb
+endomtrs_self,character,Char,50,$50.00 ,$50.00 ,You - endometriosis
+migrain_self,character,Char,50,$50.00 ,$50.00 ,You - migraines
+brstbiop_self,character,Char,50,$50.00 ,$50.00 ,You - breast biopsy
+colnpoly_self,character,Char,50,$50.00 ,$50.00 ,You - colon/rect polyps
+thyrdis_self,character,Char,50,$50.00 ,$50.00 ,You - thyroid dis
+molesrmv_self,character,Char,50,$50.00 ,$50.00 ,You - moles removed
+stroke_self_q1,character,Char,50,$50.00 ,$50.00 ,You - stroke
+hrtatk_self_q1,character,Char,50,$50.00 ,$50.00 ,You - heart attack
+hbp_self_q1,character,Char,50,$50.00 ,$50.00 ,You - hi blood press
+brca_selfsurvey,character,Char,50,$50.00 ,$50.00 ,Breast cancer self(survey data only)
+brca_famhis,numeric,Num,8,11.,11.,Family history of breast cancer
+endoca_famhis,numeric,Num,8,11.,11.,Family history of endometrial cancer
+ovryca_famhis,numeric,Num,8,11.,11.,Family history of ovarian cancer
+cervca_famhis,numeric,Num,8,11.,11.,Family history of cervical cancer
+lungca_famhis,numeric,Num,8,11.,11.,Family history of lung cancer
+leuk_famhis,numeric,Num,8,11.,11.,Family history of leukemia
+hodg_famhis,numeric,Num,8,11.,11.,Family history of hodgkins or lymphoma
+thyrca_famhis,numeric,Num,8,11.,11.,Family history of thyroid cancer
+colnca_famhis,numeric,Num,8,11.,11.,Family history of colorectal cancer
+meln_famhis,numeric,Num,8,11.,11.,Family history of melanoma
+prosca_famhis,numeric,Num,8,11.,11.,Family history of prostate cancer
+strnex_hs_hrs,numeric,Num,8,20.1,20.1,Strenuous exercise dur hs hrs/wk over yr lb
+strnex18_24hrs,numeric,Num,8,20.1,20.1,Strenuous exercise age 18-24 hrs/wk over yr lb
+strnex25_34hrs,numeric,Num,8,20.1,20.1,Strenuous exercise age 25-34 hrs/wk over yr lb
+strnex35_44hrs,numeric,Num,8,20.1,20.1,Strenuous exercise age 35-44 hrs/wk over yr lb
+strnex45_54hrs,numeric,Num,8,20.1,20.1,Strenuous exercise age 45-54 hrs/wk over yr lb
+strnex_hrs_q1,numeric,Num,8,20.1,20.1,Strenuous exercise past 3yrs hrs/wk over yr lb
+modex_hs_hrs,numeric,Num,8,20.1,20.1,Moderate exercise dur hs hrs/wk over yr lb
+modex18_24hrs,numeric,Num,8,20.1,20.1,Moderate exercise age 18-24 hrs/wk over yr lb
+modex25_34hrs,numeric,Num,8,20.1,20.1,Moderate exercise age 25-34 hrs/wk over yr lb
+modex35_44hrs,numeric,Num,8,20.1,20.1,Moderate exercise age 35-44 hrs/wk over yr lb
+modex45_54hrs,numeric,Num,8,20.1,20.1,Moderate exercise age 45-54 hrs/wk over yr lb
+modex_hrs_q1,numeric,Num,8,20.1,20.1,Moderate exercise past 3yrs hrs/wk over yr lb
+strnex_life_hrs,numeric,Num,8,20.1,20.1,Strenuous exercise hrs/wk over lifetime
+modex_life_hrs,numeric,Num,8,20.1,20.1,Moderate exercise hrs/wk over lifetime
+allex_hs_hrs,numeric,Num,8,20.1,20.1,Strenuous + moderate exercise hrs/wk over year hs
+allex18_24hrs,numeric,Num,8,20.1,20.1,Strenuous + moderate exercise hrs/wk over year 18-24
+allex25_34hrs,numeric,Num,8,20.1,20.1,Strenuous + moderate exercise hrs/wk over year 25-34
+allex35_44hrs,numeric,Num,8,20.1,20.1,Strenuous + moderate exercise hrs/wk over year 35-44
+allex45_54hrs,numeric,Num,8,20.1,20.1,Strenuous + moderate exercise hrs/wk over year 45-54
+allex_hrs_q1,numeric,Num,8,20.1,20.1,Strenuous + moderate exercise hrs/wk over year past 3 yrs
+allex_life_hrs,numeric,Num,8,20.1,20.1,Strenuous + moderate exercise hrs/wk over yr for lifetime
+strnex_fix_q1,numeric,Num,8,11.,11.,Strenuous exercise past 3yrs amt from earlier age range
+modex_fix_q1,numeric,Num,8,11.,11.,Moderate exercise past 3yrs amt from earlier age range
+caswalk_hrs,character,Char,50,$50.00 ,$50.00 ,Hours/day - casual walking
+caswalk_days,character,Char,50,$50.00 ,$50.00 ,Days/wk - casual walking
+housewrk_hrs,character,Char,50,$50.00 ,$50.00 ,Hours/day - housework
+housewrk_days,character,Char,50,$50.00 ,$50.00 ,Days/wk - housework
+stand_hrs,character,Char,50,$50.00 ,$50.00 ,Hours/day - standing/walking at work
+stand_days,character,Char,50,$50.00 ,$50.00 ,Days/wk - standing/walking at work
+sit_hrs,character,Char,50,$50.00 ,$50.00 ,Hours/day - sitting
+sit_days,character,Char,50,$50.00 ,$50.00 ,Days/wk - sitting
+sleep_hrs,character,Char,50,$50.00 ,$50.00 ,Hours/day - sleeping
+sleep_days,character,Char,50,$50.00 ,$50.00 ,Days/wk - sleeping
+vit_reg_no,character,Char,50,$50.00 ,$50.00 ,Taken vitamins regularly - no
+mulvit_days,character,Char,50,$50.00 ,$50.00 ,Multi-vitamins regularly - days/wk
+mulvit_yrs_q1,character,Char,50,$50.00 ,$50.00 ,Multi-vitamins regularly - years
+vita_days_q1,character,Char,50,$50.00 ,$50.00 ,Vitamin a regularly - days/wk
+vita_yrs_q1,character,Char,50,$50.00 ,$50.00 ,Vitamin a regularly - years
+bcar_days,character,Char,50,$50.00 ,$50.00 ,Beta-carotene regularly - days/wk
+bcar_yrs,character,Char,50,$50.00 ,$50.00 ,Beta-carotene regularly - years
+vitc_days_q1,character,Char,50,$50.00 ,$50.00 ,Vitamin c regularly - days/wk
+vitc_yrs_q1,character,Char,50,$50.00 ,$50.00 ,Vitamin c regularly - years
+vite_days_q1,character,Char,50,$50.00 ,$50.00 ,Vitamin e regularly - days/wk
+vite_yrs_q1,character,Char,50,$50.00 ,$50.00 ,Vitamin e regularly - years
+selen_days,character,Char,50,$50.00 ,$50.00 ,Selenium regularly - days/wk
+selen_yrs,character,Char,50,$50.00 ,$50.00 ,Selenium regularly - years
+daily_fiber,numeric,Num,8,20.1,20.1,Daily dietary fiber (grams)
+daily_prot,numeric,Num,8,20.1,20.1,Daily dietary protein
+daily_fat,numeric,Num,8,20.1,20.1,Daily dietary fat
+daily_calcium,numeric,Num,8,20.1,20.1,Daily dietary calcium
+daily_sfat,numeric,Num,8,20.1,20.1,Daily dietary saturated fat
+daily_oleic,numeric,Num,8,20.1,20.1,Daily dietary oleic acid
+daily_lino,numeric,Num,8,20.1,20.1,Daily dietary linoleic acid
+daily_chol,numeric,Num,8,20.1,20.1,Daily cholesterol
+daily_folate,numeric,Num,8,20.1,20.1,Daily dietary folate
+perccal_fat,numeric,Num,8,20.1,20.1,% calories from fat
+totdiet_caroten,numeric,Num,8,20.1,20.1,Dietary total carotenoids
+totdaily_kcal,numeric,Num,8,20.1,20.1,Total daily caloric intake
+totdaily_carb,numeric,Num,8,20.1,20.1,Total grams per day of carbohydrate intake
+glyc_avgdaily,numeric,Num,8,20.1,20.1,"Average daily glycemic index (white bread as ref), glycloadwb/dt_carbs (without fiber)"
+glyc_avgtot,numeric,Num,8,20.1,20.1,"Average total daily glycemic load (white bread as ref), sum: g/d * (carb-fiber)/100 * gi/100"
+diet_plant,numeric,Num,8,20.1,20.1,Diet pattern:factor score for plant-based pattern
+diet_highprotfat,numeric,Num,8,20.1,20.1,Diet pattern:factor score for high protein/fat pattern
+diet_highcarb,numeric,Num,8,20.1,20.1,Diet pattern:factor score for high carb pattern
+dief_ethnic,numeric,Num,8,20.1,20.1,Diet pattern:factor score for ethnic pattern
+diet_saladwine,numeric,Num,8,20.1,20.1,Diet pattern:factor score for salad and wine pattern
+vit_mulvit_q1,numeric,Num,8,11.,11.,Multivit and single vit use variable
+mulvit_perwk,numeric,Num,8,11.,11.,Number of multivit pills per week
+vit_perwk,numeric,Num,8,11.,11.,Number of single vit pills per week
+mulvit_dur_yrs,numeric,Num,8,11.,11.,Duration in yr category of multivit use
+vita_bcar_amt,character,Char,50,$50.00 ,$50.00 ,Amt of vitamin a/beta-c (part of multi-vit)
+vita_amt,character,Char,50,$50.00 ,$50.00 ,Amt of vitamin a (mark = yes pill)
+bcar_amt,character,Char,50,$50.00 ,$50.00 ,Amt of beta-carotene (mark = yes pill)
+vitc_amt,character,Char,50,$50.00 ,$50.00 ,Amt of vitamin c
+vite_amt,character,Char,50,$50.00 ,$50.00 ,Amt of vitamin e
+selen_amt,character,Char,50,$50.00 ,$50.00 ,Amt of selenium
+serv_fats_q1,character,Char,50,$50.00 ,$50.00 ,Use last yr - fat/oil in cooking
+serv_vegs_q1,character,Char,50,$50.00 ,$50.00 ,Use last yr - veges
+serv_fruit_q1,character,Char,50,$50.00 ,$50.00 ,Use last yr - fruit (whole)
+serv_cere_q1,character,Char,50,$50.00 ,$50.00 ,Use last yr - cold cereal
+serv_milk_q1,character,Char,50,$50.00 ,$50.00 ,Use last yr - milk
+lo_cheese_q1,character,Char,50,$50.00 ,$50.00 ,Lo/nonfat version of cheese
+lo_icecrm_q1,character,Char,50,$50.00 ,$50.00 ,Lo/nonfat version of ice cream/yogurt
+lo_dressn_q1,character,Char,50,$50.00 ,$50.00 ,Lo/nonfat version of salad dressing
+lo_cake_q1,character,Char,50,$50.00 ,$50.00 ,Lo/nonfat version of cake/cookies
+addsalt_q1,character,Char,50,$50.00 ,$50.00 ,Salt added to food
+chickn_skn_q1,character,Char,50,$50.00 ,$50.00 ,Skin on chicken eaten
+meatfat_q1,character,Char,50,$50.00 ,$50.00 ,Fat on meat eaten
+meat_charbroil_q1,character,Char,50,$50.00 ,$50.00 ,Meat charbroiled/fried
+meat_cooked_q1,character,Char,50,$50.00 ,$50.00 ,Meat cooked
+alchl_g_day18_22,numeric,Num,8,20.1,20.1,"Grams per day of alcohol, age 18-22"
+alchl_g_day30_35,numeric,Num,8,20.1,20.1,"Grams per day of alcohol, age 30-35"
+alchl_g_dayrecen,numeric,Num,8,20.1,20.1,"Grams per day of alcohol, past year"
+beer_g_day18_22,numeric,Num,8,20.1,20.1,"Grams per day of beer, age 18-22"
+wine_g_day18_22,numeric,Num,8,20.1,20.1,"Grams per day of wine, age 18-22"
+liqu_g_day18_22,numeric,Num,8,20.1,20.1,"Grams per day of liquor, age 18-22"
+beer_g_day30_35,numeric,Num,8,20.1,20.1,"Grams per day of beer, age 30-35"
+wine_g_day30_35,numeric,Num,8,20.1,20.1,"Grams per day of wine, age 30-35"
+liqu_g_day30_35,numeric,Num,8,20.1,20.1,"Grams per day of liquor, age 30-35"
+beer_g_dayrecen,numeric,Num,8,20.1,20.1,"Grams per day of beer, past year"
+wine_g_dayrecen,numeric,Num,8,20.1,20.1,"Grams per day of wine, past year"
+liqu_g_dayrecen,numeric,Num,8,20.1,20.1,"Grams per day of liquor, past year"
+alchl_analyselig,numeric,Num,8,11.,11.,Eligible for alcohol analysis (restrictive def)
+alchl_analyscat,numeric,Num,8,11.,11.,Cat of alcohol g/d past yr for bc analysis
+smoke_lifeexpo,numeric,Num,8,20.1,20.1,Lifetime exposure to smoke
+smoke_group,numeric,Num,8,11.,11.,Smoking group
+life_exposure_smk,numeric,Num,8,11.,11.,"Groups: no exposure, quartiles of lifetime exposure to smoke (LES)"
+smoke_statcat,numeric,Num,8,11.,11.,Smoking status categories
+smoke_expocat,numeric,Num,8,11.,11.,Smoking exposure categories
+passmok_expocat,numeric,Num,8,11.,11.,Passive smoke exposure categories
+cig_age1st,numeric,Num,8,11.,11.,Age first smoked
+cig_agelast,numeric,Num,8,11.,11.,Age last smoked
+smoke_totyrs,numeric,Num,8,20.1,20.1,Total years smoked
+smoke_totpackyrs,numeric,Num,8,20.1,20.1,Total pack years of smoking
+smoke_yrs_quit,numeric,Num,8,20.1,20.1,Total years since quit smoking
+smokeb4preg_yrs,numeric,Num,8,11.,11.,Total years smoked prior pregnancy
+smokeafpreg_yrs,numeric,Num,8,11.,11.,Total years smoked post pregnancy
+smoke_1stpreg,numeric,Num,8,11.,11.,Smoking in relation to first pregnancy categories
+cig_day_avg,numeric,Num,8,20.1,20.1,Avg number of cigarettes smoked per day
+shsmok_child,character,Char,50,$50.00 ,$50.00 ,Child exposure
+shsmok_adult,character,Char,50,$50.00 ,$50.00 ,Adult exposure
+shsmok_child_hm,character,Char,50,$50.00 ,$50.00 ,Child home exposure
+shsmok_adult_hm,character,Char,50,$50.00 ,$50.00 ,Adult home exposure
+shsmok_child_wrk,character,Char,50,$50.00 ,$50.00 ,Child work exposure
+shsmok_adult_wrk,character,Char,50,$50.00 ,$50.00 ,Adult work exposure
+shsmok_child_oth,character,Char,50,$50.00 ,$50.00 ,Child other exposure
+shsmok_adult_oth,character,Char,50,$50.00 ,$50.00 ,Adult other exposure
+shsmok_any,character,Char,50,$50.00 ,$50.00 ,Any exposure
+shsmok_any_hm,character,Char,50,$50.00 ,$50.00 ,Any home exposure
+shsmok_any_wrk,character,Char,50,$50.00 ,$50.00 ,Any work exposure
+shsmok_any_oth,character,Char,50,$50.00 ,$50.00 ,Any other exposure
+shsmok_any_yrs,numeric,Num,8,20.1,20.1,Any years ets exposure 0:non- exposed
+shsmok_adult_yrs,numeric,Num,8,20.1,20.1,Adult years ets exposure 0:non- exposed
+shsmok_child_yrs,numeric,Num,8,20.1,20.1,Child years ets exposure 0:non- exposed
+shsmok_any_sev,numeric,Num,8,20.1,20.1,Any severity-years exposure 0:non-exposed
+shsmok_adult_sev,numeric,Num,8,20.1,20.1,Adult severity-years exposure 0:non-exposed
+shsmok_child_sev,numeric,Num,8,20.1,20.1,Child severity-years exposure 0:non-exposed
+shsmok_any_int,numeric,Num,8,20.1,20.1,Any intensity ets exposure (summed) 0:non-exposed
+shsmok_adult_int,numeric,Num,8,20.1,20.1,Adult intensity ets exposure (summed) 0:non-exposed
+shsmok_child_int,numeric,Num,8,20.1,20.1,Child intensity ets exposure (summed) 0:non-exposed
+preg_total_q2,character,Char,50,$50.00 ,$50.00 ,How many times have you been pregnant?
+preg_snceq1_no,character,Char,50,$50.00 ,$50.00 ,Pregnancies since last survey-none
+preg_snceq1_live,character,Char,50,$50.00 ,$50.00 ,Pregnancies since last survey-live birth
+preg_snceq1_miss,character,Char,50,$50.00 ,$50.00 ,Pregnancies since last survey-miscarriage
+preg_snceq1_abor,character,Char,50,$50.00 ,$50.00 ,Pregnancies since last survey-induced abortion
+preg_snceq1_ecto,character,Char,50,$50.00 ,$50.00 ,Pregnancies since last survey-ectopic preg
+preg_snceq1_stil,character,Char,50,$50.00 ,$50.00 ,Pregnancies since last survey-stillbirth
+preg_snceq1_curr,character,Char,50,$50.00 ,$50.00 ,Pregnancies since last survey-currently preg
+preg_nausea_num,character,Char,50,$50.00 ,$50.00 ,How many pregs have you had nausea/vomiting?
+preg_nausea_trt,character,Char,50,$50.00 ,$50.00 ,Have you received treatment for nausea/vomiting?
+preg_recen_trt,character,Char,50,$50.00 ,$50.00 ,Did you need treatment for most recent preg?
+preeclamp_all,character,Char,50,$50.00 ,$50.00 ,"In all pregs, were you diagnosed w/pre- eclampsia?"
+preeclamp_recen,character,Char,50,$50.00 ,$50.00 ,Were you diagnosed for most recent preg?
+mammo_ovr20,character,Char,50,$50.00 ,$50.00 ,How many times had mammogram after age 20?
+xrayribs_undr20,character,Char,50,$50.00 ,$50.00 ,How many times x-ray for broken ribs before 20?
+xrayribs_ovr20,character,Char,50,$50.00 ,$50.00 ,How many times x-ray for broken ribs after 20?
+xrayback_undr20,character,Char,50,$50.00 ,$50.00 ,How many times x-ray for chest/back before 20?
+xrayback_ovr20,character,Char,50,$50.00 ,$50.00 ,How many times x-ray for chest/back after 20?
+xraychest_undr20,character,Char,50,$50.00 ,$50.00 ,How many times x-ray for chest (ht/lung) before 20?
+xraychest_ovr20,character,Char,50,$50.00 ,$50.00 ,How many times x-ray for chest (ht/lung) after 20?
+xraygi_undr20,character,Char,50,$50.00 ,$50.00 ,How many times x-ray for upper/lwr gi before 20?
+xraygi_ovr20,character,Char,50,$50.00 ,$50.00 ,How many times x-ray for upper/lwr gi after 20?
+xrayspine_undr20,character,Char,50,$50.00 ,$50.00 ,How many times x-ray for spinal/back before 20?
+xrayspine_ovr20,character,Char,50,$50.00 ,$50.00 ,How many times x-ray for spinal/back after 20?
+xraykidny_undr20,character,Char,50,$50.00 ,$50.00 ,How many times x-ray for kidney/ivp before 20?
+xraykidny_ovr20,character,Char,50,$50.00 ,$50.00 ,How many times x-ray for kidney/ivp after 20?
+fluorosco_undr20,character,Char,50,$50.00 ,$50.00 ,How many times fluoroscopy before 20?
+fluorosco_ovr20,character,Char,50,$50.00 ,$50.00 ,How many times fluoroscopy after 20?
+ctscan_undr20,character,Char,50,$50.00 ,$50.00 ,How many times ct scan before 20?
+ctscan_ovr20,character,Char,50,$50.00 ,$50.00 ,How many times ct scan after 20?
+radiat_th_undr20,character,Char,50,$50.00 ,$50.00 ,Ever received radiation treatment for med probs?
+butt_avg_q2,numeric,Num,8,20.1,20.1,Average of bdbutt1 and bdbutt2
+waist_avg_q2,numeric,Num,8,20.1,20.1,Average of bdwaist1 and bdwaist2
+waisthip_ratio_q2,numeric,Num,8,20.1,20.1,Waist to hip ratio calc as waist/hip
+waisthip_elig,character,Char,50,$50.00 ,$50.00 ,Indicator of waist hip eligibility
+employ_fultch_q3,character,Char,50,$50.00 ,$50.00 ,Currently full time teaching?
+employ_prttch_q3,character,Char,50,$50.00 ,$50.00 ,Currently part time teaching?
+employ_fulschl_q3,character,Char,50,$50.00 ,$50.00 ,Currently full time other school job?
+employ_prtschl_q3,character,Char,50,$50.00 ,$50.00 ,Currently part time other school job?
+employ_fuloth_q3,character,Char,50,$50.00 ,$50.00 ,Currently full time employment not school?
+employ_prtoth_q3,character,Char,50,$50.00 ,$50.00 ,Currently part time employment not school?
+employ_self_q3,character,Char,50,$50.00 ,$50.00 ,Currently self employed?
+employ_retired_q3,character,Char,50,$50.00 ,$50.00 ,Currently retired?
+employ_none_q3,character,Char,50,$50.00 ,$50.00 ,Currently unemployed?
+employ_homemak_q3,character,Char,50,$50.00 ,$50.00 ,Currently homemaker?
+employ_disabl_q3,character,Char,50,$50.00 ,$50.00 ,Currently disabled?
+lastjob_yrssnce,character,Char,50,$50.00 ,$50.00 ,Number of years since last worked?
+currjob_learning,character,Char,50,$50.00 ,$50.00 ,Learn new things in current job?
+currjob_repetitv,character,Char,50,$50.00 ,$50.00 ,Repetitive work in current job?
+currjob_creative,character,Char,50,$50.00 ,$50.00 ,Creative in current job?
+currjob_decision,character,Char,50,$50.00 ,$50.00 ,Make a lot of decisions in current job?
+currjob_highskil,character,Char,50,$50.00 ,$50.00 ,High level of skill in current job?
+currjob_lowfree,character,Char,50,$50.00 ,$50.00 ,Little freedom in current job?
+currjob_varied,character,Char,50,$50.00 ,$50.00 ,Do a variety of things in current job?
+currjob_lotofsay,character,Char,50,$50.00 ,$50.00 ,A lot of say in current job?
+currjob_develop,character,Char,50,$50.00 ,$50.00 ,Opportunity to develop in current job?
+currjob_workfast,character,Char,50,$50.00 ,$50.00 ,Work fast in current job?
+currjob_workhard,character,Char,50,$50.00 ,$50.00 ,Work hard in current job?
+currjob_physical,character,Char,50,$50.00 ,$50.00 ,Physical effort in current job?
+currjob_notexces,character,Char,50,$50.00 ,$50.00 ,Not excessive work in current job?
+currjob_givntime,character,Char,50,$50.00 ,$50.00 ,Enough time in current job?
+currjob_secure,character,Char,50,$50.00 ,$50.00 ,Good job security in current job?
+currjob_feelsafe,character,Char,50,$50.00 ,$50.00 ,Feel safe in current job?
+currjob_noconfli,character,Char,50,$50.00 ,$50.00 ,Free of conflicting demands?
+currjob_competnt,character,Char,50,$50.00 ,$50.00 ,Competent people in current job?
+currjob_interest,character,Char,50,$50.00 ,$50.00 ,People take an interest in my in job?
+currjob_friendly,character,Char,50,$50.00 ,$50.00 ,Friendly people in current job?
+currjob_helpful,character,Char,50,$50.00 ,$50.00 ,Helpful people in current job?
+currjob_concern,character,Char,50,$50.00 ,$50.00 ,Current supervisor concerned for staff?
+currjob_attentiv,character,Char,50,$50.00 ,$50.00 ,Current supervisor pays attention?
+currjob_supvhelp,character,Char,50,$50.00 ,$50.00 ,Current supervisor helpful?
+currjob_supvppl,character,Char,50,$50.00 ,$50.00 ,Current supervisor gets people together?
+jobabsent_times,character,Char,50,$50.00 ,$50.00 ,Times ill from work in last year
+soc_relativ_num,character,Char,50,$50.00 ,$50.00 ,Number close relatives
+soc_friend_num,character,Char,50,$50.00 ,$50.00 ,Number close friends
+soc_see_num,character,Char,50,$50.00 ,$50.00 ,Number social contacts see once a month
+soc_talk_num,character,Char,50,$50.00 ,$50.00 ,Number contacts talk to once a month
+soc_relig_times,character,Char,50,$50.00 ,$50.00 ,Times participate in religious groups
+soc_othgrp_times,character,Char,50,$50.00 ,$50.00 ,Times participate in other groups
+househld_num,character,Char,50,$50.00 ,$50.00 ,People in household (excl. self)
+househld_kid_num,character,Char,50,$50.00 ,$50.00 ,Children 17 or younger in household
+marital_status_q3,character,Char,50,$50.00 ,$50.00 ,Marital status at 3rd questionnaire
+care_partner,character,Char,50,$50.00 ,$50.00 ,How much partner care about you?
+care_family,character,Char,50,$50.00 ,$50.00 ,How much family care about you?
+care_friends,character,Char,50,$50.00 ,$50.00 ,How much friends care about you?
+undrstnd_partner,character,Char,50,$50.00 ,$50.00 ,How much partner understand you?
+undrstnd_family,character,Char,50,$50.00 ,$50.00 ,How much family understand you?
+undrstnd_friends,character,Char,50,$50.00 ,$50.00 ,How much friends understand you?
+rely_partner,character,Char,50,$50.00 ,$50.00 ,How much can rely on partner for help?
+rely_family,character,Char,50,$50.00 ,$50.00 ,How much can rely on family for help?
+rely_friends,character,Char,50,$50.00 ,$50.00 ,How much can rely on friends for help?
+open_partner,character,Char,50,$50.00 ,$50.00 ,How much can you open up to partner?
+open_family,character,Char,50,$50.00 ,$50.00 ,How much can you open up to family?
+open_friends,character,Char,50,$50.00 ,$50.00 ,How much can you open up to friends?
+demand_partner,character,Char,50,$50.00 ,$50.00 ,How often partner make demands on you?
+demand_family,character,Char,50,$50.00 ,$50.00 ,How often family make demands on you?
+demand_friends,character,Char,50,$50.00 ,$50.00 ,How often friends make demands on you?
+crit_partner,character,Char,50,$50.00 ,$50.00 ,How often does partner criticize you?
+crit_family,character,Char,50,$50.00 ,$50.00 ,How often does family criticize you?
+crit_friends,character,Char,50,$50.00 ,$50.00 ,How often do friends criticize you?
+letdown_partner,character,Char,50,$50.00 ,$50.00 ,How often does partner let you down?
+letdown_family,character,Char,50,$50.00 ,$50.00 ,How often does family let you down?
+letdown_friends,character,Char,50,$50.00 ,$50.00 ,How often do friends let you down?
+annoy_partner,character,Char,50,$50.00 ,$50.00 ,How often partner get on your nerves?
+annoy_family,character,Char,50,$50.00 ,$50.00 ,How often family get on your nerves?
+annoy_friends,character,Char,50,$50.00 ,$50.00 ,How often friends get on your nerves?
+feel_top,character,Char,50,$50.00 ,$50.00 ,How often feel on top of the world?
+feel_unhappy,character,Char,50,$50.00 ,$50.00 ,How often feel very unhappy?
+feel_bored,character,Char,50,$50.00 ,$50.00 ,How often do you feel bored?
+feel_excited,character,Char,50,$50.00 ,$50.00 ,How often do you feel excited?
+feel_hardbeclose,character,Char,50,$50.00 ,$50.00 ,How often feel hard to be close?
+feel_restless,character,Char,50,$50.00 ,$50.00 ,How often do you feel restless?
+feel_leftout_q3,character,Char,50,$50.00 ,$50.00 ,How often do you feel left out?
+feel_upsetcrit,character,Char,50,$50.00 ,$50.00 ,How often feel upset when criticized?
+feel_lonely,character,Char,50,$50.00 ,$50.00 ,How often do you feel very lonely?
+feel_compliment,character,Char,50,$50.00 ,$50.00 ,How often feel proud when complimented?
+feel_keepdistant,character,Char,50,$50.00 ,$50.00 ,How often feel keep people at distance?
+feel_goingmyway,character,Char,50,$50.00 ,$50.00 ,How often feel things going my way?
+feel_accomplish,character,Char,50,$50.00 ,$50.00 ,How often pleased for accomplishment?
+happy,character,Char,50,$50.00 ,$50.00 ,How happy are you these days?
+oralcntr_ever_q3,character,Char,50,$50.00 ,$50.00 ,Ever used oral contraceptives?
+oralcntr_usebyq3,numeric,Num,8,11.,11.,Q3 oral contraceptives (uses q1)
+oralcntr_mo,character,Char,50,$50.00 ,$50.00 ,How many months oral contraceptives?
+period_nostop,character,Char,50,$50.00 ,$50.00 ,Reasons menstrual periods haven't stopped
+whyperiodstop_q3,character,Char,50,$50.00 ,$50.00 ,Reasons menstrual periods have stopped
+period_stopyear,character,Char,50,$50.00 ,$50.00 ,Year period stopped
+hormo_meno,character,Char,50,$50.00 ,$50.00 ,Ever used female hormones for menopause?
+hormo_mo,character,Char,50,$50.00 ,$50.00 ,How many months used female hormones?
+hormo_lastmo,character,Char,50,$50.00 ,$50.00 ,Used female hormones in last month?
+htcomb_4yrs_no,character,Char,50,$50.00 ,$50.00 ,Did not use combined hrt past 4 yrs?
+htcomb_4yrs_ppro,character,Char,50,$50.00 ,$50.00 ,Used prempro combined hrt past 4 yrs?
+htcomb_4yrs_ppha,character,Char,50,$50.00 ,$50.00 ,Used premphase combined hrt past 4 yrs?
+htcomb_4yrs_oth,character,Char,50,$50.00 ,$50.00 ,Used other combined hrt past 4 yrs?
+estro_last4yrs,character,Char,50,$50.00 ,$50.00 ,Used estrogen past 4 yrs?
+prog_last4yrs,character,Char,50,$50.00 ,$50.00 ,Used progesterone past 4 yrs?
+estro_days_mo,character,Char,50,$50.00 ,$50.00 ,Number days/month use estrogen hrt
+prog_days_mo_q3,character,Char,50,$50.00 ,$50.00 ,Number days/month use progesterone hrt
+htcomb_4yrs,numeric,Num,8,11.,11.,Combined hormone therapy frequency past 4 years
+asthma_q3,character,Char,50,$50.00 ,$50.00 ,Doctor ever said you have asthma?
+asthma_age_q3,character,Char,50,$50.00 ,$50.00 ,Age when doctor diagnosed asthma
+asthma_diag_age,character,Char,50,$50.00 ,$50.00 ,Age when doctor diagnosed asthma
+asthmasym_not_q3,character,Char,50,$50.00 ,$50.00 ,Asthma symptoms no trouble
+asthmasym_mild_q3,character,Char,50,$50.00 ,$50.00 ,Asthma symptoms mild
+asthmasym_meds_q3,character,Char,50,$50.00 ,$50.00 ,Asthma symptoms took medication
+asthmasym_doc_q3,character,Char,50,$50.00 ,$50.00 ,Asthma symptoms urgent visit to doctor
+asthmasym_hosp_q3,character,Char,50,$50.00 ,$50.00 ,Asthma symptoms spent night in hospital
+asthmasym_nmild,character,Char,50,$50.00 ,$50.00 ,Current asthma symptoms - excludes mildest
+asthmasym_ymild,character,Char,50,$50.00 ,$50.00 ,Current asthma symptoms - includes mildest
+asthma_severity,character,Char,50,$50.00 ,$50.00 ,Asthma severity
+insulin_daily,character,Char,50,$50.00 ,$50.00 ,Daily insulin for 2mths?
+oralhyp_daily,character,Char,50,$50.00 ,$50.00 ,Daily oral hypoglycemic for 2mths?
+diuret_daily,character,Char,50,$50.00 ,$50.00 ,Daily thiazide diuretic for 2mths?
+lasix_daily,character,Char,50,$50.00 ,$50.00 ,Daily lasix for 2mths?
+calciumblck_daily,character,Char,50,$50.00 ,$50.00 ,Daily calcium blocker for 2mths?
+aceinhb_daily,character,Char,50,$50.00 ,$50.00 ,Daily ace inhibitor for 2mths?
+othhbp_daily,character,Char,50,$50.00 ,$50.00 ,Daily other hi bpr drug for 2mths?
+tagam_daily,character,Char,50,$50.00 ,$50.00 ,Daily cimetidine (tagamet) for 2mths?
+h2blck_daily,character,Char,50,$50.00 ,$50.00 ,Daily other h2 blocker for 2mths?
+tamox_daily,character,Char,50,$50.00 ,$50.00 ,Daily tamoxifen for 2mths?
+ralox_daily,character,Char,50,$50.00 ,$50.00 ,Daily raloxifene for 2mths?
+steroid_daily,character,Char,50,$50.00 ,$50.00 ,Daily oral steroids for 2mths?
+brondil_daily,character,Char,50,$50.00 ,$50.00 ,Daily inhaled bronchodilator for 2mths?
+cholmed_daily,character,Char,50,$50.00 ,$50.00 ,Daily cholesterol-lower drug for 2mths?
+antidep_daily,character,Char,50,$50.00 ,$50.00 ,Daily antidepressant for 2mths?
+lr_handed,character,Char,50,$50.00 ,$50.00 ,Write with left or right hand?
+currres_yrs,character,Char,50,$50.00 ,$50.00 ,Years lived at current residence?
+calires_yrs,character,Char,50,$50.00 ,$50.00 ,Years lived in total in california?
+bdrmppl_6mo,character,Char,50,$50.00 ,$50.00 ,How many people share bedroom at age 6 months?
+bdrmppl_age3,character,Char,50,$50.00 ,$50.00 ,How many people share bedroom at age 3?
+bdrmppl_age5,character,Char,50,$50.00 ,$50.00 ,How many people share bedroom at age 5?
+bdrmppl_age12,character,Char,50,$50.00 ,$50.00 ,How many people share bedroom at age 12?
+bdrmppl_age30,character,Char,50,$50.00 ,$50.00 ,How many people share bedroom at age 30?
+bdrmppl_now,character,Char,50,$50.00 ,$50.00 ,How many people share bedroom now?
+daycare_6mo,character,Char,50,$50.00 ,$50.00 ,Did you go to day care at age 6 months?
+daycare_age3,character,Char,50,$50.00 ,$50.00 ,Did you go to day care at age 3?
+daycare_age5,character,Char,50,$50.00 ,$50.00 ,Did you go to day care at age 5?
+pet_6mo,character,Char,50,$50.00 ,$50.00 ,Did you have a cat or dog at home at age 6 months?
+pet_age3,character,Char,50,$50.00 ,$50.00 ,Did you have a cat or dog at home at age 3?
+pet_age5,character,Char,50,$50.00 ,$50.00 ,Did you have a cat or dog at home at age 5?
+pet_age12,character,Char,50,$50.00 ,$50.00 ,Did you have a cat or dog at home at age 12?
+pet_age30,character,Char,50,$50.00 ,$50.00 ,Did you have a cat or dog at home at age 30?
+pet_now,character,Char,50,$50.00 ,$50.00 ,Did you have a cat or dog at home now?
+hoofanm_6mo,character,Char,50,$50.00 ,$50.00 ,Live 1/2 mile from hoofed animals at age 6 months?
+hoofanm_age3,character,Char,50,$50.00 ,$50.00 ,Live 1/2 mile from hoofed animals at age 3?
+hoofanm_age5,character,Char,50,$50.00 ,$50.00 ,Live 1/2 mile from hoofed animals at age 5?
+hoofanm_age12,character,Char,50,$50.00 ,$50.00 ,Live 1/2 mile from hoofed animals at age 12?
+hoofanm_age30,character,Char,50,$50.00 ,$50.00 ,Live 1/2 mile from hoofed animals at age 30?
+hoofanm_now,character,Char,50,$50.00 ,$50.00 ,Live 1/2 mile from hoofed animals now?
+hmrent_6mo,character,Char,50,$50.00 ,$50.00 ,Lived in rented house/apt at age 6 months?
+hmrent_age3,character,Char,50,$50.00 ,$50.00 ,Lived in rented house/apt at age 3?
+hmrent_age5,character,Char,50,$50.00 ,$50.00 ,Lived in rented house/apt at age 5?
+hmrent_age12,character,Char,50,$50.00 ,$50.00 ,Lived in rented house/apt at age 12?
+hmrent_age30,character,Char,50,$50.00 ,$50.00 ,Lived in rented house/apt at age 30?
+hmrent_now,character,Char,50,$50.00 ,$50.00 ,Live in rented house/apt now?
+ruralurb_6mo,character,Char,50,$50.00 ,$50.00 ,Lived in rural/urban area at age 6 months?
+ruralurb_age3,character,Char,50,$50.00 ,$50.00 ,Lived in rural/urban area at age 3?
+ruralurb_age5,character,Char,50,$50.00 ,$50.00 ,Lived in rural/urban area at age 5?
+ruralurb_age12,character,Char,50,$50.00 ,$50.00 ,Lived in rural/urban area at age 12?
+ruralurb_age30,character,Char,50,$50.00 ,$50.00 ,Lived in rural/urban area at age 30?
+ruralurb_now,character,Char,50,$50.00 ,$50.00 ,Live in rural/urban area now?
+bbaspr_perwk_q4,character,Char,50,$50.00 ,$50.00 ,Num baby aspirin per week regularly?
+aspr_perwk_q4,character,Char,50,$50.00 ,$50.00 ,Num aspirin per week regularly?
+ibupf_perwk_q4,character,Char,50,$50.00 ,$50.00 ,Num ibuprofen per week regularly?
+nsaid_perwk_q4,character,Char,50,$50.00 ,$50.00 ,Num other nsaid per week regularly?
+cox2_perwk_q4,character,Char,50,$50.00 ,$50.00 ,Num cox-2 inhibitor per week regularly?
+actem_perwk_q4,character,Char,50,$50.00 ,$50.00 ,Num acetaminophen per wk regularly?
+stopbbaspr,character,Char,50,$50.00 ,$50.00 ,Did you stop baby aspirin tablets?
+stopaspr,character,Char,50,$50.00 ,$50.00 ,Did you stop aspirin tablets?
+stopibupf,character,Char,50,$50.00 ,$50.00 ,Did you stop ibuprofen tablets?
+stopnsaid,character,Char,50,$50.00 ,$50.00 ,Did you stop other nsaid tablets?
+stopcox2,character,Char,50,$50.00 ,$50.00 ,Did you stop cox-2 inhibitor tablets?
+stopacetm,character,Char,50,$50.00 ,$50.00 ,Did you stop acetaminophen tablets?
+stopbbaspr_impr,character,Char,50,$50.00 ,$50.00 ,Stop baby aspirin because cond improved?
+stopaspr_impr,character,Char,50,$50.00 ,$50.00 ,Stop aspirin because cond improved?
+stopibupf_impr,character,Char,50,$50.00 ,$50.00 ,Stop ibuprofen because cond improved?
+stopnsaid_impr,character,Char,50,$50.00 ,$50.00 ,Stop other nsaid because cond improved?
+stopcox2_impr,character,Char,50,$50.00 ,$50.00 ,Stop cox-2 inhibitor because cond improved?
+stopacetm_impr,character,Char,50,$50.00 ,$50.00 ,Stop acetaminophen because cond improved?
+stopbbaspr_dnwrk,character,Char,50,$50.00 ,$50.00 ,Stop baby aspirin because didn't work?
+stopaspr_dnwrk,character,Char,50,$50.00 ,$50.00 ,Stop aspirin because didn't work?
+stopibupf_dnwrk,character,Char,50,$50.00 ,$50.00 ,Stop ibuprofen because didn't work?
+stopnsaid_dnwrk,character,Char,50,$50.00 ,$50.00 ,Stop other nsaid because didn't work?
+stopcox2_dnwrk,character,Char,50,$50.00 ,$50.00 ,Stop cox-2 inhibitor because didn't work?
+stopacetm_dnwrk,character,Char,50,$50.00 ,$50.00 ,Stop acetaminophen because didn't work?
+stopbbaspr_side,character,Char,50,$50.00 ,$50.00 ,Stop baby aspirin because side effects?
+stopaspr_side,character,Char,50,$50.00 ,$50.00 ,Stop aspirin because side effects?
+stopibupf_side,character,Char,50,$50.00 ,$50.00 ,Stop ibuprofen because side effects?
+stopnsaid_side,character,Char,50,$50.00 ,$50.00 ,Stop other nsaid because side effects?
+stopcox2_side,character,Char,50,$50.00 ,$50.00 ,Stop cox-2 inhibitor because side effects?
+stopacetm_side,character,Char,50,$50.00 ,$50.00 ,Stop acetaminophen because side effects?
+stopbbaspr_hear,character,Char,50,$50.00 ,$50.00 ,Stop baby aspirin heard of side effects?
+stopaspr_hear,character,Char,50,$50.00 ,$50.00 ,Stop aspirin heard of side effects?
+stopibupf_hear,character,Char,50,$50.00 ,$50.00 ,Stop ibuprofen heard of side effects?
+stopnsaid_hear,character,Char,50,$50.00 ,$50.00 ,Stop other nsaid heard of side effects?
+stopcox2_hear,character,Char,50,$50.00 ,$50.00 ,Stop cox-2 inhibitor heard of side effects?
+stopacetm_hear,character,Char,50,$50.00 ,$50.00 ,Stop acetaminophen heard of side effects?
+stopbbaspr_unav,character,Char,50,$50.00 ,$50.00 ,Stop baby aspirin because not available?
+stopaspr_unav,character,Char,50,$50.00 ,$50.00 ,Stop aspirin because not available?
+stopibupf_unav,character,Char,50,$50.00 ,$50.00 ,Stop ibuprofen because not available?
+stopnsaid_unav,character,Char,50,$50.00 ,$50.00 ,Stop other nsaid because not available?
+stopcox2_unav,character,Char,50,$50.00 ,$50.00 ,Stop cox-2 inhibitor because not available?
+stopacetm_unav,character,Char,50,$50.00 ,$50.00 ,Stop acetaminophen because not available?
+stopbbaspr_oth,character,Char,50,$50.00 ,$50.00 ,Stop baby aspirin because other?
+stopaspr_oth,character,Char,50,$50.00 ,$50.00 ,Stop aspirin because other?
+stopibupf_oth,character,Char,50,$50.00 ,$50.00 ,Stop ibuprofen because other?
+stopnsaid_oth,character,Char,50,$50.00 ,$50.00 ,Stop other nsaid because other?
+stopcox2_oth,character,Char,50,$50.00 ,$50.00 ,Stop cox-2 inhibitor because other?
+stopacetm_oth,character,Char,50,$50.00 ,$50.00 ,Stop acetaminophen because other?
+statin_q4,character,Char,50,$50.00 ,$50.00 ,Take statin medication in past 3 yrs?
+steroidpil_q4,character,Char,50,$50.00 ,$50.00 ,Take steroid pill in past 3 yrs?
+steroid_inh_q4,character,Char,50,$50.00 ,$50.00 ,Take inhaled steroids?
+othanti_inh_q4,character,Char,50,$50.00 ,$50.00 ,Take other inhaled anti-inflammatory?
+oral_anti_q4,character,Char,50,$50.00 ,$50.00 ,Take oral anti-inflammatory?
+brondil_inh_q4,character,Char,50,$50.00 ,$50.00 ,Take inhaled bronchodilator?
+brondil_linh_q4,character,Char,50,$50.00 ,$50.00 ,Take long-acting inhaled bronchodilator?
+abio_wks_q4,character,Char,50,$50.00 ,$50.00 ,How many weeks taken antibiotics?
+ralox_tamox_ever,character,Char,50,$50.00 ,$50.00 ,Ever used raloxifene or tamoxifen?
+ralox_mo,character,Char,50,$50.00 ,$50.00 ,Months used raloxifene?
+tamox_mo,character,Char,50,$50.00 ,$50.00 ,Months used tamoxifen?
+ralox_tamox_q4,character,Char,50,$50.00 ,$50.00 ,Currently using raloxifene or tamoxifen?
+otcount_hormprep,character,Char,50,$50.00 ,$50.00 ,Current use otc hormonal preps?
+otcount_soyestro,character,Char,50,$50.00 ,$50.00 ,Current use soy estrogen pills?
+otcount_dongquai,character,Char,50,$50.00 ,$50.00 ,Current use dong quai?
+otcount_natprog,character,Char,50,$50.00 ,$50.00 ,Current use nat prog or wild yam cream?
+otcount_blkcoho,character,Char,50,$50.00 ,$50.00 ,Current use black cohosh?
+otcount_flaxseed,character,Char,50,$50.00 ,$50.00 ,Current use flaxseed or linseed oil?
+menstrual_status_q4,character,Char,50,$50.00 ,$50.00 ,Current menstrual status?
+postmeno,character,Char,50,$50.00 ,$50.00 ,Are you post menopausal?
+agelastperiod_q4,character,Char,50,$50.00 ,$50.00 ,Age of last menstrual period?
+ht_last5yrs,character,Char,50,$50.00 ,$50.00 ,Used hormone therapy in past 5 yrs?
+ht_last5yrs_mo,character,Char,50,$50.00 ,$50.00 ,How many months used ht in past 5 yrs?
+ht_ppro_offwht,character,Char,50,$50.00 ,$50.00 ,Used prempro off-white?
+ht_ppro_gold,character,Char,50,$50.00 ,$50.00 ,Used prempro gold?
+ht_ppro_peach,character,Char,50,$50.00 ,$50.00 ,Used prempro peach?
+ht_ppro_blue,character,Char,50,$50.00 ,$50.00 ,Used prempro blue?
+ht_ppro_unknwn,character,Char,50,$50.00 ,$50.00 ,Used prempro unknown color?
+ht_ppha,character,Char,50,$50.00 ,$50.00 ,Used premphase?
+ht_combiptch,character,Char,50,$50.00 ,$50.00 ,Used combipatch?
+ht_femhrt,character,Char,50,$50.00 ,$50.00 ,Used femhrt?
+ht_estratest,character,Char,50,$50.00 ,$50.00 ,Used estratest?
+ht_othcom,character,Char,50,$50.00 ,$50.00 ,Used other combined?
+ht_nocom,character,Char,50,$50.00 ,$50.00 ,Did not use combined?
+premarn_grn_q4,character,Char,50,$50.00 ,$50.00 ,Used premarin green?
+premarn_blue_q4,character,Char,50,$50.00 ,$50.00 ,Used premarin blue?
+premarn_maroon_q4,character,Char,50,$50.00 ,$50.00 ,Used premarin maroon?
+premarn_wht_q4,character,Char,50,$50.00 ,$50.00 ,Used premarin white?
+premarn_orn_q4,character,Char,50,$50.00 ,$50.00 ,Used premarin orange?
+premarn_unknwn_q4,character,Char,50,$50.00 ,$50.00 ,Used premarin unknown color?
+ht_estrace,character,Char,50,$50.00 ,$50.00 ,Used estrace?
+ht_ogen,character,Char,50,$50.00 ,$50.00 ,Used ogen?
+ht_othorale,character,Char,50,$50.00 ,$50.00 ,Used other oral estrogen?
+ht_no_orale,character,Char,50,$50.00 ,$50.00 ,Did not use oral estrogen?
+ht_estropatch,character,Char,50,$50.00 ,$50.00 ,Used patch estrogen?
+ht_estrovag,character,Char,50,$50.00 ,$50.00 ,Used vaginal estrogen?
+ht_no_othestro,character,Char,50,$50.00 ,$50.00 ,Did not use other estrogen?
+provera_2_5mg_q4,character,Char,50,$50.00 ,$50.00 ,Used provera 2.5 mg?
+provera_5_9mg_q4,character,Char,50,$50.00 ,$50.00 ,Used provera 5-9 mg?
+provera_10mg_q4,character,Char,50,$50.00 ,$50.00 ,Used provera 10 mg?
+provera_ovr10mg_q4,character,Char,50,$50.00 ,$50.00 ,Used provera more than 10 mg?
+provera_dk_q4,character,Char,50,$50.00 ,$50.00 ,Used provera unknown dose?
+ht_progestin_oth,character,Char,50,$50.00 ,$50.00 ,Used other progestin?
+ht_noprog_oral,character,Char,50,$50.00 ,$50.00 ,Did not use oral prog?
+ht_orale_days_mo,character,Char,50,$50.00 ,$50.00 ,Days per month of oral estrogen?
+ht_oralp_days_mo,character,Char,50,$50.00 ,$50.00 ,Days per month of oral prog?
+ht_q4,character,Char,50,$50.00 ,$50.00 ,Current use of hormone therapy?
+diab_pre_q4,character,Char,50,$50.00 ,$50.00 ,Ever told have pre-diabetes?
+diab_gest_q4,character,Char,50,$50.00 ,$50.00 ,Ever told have gestational diabetes?
+diab_1_2_q4,character,Char,50,$50.00 ,$50.00 ,Ever told have type 1 or 2 diabetes?
+diab_pre_age_q4,character,Char,50,$50.00 ,$50.00 ,Age first pre-diabetes?
+diab_gest_age_q4,character,Char,50,$50.00 ,$50.00 ,Age first gestational diabetes?
+diab_1_2_age_q4,character,Char,50,$50.00 ,$50.00 ,Age first type 1 or 2 diabetes?
+diab_insulin,character,Char,50,$50.00 ,$50.00 ,Currently taking insulin?
+diab_insulin_yrs,character,Char,50,$50.00 ,$50.00 ,Years taking insulin?
+diab_oralhyp,character,Char,50,$50.00 ,$50.00 ,Currently taking oral hypoglycemic pills?
+diab_oralhyp_yrs,character,Char,50,$50.00 ,$50.00 ,Years taking oral hypoglycemic pills?
+asthma_diag_q4,character,Char,50,$50.00 ,$50.00 ,Doctor ever said you have asthma?
+asthma_age_q4,character,Char,50,$50.00 ,$50.00 ,Age when doctor diagnosed asthma
+asthma_diagyr_q4,character,Char,50,$50.00 ,$50.00 ,Year first diagnosed asthma
+asthmasym_freq_q4,character,Char,50,$50.00 ,$50.00 ,Frequency of asthma symptoms
+asthmasym_not_q4,character,Char,50,$50.00 ,$50.00 ,Asthma symptoms no trouble
+asthmasym_mild_q4,character,Char,50,$50.00 ,$50.00 ,Asthma symptoms mild
+asthmasym_meds_q4,character,Char,50,$50.00 ,$50.00 ,Asthma symptoms took medication
+asthmasym_doc_q4,character,Char,50,$50.00 ,$50.00 ,Asthma symptoms urgent visit to doctor
+asthmasym_hosp_q4,character,Char,50,$50.00 ,$50.00 ,Asthma symptoms spent night in hospital
+pneu_ever,character,Char,50,$50.00 ,$50.00 ,Ever had pneumonia?
+hayfever_ever,character,Char,50,$50.00 ,$50.00 ,Ever had hay fever?
+parkins_ever_q4,character,Char,50,$50.00 ,$50.00 ,Ever had parkinson's disease?
+parkins_age_q4_raw,numeric,Num,8,11.,11.,Age of parkinson's disease
+moonucl_ever,character,Char,50,$50.00 ,$50.00 ,Ever had infectious mononucleosis?
+endomtrs_ever,character,Char,50,$50.00 ,$50.00 ,Ever had endometriosis?
+mastitis_ever,character,Char,50,$50.00 ,$50.00 ,Number of times had mastitis
+strnex_hrs_q4,character,Char,50,$50.00 ,$50.00 ,Strenuous exercise hours per day
+strnex_mo_q4,character,Char,50,$50.00 ,$50.00 ,Strenuous exercise months per year
+strnex_avg_q4,numeric,Num,8,20.1,20.1,"Past 3yrs avg hrs/wk/month of strenuous activity, from q4"
+allex_avg_q4,numeric,Num,8,20.1,20.1,Strenuous + moderate avg hrs per wk per yr during past 3yrs (q4)
+modex_hrs_q4,character,Char,50,$50.00 ,$50.00 ,Moderate exercise hours per day
+modex_mo_q4,character,Char,50,$50.00 ,$50.00 ,Moderate exercise months per year
+modex_avg_q4,numeric,Num,8,20.1,20.1,"Past 3yrs avg hrs/wk/month of moderate activity, from q4"
+stairs_perday,character,Char,50,$50.00 ,$50.00 ,Flights of stairs climbed per day
+limitd_vigact_q4,character,Char,50,$50.00 ,$50.00 ,Limited in vigorous activs?
+limitd_modact_q4,character,Char,50,$50.00 ,$50.00 ,Limited in moderate activs?
+limitd_stairs_q4,character,Char,50,$50.00 ,$50.00 ,Limited in climbing several flights stairs?
+limitd_1stair_q4,character,Char,50,$50.00 ,$50.00 ,Limited in climbing 1 flight of stairs?
+limitd_wlkmile_q4,character,Char,50,$50.00 ,$50.00 ,Limited in walking more than a mile?
+limitd_wlkblcks_q4,character,Char,50,$50.00 ,$50.00 ,Limited in walking several blocks?
+limitd_wlk1blck_q4,character,Char,50,$50.00 ,$50.00 ,Limited in walking 1 block?
+limitd_carrying_q4,character,Char,50,$50.00 ,$50.00 ,Limited in carrying groceries?
+limitd_bending_q4,character,Char,50,$50.00 ,$50.00 ,"Limited in bending, kneeling, stooping?"
+limitd_bathing_q4,character,Char,50,$50.00 ,$50.00 ,Limited in bathing or dressing yourself?
+weight_q4,numeric,Num,8,11.,11.,Weight today q4
+bmi_q4,numeric,Num,8,20.1,20.1,Body mass index at Q4 (q4 wt kg/(q1 ht m)**2)
+lost20lb_times,character,Char,50,$50.00 ,$50.00 ,Number times lost 20+ pounds in a year
+gain20lb_times,character,Char,50,$50.00 ,$50.00 ,Number times gained 20+ pounds in a year
+bodyb50,character,Char,50,$50.00 ,$50.00 ,Usual body size of you before age 50
+bodya50,character,Char,50,$50.00 ,$50.00 ,Usual body size of you after age 50
+self_sex,character,Char,50,$50.00 ,$50.00 ,Sex male or female - self
+diet_analyselig,numeric,Num,8,11.,11.,Eligibility indicator for dietary analysis
+serv_vegs_q4,character,Char,50,$50.00 ,$50.00 ,Number of vegetable servings
+serv_fruit_q4,character,Char,50,$50.00 ,$50.00 ,Number of fruit servings
+serv_cere_q4,character,Char,50,$50.00 ,$50.00 ,Number of cold cereal servings
+lo_cheese_q4,character,Char,50,$50.00 ,$50.00 ,How often eat low-fat cheese?
+lo_yogurt_q4,character,Char,50,$50.00 ,$50.00 ,How often eat low-fat yogurt?
+lo_dressn_q4,character,Char,50,$50.00 ,$50.00 ,How often eat low-fat dressing or mayo?
+lo_icecrm_q4,character,Char,50,$50.00 ,$50.00 ,How often eat low-fat ice cream?
+lo_cake_q4,character,Char,50,$50.00 ,$50.00 ,How often eat low-fat cookies or cake?
+addsugar_q4,character,Char,50,$50.00 ,$50.00 ,How often add sugar to coffee/tea?
+addbutr_veg_q4,character,Char,50,$50.00 ,$50.00 ,How often add butter to vegetables?
+addmarg_veg_q4,character,Char,50,$50.00 ,$50.00 ,How often add margarine to vegetables?
+addbutr_brd_q4,character,Char,50,$50.00 ,$50.00 ,How often add butter to bread?
+addmarg_brd_q4,character,Char,50,$50.00 ,$50.00 ,How often add margarine to bread?
+meatfat_q4,character,Char,50,$50.00 ,$50.00 ,How often eat fat on meat?
+chickn_skn_q4,character,Char,50,$50.00 ,$50.00 ,How often eat skin on chicken?
+mulvit_reg,character,Char,50,$50.00 ,$50.00 ,Taken multivitamins reg in past year?
+vita_reg,character,Char,50,$50.00 ,$50.00 ,Taken vitamin a or beta-carotene reg in past year?
+vitc_reg,character,Char,50,$50.00 ,$50.00 ,Taken vitamin c reg in past year?
+vite_reg,character,Char,50,$50.00 ,$50.00 ,Taken vitamin e reg in past year?
+calcium_reg,character,Char,50,$50.00 ,$50.00 ,Taken calcium reg in past year?
+mulvit_freq,character,Char,50,$50.00 ,$50.00 ,How often take multivitamins?
+mulvit_yrs_q4,character,Char,50,$50.00 ,$50.00 ,How many years taken multivitamins?
+vita_freq,character,Char,50,$50.00 ,$50.00 ,How often take vitamin a or beta-carotene?
+vita_yrs_q4,character,Char,50,$50.00 ,$50.00 ,How many years taken vitamin a or beta- carotene?
+vitc_freq,character,Char,50,$50.00 ,$50.00 ,How often take vitamin c?
+vitc_yrs_q4,character,Char,50,$50.00 ,$50.00 ,How many years taken vitamin c?
+vite_freq,character,Char,50,$50.00 ,$50.00 ,How often take vitamin e?
+vite_yrs_q4,character,Char,50,$50.00 ,$50.00 ,How many years taken vitamin e?
+calcium_freq,character,Char,50,$50.00 ,$50.00 ,How often take calcium?
+calcium_yrs_q4,character,Char,50,$50.00 ,$50.00 ,How many years taken calcium?
+mulvit_miner,character,Char,50,$50.00 ,$50.00 ,Take multivitamins with minerals?
+mulvit_antiox,character,Char,50,$50.00 ,$50.00 ,Take multivitamins with extra antioxidants?
+vitc_mg,character,Char,50,$50.00 ,$50.00 ,Vitamin c as single supplement (mg)
+vite_mg,character,Char,50,$50.00 ,$50.00 ,Vitamin e as single supplement (mg)
+preg_ever_q4,character,Char,50,$50.00 ,$50.00 ,Ever pregnant?
+smokeb4preg_cig,character,Char,50,$50.00 ,$50.00 ,Before preg cigs per day
+smokedurpreg_cig,character,Char,50,$50.00 ,$50.00 ,During preg cigs per day
+smokeb4preg_no,character,Char,50,$50.00 ,$50.00 ,No-one smoked around me before pregnancy
+smokedurpreg_no,character,Char,50,$50.00 ,$50.00 ,No-one smoked around me during pregnancy
+smokeb4preg_hm,character,Char,50,$50.00 ,$50.00 ,Others at home smoked before pregnancy
+smokedurpreg_hm,character,Char,50,$50.00 ,$50.00 ,Others at home smoked during pregnancy
+smokeb4preg_wrk,character,Char,50,$50.00 ,$50.00 ,Others at work smoked before pregnancy
+smokedurpreg_wrk,character,Char,50,$50.00 ,$50.00 ,Others at work smoked during pregnancy
+smokeb4preg_oth,character,Char,50,$50.00 ,$50.00 ,Others smoked around me before pregnancy
+smokedurpreg_oth,character,Char,50,$50.00 ,$50.00 ,Others smoked around me during pregnancy
+livbirth_1stpreg,character,Char,50,$50.00 ,$50.00 ,Did first pregnancy result in a live birth?
+livbirth_ever,character,Char,50,$50.00 ,$50.00 ,Ever preg & live birth?
+smokeb4livb_cig,character,Char,50,$50.00 ,$50.00 ,Own smoking before live birth cigs per day
+smokedurlivb_cig,character,Char,50,$50.00 ,$50.00 ,Own smoking during live birth cigs per day
+smokeb4livb_no,character,Char,50,$50.00 ,$50.00 ,No-one smoked before live birth
+smokedurlivb_no,character,Char,50,$50.00 ,$50.00 ,No-one smoked during live birth
+smokeb4livb_hm,character,Char,50,$50.00 ,$50.00 ,Others at home smoked before live birth
+smokedurlivb_hm,character,Char,50,$50.00 ,$50.00 ,Others at home smoked during live birth
+smokeb4livb_wrk,character,Char,50,$50.00 ,$50.00 ,Others at work smoked before live birth
+smokedurlivb_wrk,character,Char,50,$50.00 ,$50.00 ,Others at work smoked during live birth
+smokeb4livb_oth,character,Char,50,$50.00 ,$50.00 ,Others smoked around me before live birth
+smokedurlivb_oth,character,Char,50,$50.00 ,$50.00 ,Others smoked around me during live birth
+hlthinsur_mdcare,character,Char,50,$50.00 ,$50.00 ,Medicare health insurance?
+hlthinsur_comb,character,Char,50,$50.00 ,$50.00 ,Health insurance answer combinations
+retired_q4,character,Char,50,$50.00 ,$50.00 ,Is participant retired
+retired_spous,character,Char,50,$50.00 ,$50.00 ,Is participant spouse retired
+edu_self,character,Char,50,$50.00 ,$50.00 ,Highest education - participant
+edu_self_comb,character,Char,50,$50.00 ,$50.00 ,Advanced degree combo - participant
+edu_spous,character,Char,50,$50.00 ,$50.00 ,Highest education - spouse/partner
+edu_spous_comb,character,Char,50,$50.00 ,$50.00 ,Advanced degree combo - spouse/partner
+edu_mom,character,Char,50,$50.00 ,$50.00 ,Highest education - mother
+edu_mom_comb,character,Char,50,$50.00 ,$50.00 ,Advanced degree combo - mother
+edu_dad,character,Char,50,$50.00 ,$50.00 ,Highest education - father
+edu_dad_comb,character,Char,50,$50.00 ,$50.00 ,Advanced degree combo - father
+household_income_q4,character,Char,50,$50.00 ,$50.00 ,Household annual income
+ppl_support_house_income_q4,character,Char,50,$50.00 ,$50.00 ,Number supported by household income
+minor_support_house_inc_q4,character,Char,50,$50.00 ,$50.00 ,Number of minors supported by household income
+senior_support_house_inc_q4,character,Char,50,$50.00 ,$50.00 ,Individuals over 64 supported by household income
+menstrual_status_q4mini,character,Char,50,$50.00 ,$50.00 ,Current menstrual status?
+postmeno_mini,character,Char,50,$50.00 ,$50.00 ,Are you post menopausal?
+agelastperiod_q4mini,character,Char,50,$50.00 ,$50.00 ,Age of last menstrual period?
+ht_last5yrs_mini,character,Char,50,$50.00 ,$50.00 ,Used hormone therapy in past 5 yrs?
+ht_last5yrs_mo_mini,character,Char,50,$50.00 ,$50.00 ,How many months used ht in past 5 yrs?
+ht_ppro_offwht_mini,character,Char,50,$50.00 ,$50.00 ,Used prempro off-white?
+ht_ppro_gold_mini,character,Char,50,$50.00 ,$50.00 ,Used prempro gold?
+ht_ppro_peach_mini,character,Char,50,$50.00 ,$50.00 ,Used prempro peach?
+ht_ppro_blue_mini,character,Char,50,$50.00 ,$50.00 ,Used prempro blue?
+ht_ppro_unknwn_mini,character,Char,50,$50.00 ,$50.00 ,Used prempro unknown color?
+ht_ppha_mini,character,Char,50,$50.00 ,$50.00 ,Used premphase?
+ht_combiptch_mini,character,Char,50,$50.00 ,$50.00 ,Used combipatch?
+ht_femhrt_mini,character,Char,50,$50.00 ,$50.00 ,Used femhrt?
+ht_estratest_mini,character,Char,50,$50.00 ,$50.00 ,Used estratest?
+ht_othcom_mini,character,Char,50,$50.00 ,$50.00 ,Used other combined?
+ht_nocom_mini,character,Char,50,$50.00 ,$50.00 ,Did not use combined?
+premarn_grn_q4mini,character,Char,50,$50.00 ,$50.00 ,Used premarin green?
+premarn_blue_q4mini,character,Char,50,$50.00 ,$50.00 ,Used premarin blue?
+premarn_maroon_q4mini,character,Char,50,$50.00 ,$50.00 ,Used premarin maroon?
+premarn_wht_q4mini,character,Char,50,$50.00 ,$50.00 ,Used premarin white?
+premarn_orn_q4mini,character,Char,50,$50.00 ,$50.00 ,Used premarin orange?
+premarn_unknwn_q4mini,character,Char,50,$50.00 ,$50.00 ,Used premarin unknown color?
+ht_estrace_mini,character,Char,50,$50.00 ,$50.00 ,Used estrace?
+ht_ogen_mini,character,Char,50,$50.00 ,$50.00 ,Used ogen?
+ht_othorale_mini,character,Char,50,$50.00 ,$50.00 ,Used other oral estrogen?
+ht_no_orale_mini,character,Char,50,$50.00 ,$50.00 ,Did not use oral estrogen?
+ht_estropatch_mini,character,Char,50,$50.00 ,$50.00 ,Used patch estrogen?
+ht_estrovag_mini,character,Char,50,$50.00 ,$50.00 ,Used vaginal estrogen?
+ht_no_othestro_mini,character,Char,50,$50.00 ,$50.00 ,Did not use other estrogen?
+provera_2_5mg_q4mini,character,Char,50,$50.00 ,$50.00 ,Used provera 2.5 mg?
+provera_5_9mg_q4mini,character,Char,50,$50.00 ,$50.00 ,Used provera 5-9 mg?
+provera_10mg_q4mini,character,Char,50,$50.00 ,$50.00 ,Used provera 10 mg?
+provera_ovr10mg_q4mini,character,Char,50,$50.00 ,$50.00 ,Used provera more than 10 mg?
+provera_dk_q4mini,character,Char,50,$50.00 ,$50.00 ,Used provera unknown dose?
+ht_progestin_oth_mini,character,Char,50,$50.00 ,$50.00 ,Used other progestin?
+ht_noprog_oral_mini,character,Char,50,$50.00 ,$50.00 ,Did not use oral prog?
+ht_orale_days_mo_mini,character,Char,50,$50.00 ,$50.00 ,Days per month of oral estrogen?
+ht_oralp_days_mo_mini,character,Char,50,$50.00 ,$50.00 ,Days per month of oral prog?
+ht_q4mini,character,Char,50,$50.00 ,$50.00 ,Current use of hormone therapy?
+ralox_ever_mini,character,Char,50,$50.00 ,$50.00 ,Ever used raloxifene?
+ralox_mo_mini,character,Char,50,$50.00 ,$50.00 ,Months used raloxifene?
+ralox_q4mini,character,Char,50,$50.00 ,$50.00 ,Currently using raloxifene?
+otcount_hormprep_mini,character,Char,50,$50.00 ,$50.00 ,Currently using otc hormonal preps?
+otcount_soyestro_mini,character,Char,50,$50.00 ,$50.00 ,Currently using soy estrogen pills?
+otcount_dongquai_mini,character,Char,50,$50.00 ,$50.00 ,Currently using dong quai?
+otcount_natprog_mini,character,Char,50,$50.00 ,$50.00 ,Currently using nat prog cream or wild yam cream?
+otcount_blkcoho_mini,character,Char,50,$50.00 ,$50.00 ,Currently using black cohosh?
+otcount_flaxseed_mini,character,Char,50,$50.00 ,$50.00 ,Currently using flaxseed or linseed oil?
+weight_q4mini,character,Char,50,$50.00 ,$50.00 ,Weight today in lbs
+marital_status_q5,character,Char,50,$50.00 ,$50.00 ,Marital status at 5th questionnaire
+employ_schl_q5,character,Char,50,$50.00 ,$50.00 ,"Currently employed in public, charter or private schools"
+employ_oth_q5,character,Char,50,$50.00 ,$50.00 ,Other employed
+employ_return_q5,character,Char,50,$50.00 ,$50.00 ,"Not currently working, plan to re enter work force"
+employ_unable_q5,character,Char,50,$50.00 ,$50.00 ,Unable to work
+employ_homemak_q5,character,Char,50,$50.00 ,$50.00 ,Homemaker
+employ_retired_q5,character,Char,50,$50.00 ,$50.00 ,Retired
+sleep_quality,character,Char,50,$50.00 ,$50.00 ,Sleep quality during past month
+sleep_fall,character,Char,50,$50.00 ,$50.00 ,How long to fall asleep during past month
+sleep_hrs_night,character,Char,50,$50.00 ,$50.00 ,Hours of sleep each night during past month
+sleep_trouble,character,Char,50,$50.00 ,$50.00 ,How often trouble sleeping during past month
+sleep_reg_lastyr,character,Char,50,$50.00 ,$50.00 ,Are your sleep habits typical over the last year
+sleep_reg2_5yrs,character,Char,50,$50.00 ,$50.00 ,Are your sleep habits typical of 2-5 years ago
+sleep_reg6_10yrs,character,Char,50,$50.00 ,$50.00 ,Are your sleep habits typical of 6-10 years ago
+sleep_reg_ovr11yrs,character,Char,50,$50.00 ,$50.00 ,Are your sleep habits typical of 11 or more years ago
+sleep_med_howoft,character,Char,50,$50.00 ,$50.00 ,How often taken sleep medicine during past month
+sleep_type_teen,character,Char,50,$50.00 ,$50.00 ,Are you a morning or evening type in your teens/in college
+sleep_type30_40,character,Char,50,$50.00 ,$50.00 ,Are you a  morning or evening type in ages 30-40
+sleep_type_now,character,Char,50,$50.00 ,$50.00 ,Are you a morning or evening type now
+colds_howoft,character,Char,50,$50.00 ,$50.00 ,How often do you get colds
+hrswithchildren,character,Char,50,$50.00 ,$50.00 ,How many hours spend with child under 5years old
+stand_wrk_hrs,character,Char,50,$50.00 ,$50.00 ,Hours per week standing or walking at work or away from home
+stand_hm_hrs,character,Char,50,$50.00 ,$50.00 ,Hours per week standing or walking around at home
+sit_wrk_hrs,character,Char,50,$50.00 ,$50.00 ,Hours per week sitting at work
+sit_car_hrs,character,Char,50,$50.00 ,$50.00 ,Hours per week sitting or driving in a vehicle
+sit_tv_hrs,character,Char,50,$50.00 ,$50.00 ,Hours per week sitting while watching tv
+sit_read_hrs,character,Char,50,$50.00 ,$50.00 ,Hours per week sitting while reading
+sit_oth_hrs,character,Char,50,$50.00 ,$50.00 ,Hours per week sitting for other reasons
+lightex_hrs,character,Char,50,$50.00 ,$50.00 ,Hours per week participating in light intensity activities
+walk_hrs,character,Char,50,$50.00 ,$50.00 ,Hours per week walking for exercise or as part of job
+weighttrain_hrs,character,Char,50,$50.00 ,$50.00 ,Hours per week weight training exercise
+walk_normalpace,character,Char,50,$50.00 ,$50.00 ,Normal walking pace
+strnex_hrs_q5,character,Char,50,$50.00 ,$50.00 ,Hours per week of strenuous activity during past 3 years
+strnex_mo_q5,character,Char,50,$50.00 ,$50.00 ,Months per year of strenuous activity during past 3 years
+modex_hrs_q5,character,Char,50,$50.00 ,$50.00 ,Hours per week of moderate activity during past 3 years
+modex_mo_q5,character,Char,50,$50.00 ,$50.00 ,Months per year of moderate activity during past 3 years
+limitd_vigact_q5,character,Char,50,$50.00 ,$50.00 ,Are currently limited doing vigorous activities
+limitd_modact_q5,character,Char,50,$50.00 ,$50.00 ,Are currently limited doing moderate activities
+limitd_carrying_q5,character,Char,50,$50.00 ,$50.00 ,Are currently limited lifting or carrying groceries
+limitd_stairs_q5,character,Char,50,$50.00 ,$50.00 ,Are currently limited climbing several flights of stairs
+limitd_1stair_q5,character,Char,50,$50.00 ,$50.00 ,Are currently limited climbing one flight of stairs
+limitd_bending_q5,character,Char,50,$50.00 ,$50.00 ,"Are currently limited bending, kneeling, or stooping"
+limitd_wlkmile_q5,character,Char,50,$50.00 ,$50.00 ,Are currently limited walking more than a mile
+limitd_wlkblcks_q5,character,Char,50,$50.00 ,$50.00 ,Are currently limited walking several blocks
+limitd_wlk1blck_q5,character,Char,50,$50.00 ,$50.00 ,Are currently limited walking one block
+limitd_bathing_q5,character,Char,50,$50.00 ,$50.00 ,Are currently limited bathing or dressing yourself
+bbaspr_perwk_q5,character,Char,50,$50.00 ,$50.00 ,Current use of baby aspirin num tablets per week
+aspr_perwk_q5,character,Char,50,$50.00 ,$50.00 ,Current use of aspirin num tablets per week
+ibupf_perwk_q5,character,Char,50,$50.00 ,$50.00 ,Current use of ibuprofen num tablets per week
+nsaid_perwk_q5,character,Char,50,$50.00 ,$50.00 ,Current use of other non-steroidal num tablets per week
+cox2_perwk_q5,character,Char,50,$50.00 ,$50.00 ,Current use of cox-2 inhibitor num tablets per week
+actem_perwk_q5,character,Char,50,$50.00 ,$50.00 ,Current use of acetaminophen num tablets per week
+opiat_perwk,character,Char,50,$50.00 ,$50.00 ,Current use of pain med w opiate num tablets per week
+statin_q5,character,Char,50,$50.00 ,$50.00 ,Current use of statin medication
+osteopmed_ever,character,Char,50,$50.00 ,$50.00 ,Have your ever taken meds to treat or prevent osteoporosis
+bisphos_q5,character,Char,50,$50.00 ,$50.00 ,Current years of use of bisphosphonates
+ralox_q5,character,Char,50,$50.00 ,$50.00 ,Current year of use of raloxifene
+oralcntr_aft00,character,Char,50,$50.00 ,$50.00 ,Use of oral contraceptive use since january 2000
+oralcntr_agelast_q5,character,Char,50,$50.00 ,$50.00 ,Age stopped taking  oral contraceptives
+oralcntr_aft00_yrs,character,Char,50,$50.00 ,$50.00 ,Year of oral contraceptive use since january 2000
+agelastperiod_dk_q5,character,Char,50,$50.00 ,$50.00 ,Answered do not know date or age of last menstrual period
+agelastperiod_writdate_q5,character,Char,50,$50.00 ,$50.00 ,"M/y last menstrual period, as written in the boxes"
+agelastperiod_mo_q5,character,Char,50,$50.00 ,$50.00 ,"Month last menstrual period, as bubbled"
+agelastperiod_yr_q5,character,Char,50,$50.00 ,$50.00 ,"Year last menstrual period, as bubbled"
+agelastperiod_writ_q5,character,Char,50,$50.00 ,$50.00 ,"Age last menstrual period, as written in the boxes"
+agelastperiod_bub_q5,character,Char,50,$50.00 ,$50.00 ,"Age last menstrual period, as bubbled"
+menstrual_statusus_q5,character,Char,50,$50.00 ,$50.00 ,Current menstrual status
+hormo_aft05,character,Char,50,$50.00 ,$50.00 ,Use of hormones since 2005
+hormo_aft05_yrs,character,Char,50,$50.00 ,$50.00 ,Years of hormone use since 2005
+cestro_aft05,character,Char,50,$50.00 ,$50.00 ,Used conjugated estrogens since 2005
+cestrodose_aft05,character,Char,50,$50.00 ,$50.00 ,Dose of conjugated estrogens since 2005
+estrad_aft05,character,Char,50,$50.00 ,$50.00 ,Used estradiol since 2005
+estraddose_aft05,character,Char,50,$50.00 ,$50.00 ,Dose of estradiol since 2005
+prog_aft05,character,Char,50,$50.00 ,$50.00 ,Dose of progesterone/progestin since 2005
+hormopil_aft05,character,Char,50,$50.00 ,$50.00 ,Use pills (hormones) since 2005
+estropil_aft05,character,Char,50,$50.00 ,$50.00 ,Estrogen type pills since 2005
+progpil_aft05,character,Char,50,$50.00 ,$50.00 ,Progesterone type pills since 2005
+combpil_aft05,character,Char,50,$50.00 ,$50.00 ,Combined type pills (hormones) since 2005
+hormopil_q5,character,Char,50,$50.00 ,$50.00 ,Current use of pills (hormones)
+hormopil_yrstop,character,Char,50,$50.00 ,$50.00 ,Year stopped using pills (hormones)
+hormoptch_aft05,character,Char,50,$50.00 ,$50.00 ,Use patches (hormones) since 2005
+estropatch_aft05,character,Char,50,$50.00 ,$50.00 ,Estrogen type patches since 2005
+combpatch_aft05,character,Char,50,$50.00 ,$50.00 ,Combined type patches (hormones) since 2005
+hormoptch_q5,character,Char,50,$50.00 ,$50.00 ,Current use of patches (hormones)
+hormoptch_yrstop,character,Char,50,$50.00 ,$50.00 ,Year stopped using patches (hormones)
+vagcrm_aft05,character,Char,50,$50.00 ,$50.00 ,Use vaginal creams/gels (hormones) since 2005
+vagcrm_q5,character,Char,50,$50.00 ,$50.00 ,Current use of vaginal creams/gels (hormones)
+vagcrm_yrstop,character,Char,50,$50.00 ,$50.00 ,Year stopped using vaginal creams/gels (hormones)
+combpil_type_q5,character,Char,50,$50.00 ,$50.00 ,Combined type pills (hormones) currently using
+combpatch_type_q5,character,Char,50,$50.00 ,$50.00 ,Combined type patches (hormones) currently using
+estro_type_q5,character,Char,50,$50.00 ,$50.00 ,Estrogen currently using
+prog_type_q5,character,Char,50,$50.00 ,$50.00 ,Progesterone currently using
+hormo_bioiden,character,Char,50,$50.00 ,$50.00 ,Ever used bio-identical hormones
+diab_self_q5,character,Char,50,$50.00 ,$50.00 ,Ever told you have diabetes
+diab_type_q5,character,Char,50,$50.00 ,$50.00 ,Type of diabetes
+diab_age_q5,character,Char,50,$50.00 ,$50.00 ,Age diagnosed with diabetes
+diab_diag_untreat,character,Char,50,$50.00 ,$50.00 ,Diabetes not treated when diagnosed
+diab_diag_diet,character,Char,50,$50.00 ,$50.00 ,Diabetes treated with diet when diagnosed
+diab_diag_injec,character,Char,50,$50.00 ,$50.00 ,Diabetes treated with injection when diagnosed
+diab_diag_metfrm,character,Char,50,$50.00 ,$50.00 ,Diabetes treated with metformin/glucophage when diagnosed
+diab_diag_othmed,character,Char,50,$50.00 ,$50.00 ,Diabetes treated with another medication when diagnosed
+diab_diag_oth,character,Char,50,$50.00 ,$50.00 ,Diabetes treated with other when diagnosed
+diab_untreat_q5,character,Char,50,$50.00 ,$50.00 ,Diabetes not treated currently
+diab_diet_q5,character,Char,50,$50.00 ,$50.00 ,Diabetes treated with diet currently
+diab_injec_q5,character,Char,50,$50.00 ,$50.00 ,Diabetes treated with injection currently
+diab_metfrm_q5,character,Char,50,$50.00 ,$50.00 ,Diabetes treated with metformin/glucophage currently
+diab_othmed_q5,character,Char,50,$50.00 ,$50.00 ,Diabetes treated with another medication currently
+diab_oth_q5,character,Char,50,$50.00 ,$50.00 ,Diabetes treated with other currently
+diab_bldkit,character,Char,50,$50.00 ,$50.00 ,Use diabetes blood glucose kit
+diab_bldkit_freq,character,Char,50,$50.00 ,$50.00 ,Frequency use diabetes blood glucose kit
+diab_a1c_last6mo,character,Char,50,$50.00 ,$50.00 ,Diabetes hemoglobin a1c measured last 6 months
+diab_a1c_score,character,Char,50,$50.00 ,$50.00 ,Diabetes hemoglobin a1c score
+feel_nocompanion,character,Char,50,$50.00 ,$50.00 ,Feel lack of companionship
+feel_leftout_q5,character,Char,50,$50.00 ,$50.00 ,Feel left out
+feel_isolated,character,Char,50,$50.00 ,$50.00 ,Feel isolated from others
+mri_b4_1900,character,Char,50,$50.00 ,$50.00 ,Mri before 1990
+mri_1900_99,character,Char,50,$50.00 ,$50.00 ,Mri 1990-1999
+mri_aft2000,character,Char,50,$50.00 ,$50.00 ,Mri 2000 or later
+cthead_nevr,character,Char,50,$50.00 ,$50.00 ,Never had any cat/pet scan of head
+cthead_b4_1900,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of head before 1990
+cthead_1900_99,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of head 1990-1999
+cthead_aft2000,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of head 2000 or later
+ctneck_nevr,character,Char,50,$50.00 ,$50.00 ,Never had any cat/pet scan of neck
+ctneck_b4_1900,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of neck before 1990
+ctneck_1900_99,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of neck 1990-1999
+ctneck_aft2000,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of neck 2000 or later
+ctchest_nevr,character,Char,50,$50.00 ,$50.00 ,Never had any cat/pet scan of chest
+ctchest_b4_1900,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of chest before 1990
+ctchest_1900_99,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of chest 1990-1999
+ctchest_aft2000,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of chest 2000 or later
+ctspine_nevr,character,Char,50,$50.00 ,$50.00 ,Never had any cat/pet scan of spine
+ctspine_b4_1900,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of spine before 1990
+ctspine_1900_99,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of spine 1990-1999
+ctspine_aft2000,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of spine 2000 or later
+ctabdom_nevr,character,Char,50,$50.00 ,$50.00 ,Never had any cat/pet scan of abdomen/pelvis
+ctabdom_b4_1900,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of abdomen/pelvis before 1990
+ctabdom_1900_99,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of abdomen/pelvis 1990-1999
+ctabdom_aft2000,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of abdomen/pelvis 2000 or later
+ctheart_nevr,character,Char,50,$50.00 ,$50.00 ,Never had any cat/pet scan of heart angiography
+ctheart_b4_1900,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of heart angiography before 1990
+ctheart_1900_99,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of heart angiography 1990-1999
+ctheart_aft2000,character,Char,50,$50.00 ,$50.00 ,Cat/pet scan of heart angiography 2000 or later
+mammo_ever_q5,character,Char,50,$50.00 ,$50.00 ,Ever had mammogram
+mammo_whenlast,character,Char,50,$50.00 ,$50.00 ,When was last mammogram
+mammo_howoft,character,Char,50,$50.00 ,$50.00 ,How often had mammogram over last 10 years
+breastsurg_ever,character,Char,50,$50.00 ,$50.00 ,Ever had breast procedure
+atypia_ever,character,Char,50,$50.00 ,$50.00 ,Ever had atypical hyperplasia/atypia diagnosis
+atypia_diag_age,character,Char,50,$50.00 ,$50.00 ,Age first diagnosed with atypical hyperplasia/atypia
+ct_colnscop_no,character,Char,50,$50.00 ,$50.00 ,No (virtual) ct colonoscopy
+ct_colnscop_scrn,character,Char,50,$50.00 ,$50.00 ,Yes (virtual) ct colonoscopy screening
+ct_colnscop_symp,character,Char,50,$50.00 ,$50.00 ,Yes (virtual) ct colonoscopy symptoms
+ct_colnscop_age,character,Char,50,$50.00 ,$50.00 ,Age at (virtual) ct colonoscopy
+colnscop_scrn,character,Char,50,$50.00 ,$50.00 ,Yes colonoscopy screening
+colnscop_symp,character,Char,50,$50.00 ,$50.00 ,Yes colonoscopy symptoms
+colnscop_age,character,Char,50,$50.00 ,$50.00 ,Age at colonoscopy
+sigmscop_scrn,character,Char,50,$50.00 ,$50.00 ,Yes sigmoidoscopy screening
+sigmscop_symp,character,Char,50,$50.00 ,$50.00 ,Yes sigmoidoscopy symptoms
+sigmscop_age,character,Char,50,$50.00 ,$50.00 ,Age at sigmoidoscopy
+result_colnpoly,character,Char,50,$50.00 ,$50.00 ,Benign colon polyp procedure outcome
+result_rectpoly,character,Char,50,$50.00 ,$50.00 ,Benign rectal polyp procedure outcome
+result_colnca,character,Char,50,$50.00 ,$50.00 ,Colon/rectal cancer procedure outcome
+result_none,character,Char,50,$50.00 ,$50.00 ,None of these procedure outcome
+result_dk,character,Char,50,$50.00 ,$50.00 ,Dont know procedure outcome
+mulvit_howoft_q5,character,Char,50,$50.00 ,$50.00 ,How often multivitamins
+mulvit_yrs_q5,character,Char,50,$50.00 ,$50.00 ,How many years multivitamins
+b12_howoft,character,Char,50,$50.00 ,$50.00 ,How often vitamin b12
+b12_yrs,character,Char,50,$50.00 ,$50.00 ,How many years vitamin b12
+calcium_vitd_howoft,character,Char,50,$50.00 ,$50.00 ,How often calcium/vitamin d
+calcium_vitd_yrs,character,Char,50,$50.00 ,$50.00 ,How many years calcium/vitamin d
+vitd3_howoft,character,Char,50,$50.00 ,$50.00 ,How often vitamin d3
+vitd4_yrs,character,Char,50,$50.00 ,$50.00 ,How many years vitamin d3
+calcium_howoft_q5,character,Char,50,$50.00 ,$50.00 ,How often calcium
+calcium_yrs_q5,character,Char,50,$50.00 ,$50.00 ,How many years calcium
+niacin_howoft,character,Char,50,$50.00 ,$50.00 ,How often niacin
+niacin_yrs,character,Char,50,$50.00 ,$50.00 ,How many years niacin
+omega3_howoft,character,Char,50,$50.00 ,$50.00 ,How often omega-3 fatty acids
+omega3_yrs,character,Char,50,$50.00 ,$50.00 ,How many years omega-3 fatty acids
+soypill_howoft,character,Char,50,$50.00 ,$50.00 ,How often soy pills
+soypill_yrs,character,Char,50,$50.00 ,$50.00 ,How many years soy pills
+chondro_howoft,character,Char,50,$50.00 ,$50.00 ,How often chondroitin/glucosamine
+chondro_yrs,character,Char,50,$50.00 ,$50.00 ,How many years chondroitin/glucosamine
+vitd3_howmch,character,Char,50,$50.00 ,$50.00 ,How much vitamin d3
+hbp_diag_q5,character,Char,50,$50.00 ,$50.00 ,Hypertension diagnosis
+hbp_diag_age,character,Char,50,$50.00 ,$50.00 ,Age at hypertension diagnosis
+hbp_medever_q5,character,Char,50,$50.00 ,$50.00 ,Ever medication for hypertension diagnosis
+hbp_currmed_q5,character,Char,50,$50.00 ,$50.00 ,Current medication for hypertension diagnosis
+hrtatk_diag_q5,character,Char,50,$50.00 ,$50.00 ,Heart attack diagnosis
+hrtatk_diag_age,character,Char,50,$50.00 ,$50.00 ,Age at heart attack diagnosis
+hrtatk_medever,character,Char,50,$50.00 ,$50.00 ,Ever medication for heart attack diagnosis
+hrtatk_currmed,character,Char,50,$50.00 ,$50.00 ,Current medication for heart attack diagnosis
+stroke_diag_q5,character,Char,50,$50.00 ,$50.00 ,Stroke diagnosis
+stroke_medever,character,Char,50,$50.00 ,$50.00 ,Ever medication for stroke diagnosis
+stroke_currmed,character,Char,50,$50.00 ,$50.00 ,Current medication for stroke diagnosis
+dvt_diag_q5,character,Char,50,$50.00 ,$50.00 ,Deep venous thrombosis diagnosis
+dvt_medever_q5,character,Char,50,$50.00 ,$50.00 ,Ever medication for deep venous thrombosis diagnosis
+dvt_currmed_q5,character,Char,50,$50.00 ,$50.00 ,Current medication for deep venous thrombosis diagnosis
+copd_diag_q5,character,Char,50,$50.00 ,$50.00 ,Copd diagnosis
+copd_medever,character,Char,50,$50.00 ,$50.00 ,Ever medication for copd diagnosis
+copd_currmed,character,Char,50,$50.00 ,$50.00 ,Current medication for copd diagnosis
+osteop_diag_q5,character,Char,50,$50.00 ,$50.00 ,Osteoporosis diagnosis
+osteop_medever_q5,character,Char,50,$50.00 ,$50.00 ,Ever medication for osteoporosis diagnosis
+osteop_currmed_q5,character,Char,50,$50.00 ,$50.00 ,Current medication for osteoporosis diagnosis
+pneu_diag_q5,character,Char,50,$50.00 ,$50.00 ,Pneumonia diagnosis
+pneu_medever,character,Char,50,$50.00 ,$50.00 ,Ever medication for pneumonia diagnosis
+pneu_currmed,character,Char,50,$50.00 ,$50.00 ,Current medication for pneumonia diagnosis
+parkins_diag_q5,character,Char,50,$50.00 ,$50.00 ,Parkinson's diagnosis
+parkins_medever_q5,character,Char,50,$50.00 ,$50.00 ,Ever medication for parkinson's diagnosis
+parkins_currmed_q5,character,Char,50,$50.00 ,$50.00 ,Current medication for parkinson's diagnosis
+depres_diag_q5,character,Char,50,$50.00 ,$50.00 ,Depression diagnosis
+depres_medever_q5,character,Char,50,$50.00 ,$50.00 ,Ever medication for depression diagnosis
+depres_currmed_q5,character,Char,50,$50.00 ,$50.00 ,Current medication for depression diagnosis
+shingle_diag_q5,character,Char,50,$50.00 ,$50.00 ,Shingles diagnosis
+shingle_medever_q5,character,Char,50,$50.00 ,$50.00 ,Ever medication for shingles diagnosis
+shingle_currmed_q5,character,Char,50,$50.00 ,$50.00 ,Current medication for shingles diagnosis
+ulcer_diag_q5,character,Char,50,$50.00 ,$50.00 ,Ulcer diagnosis
+ulcer_medever,character,Char,50,$50.00 ,$50.00 ,Ever medication for ulcer diagnosis
+ulcer_currmed,character,Char,50,$50.00 ,$50.00 ,Current medication for ulcer diagnosis
+kidnstn_diag_q5,character,Char,50,$50.00 ,$50.00 ,Kidney stones diagnosis
+kidnstn_medever_q5,character,Char,50,$50.00 ,$50.00 ,Ever medication for kidney stones diagnosis
+kidnstn_currmed_q5,character,Char,50,$50.00 ,$50.00 ,Current medication for kidney stones diagnosis
+kidndis_diag_q5,character,Char,50,$50.00 ,$50.00 ,Kidney disease diagnosis
+kidndis_medever_q5,character,Char,50,$50.00 ,$50.00 ,Ever medication for kidney disease diagnosis
+kidndis_currmed_q5,character,Char,50,$50.00 ,$50.00 ,Current medication for kidney disease diagnosis
+fatigu_diag_q5,character,Char,50,$50.00 ,$50.00 ,Chronic fatigue syndrome diagnosis
+fatigu_medever_q5,character,Char,50,$50.00 ,$50.00 ,Ever medication for chronic fatigue syndrome diagnosis
+fatigu_currmed_q5,character,Char,50,$50.00 ,$50.00 ,Current medication for chronic fatigue syndrome diagnosis
+osteoa_diag_q5,character,Char,50,$50.00 ,$50.00 ,Osteoarthritis diagnosis
+osteoa_medever_q5,character,Char,50,$50.00 ,$50.00 ,Ever medication for osteoarthritis diagnosis
+osteoa_currmed_q5,character,Char,50,$50.00 ,$50.00 ,Current medication for osteoarthritis diagnosis
+rheuma_diag_q5,character,Char,50,$50.00 ,$50.00 ,Rheumatoid arthritis diagnosis
+rheuma_medever_q5,character,Char,50,$50.00 ,$50.00 ,Ever medication for rheumatoid arthritis diagnosis
+rheuma_currmed_q5,character,Char,50,$50.00 ,$50.00 ,Current medication for rheumatoid arthritis diagnosis
+lupus_diag_q5,character,Char,50,$50.00 ,$50.00 ,Sle/lupus diagnosis
+lupus_medever,character,Char,50,$50.00 ,$50.00 ,Ever medication for sle/lupus diagnosis
+lupus_currmed,character,Char,50,$50.00 ,$50.00 ,Current medication for sle/lupus diagnosis
+crohns_diag_q5,character,Char,50,$50.00 ,$50.00 ,Ibd/crohns diagnosis
+crohns_medever,character,Char,50,$50.00 ,$50.00 ,Ever medication for ibd/crohns diagnosis
+crohns_currmed,character,Char,50,$50.00 ,$50.00 ,Current medication for ibd/crohns diagnosis
+sclero_diag_q5,character,Char,50,$50.00 ,$50.00 ,Multiple sclerosis diagnosis
+sclero_medever,character,Char,50,$50.00 ,$50.00 ,Ever medication for multiple sclerosis diagnosis
+sclero_currmed,character,Char,50,$50.00 ,$50.00 ,Current medication for multiple sclerosis diagnosis
+psoria_diag_q5,character,Char,50,$50.00 ,$50.00 ,Psoriasis diagnosis
+psoria_medever_q5,character,Char,50,$50.00 ,$50.00 ,Ever medication for psoriasis diagnosis
+psoria_currmed_q5,character,Char,50,$50.00 ,$50.00 ,Current medication for psoriasis diagnosis
+lostheight,character,Char,50,$50.00 ,$50.00 ,Lost height as aged
+lostheigh_inch,character,Char,50,$50.00 ,$50.00 ,Height inches lost as aged
+gastricby,character,Char,50,$50.00 ,$50.00 ,Had gastric bypass/lap-band surgery
+gastricby_type,character,Char,50,$50.00 ,$50.00 ,Type of gastric bypass/lap-band surgery
+bmi_q5,numeric,Num,8,20.1,20.1,Bmi at q5
+weight_q5,numeric,Num,8,11.,11.,Weight at q5
+height_q5,numeric,Num,8,11.,11.,Height at q5
+spffacecrm,character,Char,50,$50.00 ,$50.00 ,Use facial creams with spf
+spffacecrm_yrs,character,Char,50,$50.00 ,$50.00 ,Years used facial creams with spf
+spffacecrm_undr15,character,Char,50,$50.00 ,$50.00 ,Age <15 when used facial creams with spf
+spffacecrm15_25,character,Char,50,$50.00 ,$50.00 ,Age 15-25 when used facial creams with spf
+spffacecrm26_40,character,Char,50,$50.00 ,$50.00 ,Age 26-40 when used facial creams with spf
+spffacecrm41_60,character,Char,50,$50.00 ,$50.00 ,Age 41-60 when used facial creams with spf
+spffacecrm_ovr61,character,Char,50,$50.00 ,$50.00 ,Age 61 or older when used facial creams with spf
+sunscrn,character,Char,50,$50.00 ,$50.00 ,Use sunscreen
+sunscrn_yrs,character,Char,50,$50.00 ,$50.00 ,Years used sunscreen
+sunscrn_undr15,character,Char,50,$50.00 ,$50.00 ,Age <15 when used sunscreen
+sunscrn15_25,character,Char,50,$50.00 ,$50.00 ,Age 15-25 when used sunscreen
+sunscrn26_40,character,Char,50,$50.00 ,$50.00 ,Age 26-40 when used sunscreen
+sunscrn41_60,character,Char,50,$50.00 ,$50.00 ,Age 41-60 when used sunscreen
+sunscrn_ovr61,character,Char,50,$50.00 ,$50.00 ,Age 61 or older when used sunscreen
+tanbooth,character,Char,50,$50.00 ,$50.00 ,Use tanning bed/booth
+tanbooth_yrs,character,Char,50,$50.00 ,$50.00 ,Years used tanning bed/booth
+tanbooth_undr15,character,Char,50,$50.00 ,$50.00 ,Age <15 when used tanning bed/booth
+tanbooth15_25,character,Char,50,$50.00 ,$50.00 ,Age 15-25 when used tanning bed/booth
+tanbooth26_40,character,Char,50,$50.00 ,$50.00 ,Age 26-40 when used tanning bed/booth
+tanbooth41_60,character,Char,50,$50.00 ,$50.00 ,Age 41-60 when used tanning bed/booth
+tanbooth_ovr61,character,Char,50,$50.00 ,$50.00 ,Age 61 or older when used tanning bed/booth
+currres_yrs_q5mini,character,Char,50,$50.00 ,$50.00 ,Years lived at current residence
+strnex_hrs_q5mini,character,Char,50,$50.00 ,$50.00 ,Hours per week of strenuous activity during past 3 years
+strnex_mo_q5mini,character,Char,50,$50.00 ,$50.00 ,Months per year of strenuous activity during past 3 years
+modex_hrs_q5mini,character,Char,50,$50.00 ,$50.00 ,Hours per week of moderate activity during past 3 years
+modex_mo_q5mini,character,Char,50,$50.00 ,$50.00 ,Months per year of moderate activity during past 3 years
+diab_self_q5mini,character,Char,50,$50.00 ,$50.00 ,Ever told you have diabetes
+diab_type_q5mini,character,Char,50,$50.00 ,$50.00 ,Type of diabetes
+hormo_aft05_mini,character,Char,50,$50.00 ,$50.00 ,Use of hormones since 2005
+hormo_aft05_yrs_mini,character,Char,50,$50.00 ,$50.00 ,Years of hormone use since 2005
+menstrual_status_q5mini,character,Char,50,$50.00 ,$50.00 ,Current menstrual status
+strenuous_hrs_per_wk_q6,numeric,Num,8,11.,11.,Strenuous exercise hrs per wk
+strenuous_mos_per_yr_q6,numeric,Num,8,11.,11.,Strenuous exercise months per year
+moderate_hrs_per_wk_q6,numeric,Num,8,11.,11.,Moderate exercise hrs per wk
+moderate_hrs_per_yr_q6,numeric,Num,8,11.,11.,Moderate exercise months per year
+osteoa_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Arthritis: Osteoarthritis
+rheuma_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Arthritis: Rheumatoid arthritis
+asthma_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Asthma
+t2d_diag_q6,numeric,Num,8,11.,11.,"Diagnosed with Diabetes Type 2 (""Type 2 Diabetes"")"
+dvt_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Deep vein thrombosis (DVT)
+depres_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Depression
+cholesterol_diag_q6,numeric,Num,8,11.,11.,Diagnosed with High cholesterol
+dbp_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Hypertension / high blood pressure
+inflammatorybowel_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Inflammatory bowel disease or Crohn's disease
+kidndis_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Kidney disease (not kidney stones)
+kidnstn_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Kidney stones
+migraines_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Migraines
+osteop_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Osteoporosis
+parkins_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Parkinson's disease
+periodontal_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Periodontal disease or gum disease / gingivitis
+psoria_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Psoriasis
+shingle_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Shingles
+sleepapnea_diag_q6,numeric,Num,8,11.,11.,Diagnosed with Sleep apnea
+sleep_disorder_diag_q6,numeric,Num,8,11.,11.,Diagnosed with a sleep disorder
+genetic_testing_q6,numeric,Num,8,11.,11.,Ever genetic testing
+menstrual_status_q6,numeric,Num,8,11.,11.,Current menstrual status
+age_lmp_q6,numeric,Num,8,11.,11.,Age at last menstrual period
+used_mht_q6,numeric,Num,8,11.,11.,Used prescription hormones since last questionnaire
+type_mht_is_pills_q6,numeric,Num,8,11.,11.,Used prescription hormone pills
+type_mht_patches_q6,numeric,Num,8,11.,11.,Used prescription hormone patches
+type_mht_estrogen_cream_q6,numeric,Num,8,11.,11.,Used prescription hormone vaginal estrogen creams
+type_mht_pills_q6,numeric,Num,8,11.,11.,Type of pills used
+curr_mht_pills_q6,numeric,Num,8,11.,11.,Currently using pills
+years_used_pills_q6,numeric,Num,8,11.,11.,Total years used pills
+curr_mht_patches_q6,numeric,Num,8,11.,11.,Currently using patches
+curr_mht_estrogen_cream_q6,numeric,Num,8,11.,11.,Currently using vaginal estrogen creams or gels
+weight_q6,numeric,Num,8,11.,11.,Weight
+height_feet_q6,numeric,Num,8,11.,11.,Height feet
+height_inches_q6,numeric,Num,8,11.,11.,Height inches
+snores_q6,numeric,Num,8,11.,11.,Participant snores
+fatigued_day_q6,numeric,Num,8,11.,11.,Fatigued during the day
+stop_breath_night_q6,numeric,Num,8,11.,11.,Stop breathing at night
+difficult_fall_asleep_q6,numeric,Num,8,11.,11.,Difficulty falling asleep
+severe_diff_fall_asleep_q6,numeric,Num,8,11.,11.,Difficulty falling asleep
+severe_diff_stay_asleep_q6,numeric,Num,8,11.,11.,Difficulty staying asleep
+wake_too_early_q6,numeric,Num,8,11.,11.,Problem waking up too early
+satisfied_sleep_pattern_q6,numeric,Num,8,11.,11.,Satisfaction with sleep pattern
+sleep_interfere_day_life_q6,numeric,Num,8,11.,11.,Sleep interference with daily life
+noticeable_sleep_problem_q6,numeric,Num,8,11.,11.,How noticeable is sleep problem
+worry_abt_sleep_problem_q6,numeric,Num,8,11.,11.,Worry about sleep problem
+chronic_sleep_problem_q6,numeric,Num,8,11.,11.,Chronic sleep problem
+usual_glasses_water_q6,numeric,Num,8,11.,11.,Usual intake glass of water
+usual_cups_coffee_q6,numeric,Num,8,11.,11.,Usual intake cup of coffee
+usual_cups_tea_q6,numeric,Num,8,11.,11.,Usual intake cup of hot tea
+usual_glasses_icedtea_q6,numeric,Num,8,11.,11.,Usual intake glass of iced tea
+showers_per_week_q6,numeric,Num,8,11.,11.,Average showers per week
+water_source_curr_home_q6,numeric,Num,8,11.,11.,Current home drinking water source
+filter_tap_h2o_curr_home_q6,numeric,Num,8,11.,11.,Current home tap water filtered
+worry_retirement_money_q6,numeric,Num,8,11.,11.,Worry money for retirement
+worry_serious_ill_cost_q6,numeric,Num,8,11.,11.,Worry pay serious illness medical costs
+unpaid_medbills_past_yr_q6,numeric,Num,8,11.,11.,Unpaid medical bills in last 12 months
+pay_medbills_over_time_q6,numeric,Num,8,11.,11.,Medical bills paid off over time
+unable_pay_medical_bills_q6,numeric,Num,8,11.,11.,Unable to pay medical bills
+household_income_q6,numeric,Num,8,11.,11.,Household annual income
+ppl_support_house_income_q6,numeric,Num,8,11.,11.,Number supported by household income
+minor_support_house_inc_q6,numeric,Num,8,11.,11.,Minors supported by household income
+senior_support_house_inc_q6,numeric,Num,8,11.,11.,Individuals over 64 supported by household income
+lack_companionship_q6,numeric,Num,8,11.,11.,Feel lack companionship
+feel_left_out_q6,numeric,Num,8,11.,11.,Feel left out
+feel_isolated_q6,numeric,Num,8,11.,11.,Feel isolated from others
+marital_status_q6,numeric,Num,8,11.,11.,Marital status at 6th questionnaire
+employ_school_q6,numeric,Num,8,11.,11.,"Employment status: public, charter, or private schools"
+employ_other_q6,numeric,Num,8,11.,11.,Employment status: other
+employ_not_currently_q6,numeric,Num,8,11.,11.,Employment status: not currently working
+employ_homemaker_q6,numeric,Num,8,11.,11.,Employment status: homemaker
+employ_unable_work_q6,numeric,Num,8,11.,11.,Employment status: unable to work
+employ_retired_q6,numeric,Num,8,11.,11.,Employment status: retired
+ever_used_med_cannabis_q6,numeric,Num,8,11.,11.,Ever used medicinal cannabis
+medical_cannabis_method_q6,numeric,Num,8,11.,11.,Medicinal cannabis consumption method
+cannabis_reason_anxiety_q6,numeric,Num,8,11.,11.,Reason use med cannabis: relieve anxiety
+cannabis_reason_pain_q6,numeric,Num,8,11.,11.,Reason use med cannabis: relieve pain
+cannabis_reason_sleep_q6,numeric,Num,8,11.,11.,Reason use med cannabis: improve sleep
+cannabis_reason_relax_q6,numeric,Num,8,11.,11.,Reason use med cannabis: relax
+cannabis_reason_other_q6,numeric,Num,8,11.,11.,Reason use med cannabis: other reason
+medi_cannabis_as_rx_med_q6,numeric,Num,8,11.,11.,Medicinal cannabis as substitute for prescription
+happiness_q6,numeric,Num,8,11.,11.,Overall happiness
+recent_colonoscopy_q6,numeric,Num,8,11.,11.,Colonoscopy in last 3 years
+recent_sigmoidoscopy_q6,numeric,Num,8,11.,11.,Sigmoidoscopy in last 3 years
+age_recent_colonoscopy_q6,numeric,Num,8,11.,11.,Age at recent colonoscopy
+age_recent_sigmoidoscopy_q6,numeric,Num,8,11.,11.,Age at recent sigmoidoscopy
+recent_chest_xray_q6,numeric,Num,8,11.,11.,Recent chest x-ray
