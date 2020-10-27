@@ -1,7 +1,6 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
-//import CircularProgress from '@material-ui/core/CircularProgress';
 import Tooltip from '@material-ui/core/Tooltip';
 import StartOfFollowUp from './StartOfFollowUp';
 import CensoringRules from './CensoringRules';
@@ -9,6 +8,12 @@ import CancerEndpoint from './CancerEndpoint';
 import QuestionnaireData from './questionnarie/QuestionnaireData';
 import SelectedDataSummary from './SelectedDataSummary';
 import Summary from './Summary';
+import CancerInformation from './CancerInformation';
+import Biospecimens from './Biospecimens';
+import GeospatialData from './GeospatialData';
+import DataSharing from './DataSharing';
+import HospitalizationInformation from './HospitalizationInformation';
+import MortalityInformation from './MortalityInformation'
 import axios from "axios";
 import MuiButton from "@material-ui/core/Button";
 import Paper from '@material-ui/core/Paper';
@@ -59,6 +64,39 @@ const getExpanded = (project) => {
 }
 
 
+const getModules = (project) => {
+    let modules = [];
+    if (project.endpoint === 'Cancer') {
+        if (project.study_design === 'Cohort') {
+            modules = [CancerEndpoint, StartOfFollowUp, CensoringRules, QuestionnaireData];
+        } else {
+            modules = [CancerInformation, QuestionnaireData];
+        }
+    } else if (project.endpoint === 'Hospitalization') {
+        modules = [HospitalizationInformation, QuestionnaireData];
+    } else if (project.endpoint === 'Mortality') {
+        modules = [MortalityInformation, QuestionnaireData];
+    }
+
+    if (project.biospecimens) {
+        modules.push(Biospecimens);
+    }
+
+    if (project.geospatial_data) {
+        modules.push(GeospatialData);
+    }
+
+    if (project.data_sharing) {
+        modules.push(DataSharing);
+    }
+
+    modules.push(Summary);
+
+    return modules;
+
+}
+
+
 class ProjectConfigPane extends React.Component {
 
     constructor(props) {
@@ -74,6 +112,13 @@ class ProjectConfigPane extends React.Component {
             censoring_rules: this.props.project.censoring_rules ? JSON.parse(this.props.project.censoring_rules) : null,
             questionnarie: this.props.project.questionnarie ? JSON.parse(this.props.project.questionnarie) : null,
 
+            cancer_info: this.props.project.cancer_info ? JSON.parse(this.props.project.cancer_info) : null,
+            biospecimen_info: this.props.project.biospecimen_info ? JSON.parse(this.props.project.biospecimen_info) : null,
+            geospatial_info: this.props.project.geospatial_info ? JSON.parse(this.props.project.geospatial_info) : null,
+            data_sharing_info: this.props.project.data_sharing_info ? JSON.parse(this.props.project.data_sharing_info) : null,
+            mortality_info: this.props.project.mortality_info ? JSON.parse(this.props.project.mortality_info) : null,
+            hospitalization_info: this.props.project.hospitalization_info ? JSON.parse(this.props.project.hospitalization_info) : null,
+
             activeTabKey: "config",  // manage tabs
             activeStep: 0,
             next_step_valid: false,
@@ -87,6 +132,13 @@ class ProjectConfigPane extends React.Component {
         this.startOfFollowUpRef = React.createRef();
         this.censoringRulesRef = React.createRef();
         this.questionnarieRef = React.createRef();
+
+        this.cancerInfoRef = React.createRef();
+        this.biospecimenInfoRef = React.createRef();
+        this.geospatialInfoRef = React.createRef();
+        this.dataSharingInfoRef = React.createRef();
+        this.mortalityInfoRef = React.createRef();
+        this.hospitalizationInfoRef = React.createRef();
 
         this.makeProgressFunct = null;
     }
@@ -216,11 +268,70 @@ class ProjectConfigPane extends React.Component {
     }
 
     saveQuestionnarie = (variable_selected) => {
-
         let project = this.state.project;
         project.questionnarie = JSON.stringify(variable_selected);
         this.setState({
             questionnarie: variable_selected,
+            project
+        }, this.saveProjectConfig);
+    }
+
+    setCancerInformation = (cancer_information) => {
+        this.setState({
+            cancer_information
+        }, this.saveProjectConfig);
+    }
+
+    saveCancerInformation = (cancer_info) => {
+        let project = this.state.project;
+        project.cancer_info = JSON.stringify(cancer_info);
+        this.setState({
+            cancer_info,
+            project
+        }, this.saveProjectConfig);
+    }
+
+    saveBiospecimenInformation = (biospecimen_info) => {
+        let project = this.state.project;
+        project.biospecimen_info = JSON.stringify(biospecimen_info);
+        this.setState({
+            biospecimen_info,
+            project
+        }, this.saveProjectConfig);
+    }
+
+    saveGeospatialInformation = (geospatial_info) => {
+        let project = this.state.project;
+        project.geospatial_info = JSON.stringify(geospatial_info);
+        this.setState({
+            geospatial_info,
+            project
+        }, this.saveProjectConfig);
+    }
+
+    saveDataSharingInformation = (data_sharing_info) => {
+        let project = this.state.project;
+        project.data_sharing_info = JSON.stringify(data_sharing_info);
+        this.setState({
+            data_sharing_info,
+            project
+        }, this.saveProjectConfig);
+    }
+
+    saveMortalityInformation = (mortality_info) => {
+        let project = this.state.project;
+        project.mortality_info = JSON.stringify(mortality_info);
+        this.setState({
+            mortality_info,
+            project
+        }, this.saveProjectConfig);
+    }
+
+    saveHospitalizationInformation = (hospitalization_info) => {
+        let project = this.state.project;
+        project.hospitalization_info = JSON.stringify(hospitalization_info);
+        this.setState({
+            hospitalization_info,
             project
         }, this.saveProjectConfig);
     }
@@ -233,15 +344,24 @@ class ProjectConfigPane extends React.Component {
             start_of_follow_up: this.state.start_of_follow_up ? JSON.stringify(this.state.start_of_follow_up) : null,
             censoring_rules: this.state.censoring_rules ? JSON.stringify(this.state.censoring_rules) : null,
             questionnarie: this.state.questionnarie ? JSON.stringify(this.state.questionnarie) : null,
+            cancer_info: this.state.cancer_info ? JSON.stringify(this.state.cancer_info) : null,
+            biospecimen_info: this.state.biospecimen_info ? JSON.stringify(this.state.biospecimen_info) : null,
+            geospatial_info: this.state.geospatial_info ? JSON.stringify(this.state.geospatial_info) : null,
+            data_sharing_info: this.state.data_sharing_info ? JSON.stringify(this.state.data_sharing_info) : null,
+            mortality_info: this.state.mortality_info ? JSON.stringify(this.state.mortality_info) : null,
+            hospitalization_info: this.state.hospitalization_info ? JSON.stringify(this.state.hospitalization_info) : null,
         }
 
-        console.log("questionnarie = " + JSON.stringify(this.state.questionnarie, null, 2));
-        console.log("updates = " + JSON.stringify(updates, null, 2));
+        //console.log("questionnarie = " + JSON.stringify(this.state.questionnarie, null, 2));
+        //console.log("updates = " + JSON.stringify(updates, null, 2));
 
         await axios.put('/api/project/' + this.state.project.id, updates)
             .then(function (response) {
                 let result = response.data;
                 thisProps.update_project_in_list(result);
+            })
+            .catch(error => {
+                window.location.href = "/";
             });
 
         if (this.summaryRef.current && this.summaryRef.current.refresh) {
@@ -402,12 +522,24 @@ class ProjectConfigPane extends React.Component {
         project.start_of_follow_up = null;
         project.censoring_rules = null;
         project.questionnarie = JSON.stringify(preselected);
+        project.cancer_info = null;
+        project.hospitalization_info = null;
+        project.mortality_info = null;
+        project.biospecimen_info = null;
+        project.geospatial_info = null;
+        project.data_sharing_info = null;
 
         this.setState({
             cancer_endpoint: null,
             start_of_follow_up: null,
             censoring_rules: null,
             questionnarie: preselected,
+            cancer_info: null,
+            biospecimen_info: null,
+            geospatial_info: null,
+            data_sharing_info: null,
+            mortality_info: null,
+            hospitalization_info: null,
             project: project,
             activeTabKey: 'config',
             activeStep: 0,
@@ -429,10 +561,35 @@ class ProjectConfigPane extends React.Component {
         if (this.questionnarieRef.current) {
             this.questionnarieRef.current.reset();
         }
+
+        if (this.cancerInfoRef.current) {
+            this.cancerInfoRef.current.reset();
+        }
+
+        if (this.biospecimenInfoRef.current) {
+            this.biospecimenInfoRef.current.reset();
+        }
+
+        if (this.geospatialInfoRef.current) {
+            this.geospatialInfoRef.current.reset();
+        }
+
+        if (this.dataSharingInfoRef.current) {
+            this.dataSharingInfoRef.current.reset();
+        }
+
+        if (this.mortalityInfoRef.current) {
+            this.mortalityInfoRef.current.reset();
+        }
+
+        if (this.hospitalizationInfoRef.current) {
+            this.hospitalizationInfoRef.current.reset();
+        }
+
     }
 
     nextStep = () => {
-        if (this.state.activeStep < 4) {
+        if (this.state.activeStep < getModules(this.state.project).length - 1) {
             let activeStep = this.state.activeStep + 1;
             this.setState({
                 activeStep,
@@ -509,6 +666,8 @@ class ProjectConfigPane extends React.Component {
             method: 'GET',
             responseType: 'blob', // important
         }).then((response) => {
+
+            /*
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
@@ -517,6 +676,7 @@ class ProjectConfigPane extends React.Component {
             link.setAttribute('download', filename);
             document.body.appendChild(link);
             link.click();
+            */
 
             clearInterval(this.makeProgressFunct);
             let project = thisState.state.project;
@@ -525,6 +685,11 @@ class ProjectConfigPane extends React.Component {
                 showWaitDowwnload: false,
                 project
             });
+
+            Modal.success({
+                content: `The data for the project "${project.name}" version ${project.version - 1 < 10 ? '0' + project.version - 1 : project.version - 1} was generated.`,
+            });
+
         }).catch(function (error) {
 
             if (thisState.makeProgressFunct) {
@@ -605,451 +770,212 @@ class ProjectConfigPane extends React.Component {
                                      style={{padding: '4pt 2pt 0pt 2pt'}}
                             >
 
-                                <Paper elevation={8}
-                                       style={{
-                                           padding: '20pt 20pt 20pt 20pt',
-                                           margin: '10pt 5pt 10pt 5pt',
-                                       }}>
+                                {
+                                    <Paper elevation={8}
+                                           style={{
+                                               padding: '20pt 20pt 20pt 20pt',
+                                               margin: '10pt 5pt 10pt 5pt',
+                                           }}>
 
-                                    <Stepper activeStep={this.state.activeStep} alternativeLabel>
-                                        <Step key={'Task1'}>
-                                            <StepLabel completed=
-                                                           {
-                                                               this.state.cancer_endpoint &&
-                                                               this.state.cancer_endpoint.length > 0
-                                                           }
-                                                       onClick={() => this.stepTo(0)}>
-                                                {'Select cancer endpoint'}
-                                            </StepLabel>
-                                        </Step>
-                                        <Step key={'Task2'}>
-                                            <StepLabel completed=
-                                                           {
-                                                               this.state.start_of_follow_up !== undefined &&
-                                                               this.state.start_of_follow_up !== null &&
-                                                               this.state.start_of_follow_up.start_of_follow_up !== undefined &&
-                                                               this.state.start_of_follow_up.start_of_follow_up !== null &&
-                                                               (
-                                                                   (
-                                                                       this.state.start_of_follow_up.start_of_follow_up === 'Other' &&
-                                                                       this.state.start_of_follow_up.start_of_follow_up_specified !== undefined &&
-                                                                       this.state.start_of_follow_up.start_of_follow_up_specified !== null
-                                                                   )
-                                                                   ||
-                                                                   (
-                                                                       this.state.start_of_follow_up.start_of_follow_up !== 'Other' &&
-                                                                       this.state.start_of_follow_up.start_of_follow_up_exclude !== undefined &&
-                                                                       this.state.start_of_follow_up.start_of_follow_up_exclude !== null
-                                                                   )
-                                                               )
-                                                           }
-                                                       onClick={() => this.stepTo(1)}>
-                                                {'Select start of follow-up'}
-                                            </StepLabel>
-                                        </Step>
-                                        <Step key={'Task3'}>
-                                            <StepLabel completed=
-                                                           {
-                                                               //this.state.censoring_rules &&
-                                                               //this.state.censoring_rules.through_2015_12_31 !== undefined
-                                                               this.state.censoring_rules !== undefined &&
-                                                               this.state.censoring_rules !== null &&
-                                                               this.state.censoring_rules.through_2015_12_31 !== undefined &&
-                                                               this.state.censoring_rules.through_2015_12_31 !== null &&
-                                                               (
-                                                                   (
-                                                                       this.state.censoring_rules.through_2015_12_31 === true &&
-                                                                       this.state.censoring_rules.end_of_follow_up_exclude !== undefined &&
-                                                                       this.state.censoring_rules.end_of_follow_up_exclude !== null
-                                                                   )
-                                                                   ||
-                                                                   (
-                                                                       this.state.censoring_rules.through_2015_12_31 === false &&
-                                                                       this.state.censoring_rules.end_of_follow_up !== undefined &&
-                                                                       this.state.censoring_rules.end_of_follow_up !== null &&
-                                                                       (
-                                                                           (
-                                                                               this.state.censoring_rules.end_of_follow_up === 'Other' &&
-                                                                               this.state.censoring_rules.end_of_follow_up_specified !== undefined &&
-                                                                               this.state.censoring_rules.end_of_follow_up_specified !== null
-                                                                           )
-                                                                           ||
-                                                                           (
-                                                                               this.state.censoring_rules.end_of_follow_up !== 'Other' &&
-                                                                               this.state.censoring_rules.end_of_follow_up_exclude !== undefined &&
-                                                                               this.state.censoring_rules.end_of_follow_up_exclude !== null
-                                                                           )
-                                                                       )
-                                                                   )
-                                                               )
-
-
-                                                           }
-                                                       onClick={() => this.stepTo(2)}>
-                                                {'Select censoring rules'}
-                                            </StepLabel>
-                                        </Step>
-                                        <Step key={'Task4'}>
-                                            <StepLabel completed=
-                                                           {
-                                                               this.state.questionnarie &&
-                                                               (
-                                                                   (
-                                                                       this.state.questionnarie['Q1'] &&
-                                                                       JSON.stringify(this.state.questionnarie['Q1']) !== '{}'
-                                                                   )
-                                                                   ||
-                                                                   (
-                                                                       this.state.questionnarie['Q2'] &&
-                                                                       JSON.stringify(this.state.questionnarie['Q2']) !== '{}'
-                                                                   )
-                                                                   ||
-                                                                   (
-                                                                       this.state.questionnarie['Q3'] &&
-                                                                       JSON.stringify(this.state.questionnarie['Q3']) !== '{}'
-                                                                   )
-                                                                   ||
-                                                                   (
-                                                                       this.state.questionnarie['Q4'] &&
-                                                                       JSON.stringify(this.state.questionnarie['Q4']) !== '{}'
-                                                                   )
-                                                                   ||
-                                                                   (
-                                                                       this.state.questionnarie['Q4mini'] &&
-                                                                       JSON.stringify(this.state.questionnarie['Q4mini']) !== '{}'
-                                                                   )
-                                                                   ||
-                                                                   (
-                                                                       this.state.questionnarie['Q5'] &&
-                                                                       JSON.stringify(this.state.questionnarie['Q5']) !== '{}'
-                                                                   )
-                                                                   ||
-                                                                   (
-                                                                       this.state.questionnarie['Q5mini'] &&
-                                                                       JSON.stringify(this.state.questionnarie['Q5mini']) !== '{}'
-                                                                   )
-                                                                   ||
-                                                                   (
-                                                                       this.state.questionnarie['Q6'] &&
-                                                                       JSON.stringify(this.state.questionnarie['Q6']) !== '{}'
-                                                                   )
-                                                               )
-                                                           }
-                                                       onClick={() => this.stepTo(3)}>
-                                                {'Select questionnaire data'}
-                                            </StepLabel>
-                                        </Step>
-                                        <Step>
-                                            <StepLabel completed={
-                                                this.state.cancer_endpoint &&
-                                                this.state.cancer_endpoint.length > 0 &&
-                                                this.state.start_of_follow_up !== undefined &&
-                                                this.state.start_of_follow_up !== null &&
-                                                this.state.start_of_follow_up.start_of_follow_up !== undefined &&
-                                                this.state.start_of_follow_up.start_of_follow_up !== null &&
-                                                (
-                                                    (
-                                                        this.state.start_of_follow_up.start_of_follow_up === 'Other' &&
-                                                        this.state.start_of_follow_up.start_of_follow_up_specified !== undefined &&
-                                                        this.state.start_of_follow_up.start_of_follow_up_specified !== null
-                                                    )
-                                                    ||
-                                                    (
-                                                        this.state.start_of_follow_up.start_of_follow_up !== 'Other' &&
-                                                        this.state.start_of_follow_up.start_of_follow_up_exclude !== undefined &&
-                                                        this.state.start_of_follow_up.start_of_follow_up_exclude !== null
-                                                    )
-                                                ) &&
-                                                this.state.censoring_rules !== undefined &&
-                                                this.state.censoring_rules !== null &&
-                                                this.state.censoring_rules.through_2015_12_31 !== undefined &&
-                                                this.state.censoring_rules.through_2015_12_31 !== null &&
-                                                (
-                                                    (
-                                                        this.state.censoring_rules.through_2015_12_31 === true &&
-                                                        this.state.censoring_rules.end_of_follow_up_exclude !== undefined &&
-                                                        this.state.censoring_rules.end_of_follow_up_exclude !== null
-                                                    )
-                                                    ||
-                                                    (
-                                                        this.state.censoring_rules.through_2015_12_31 === false &&
-                                                        this.state.censoring_rules.end_of_follow_up !== undefined &&
-                                                        this.state.censoring_rules.end_of_follow_up !== null &&
-                                                        (
-                                                            (
-                                                                this.state.censoring_rules.end_of_follow_up === 'Other' &&
-                                                                this.state.censoring_rules.end_of_follow_up_specified !== undefined &&
-                                                                this.state.censoring_rules.end_of_follow_up_specified !== null
-                                                            )
-                                                            ||
-                                                            (
-                                                                this.state.censoring_rules.end_of_follow_up !== 'Other' &&
-                                                                this.state.censoring_rules.end_of_follow_up_exclude !== undefined &&
-                                                                this.state.censoring_rules.end_of_follow_up_exclude !== null
-                                                            )
-                                                        )
-                                                    )
-                                                ) &&
-                                                this.state.questionnarie &&
-                                                (
-                                                    (
-                                                        this.state.questionnarie['Q1'] &&
-                                                        JSON.stringify(this.state.questionnarie['Q1']) !== '{}'
-                                                    )
-                                                    ||
-                                                    (
-                                                        this.state.questionnarie['Q2'] &&
-                                                        JSON.stringify(this.state.questionnarie['Q2']) !== '{}'
-                                                    )
-                                                    ||
-                                                    (
-                                                        this.state.questionnarie['Q3'] &&
-                                                        JSON.stringify(this.state.questionnarie['Q3']) !== '{}'
-                                                    )
-                                                    ||
-                                                    (
-                                                        this.state.questionnarie['Q4'] &&
-                                                        JSON.stringify(this.state.questionnarie['Q4']) !== '{}'
-                                                    )
-                                                    ||
-                                                    (
-                                                        this.state.questionnarie['Q4mini'] &&
-                                                        JSON.stringify(this.state.questionnarie['Q4mini']) !== '{}'
-                                                    )
-                                                    ||
-                                                    (
-                                                        this.state.questionnarie['Q5'] &&
-                                                        JSON.stringify(this.state.questionnarie['Q5']) !== '{}'
-                                                    )
-                                                    ||
-                                                    (
-                                                        this.state.questionnarie['Q5mini'] &&
-                                                        JSON.stringify(this.state.questionnarie['Q5mini']) !== '{}'
-                                                    )
-                                                    ||
-                                                    (
-                                                        this.state.questionnarie['Q6'] &&
-                                                        JSON.stringify(this.state.questionnarie['Q6']) !== '{}'
-                                                    )
+                                        <Stepper activeStep={this.state.activeStep} alternativeLabel>
+                                            {
+                                                getModules(this.state.project).map((module, task_id) =>
+                                                    <Step key={module.getTitle()}>
+                                                        <StepLabel
+                                                            completed={module.isComplete(this.state)}
+                                                            onClick={() => this.stepTo(task_id)}>
+                                                            {module.getTitle()}
+                                                        </StepLabel>
+                                                    </Step>
                                                 )
                                             }
+                                        </Stepper>
 
-                                                       onClick={() => this.stepTo(4)}
-                                            >
-                                                {'Summary'}
-                                            </StepLabel>
-                                        </Step>
-                                    </Stepper>
+                                        {
+                                            getModules(this.state.project)[this.state.activeStep].getTitle &&
+                                            getModules(this.state.project)[this.state.activeStep].getTitle() === 'Select cancer endpoint' ?
+                                                <CancerEndpoint project={this.state.project}
+                                                                setup_cancer_endpoint={this.setCancerEndpoint}
+                                                                save_cancer_endpoint={this.saveCancerEndpoint}
+                                                                ref={this.cancerEndpointRef}
+                                                /> : null
+                                        }
 
-                                    {
-                                        this.state.activeStep === 0 ?
-                                            <CancerEndpoint project={this.state.project}
-                                                            setup_cancer_endpoint={this.setCancerEndpoint}
-                                                            save_cancer_endpoint={this.saveCancerEndpoint}
-                                                            ref={this.cancerEndpointRef}
-                                            /> : null
-                                    }
+                                        {
+                                            getModules(this.state.project)[this.state.activeStep].getTitle &&
+                                            getModules(this.state.project)[this.state.activeStep].getTitle() === 'Select start of follow-up' ?
+                                                <StartOfFollowUp project={this.state.project}
+                                                                 setup_start_of_follow_up={this.setStartOfFollowUp}
+                                                                 save_start_of_follow_up={this.saveStartOfFollowUp}
+                                                                 ref={this.startOfFollowUpRef}
+                                                />
+                                                : null
+                                        }
 
-                                    {
-                                        this.state.activeStep === 1 ?
-                                            <StartOfFollowUp project={this.state.project}
-                                                             setup_start_of_follow_up={this.setStartOfFollowUp}
-                                                             save_start_of_follow_up={this.saveStartOfFollowUp}
-                                                             ref={this.startOfFollowUpRef}
-                                            />
-                                            : null
-                                    }
+                                        {
+                                            getModules(this.state.project)[this.state.activeStep].getTitle &&
+                                            getModules(this.state.project)[this.state.activeStep].getTitle() === 'Select censoring rules' ?
+                                                <CensoringRules project={this.state.project}
+                                                                setup_censoring_rules={this.setCensoringRules}
+                                                                save_censoring_rules={this.saveCensoringRules}
+                                                                ref={this.censoringRulesRef}
+                                                />
+                                                : null
+                                        }
 
-                                    {
-                                        this.state.activeStep === 2 ?
-                                            <CensoringRules project={this.state.project}
-                                                            setup_censoring_rules={this.setCensoringRules}
-                                                            save_censoring_rules={this.saveCensoringRules}
-                                                            ref={this.censoringRulesRef}
-                                            />
-                                            : null
-                                    }
+                                        {
+                                            getModules(this.state.project)[this.state.activeStep].getTitle &&
+                                            getModules(this.state.project)[this.state.activeStep].getTitle() === 'Enter cancer information' ?
+                                                <CancerInformation project={this.state.project}
+                                                                   save_cancer_information={this.saveCancerInformation}
+                                                                   ref={this.cancerInfoRef}
+                                                /> : null
+                                        }
 
-                                    {
-                                        this.state.activeStep === 3 ?
-                                            <QuestionnaireData project={this.state.project}
-                                                               save_questionnarie={this.saveQuestionnarie}
-                                                               ref={this.questionnarieRef}
-                                            />
-                                            : null
-                                    }
+                                        {
+                                            getModules(this.state.project)[this.state.activeStep].getTitle &&
+                                            getModules(this.state.project)[this.state.activeStep].getTitle() === 'Enter hospitalization information' ?
+                                                <HospitalizationInformation project={this.state.project}
+                                                                            save_hospitalization_info={this.saveHospitalizationInformation}
+                                                                            ref={this.hospitalizationInfoRef}
+                                                /> : null
+                                        }
 
-                                    {
-                                        this.state.activeStep === 4 ?
-                                            <Summary project={this.state.project}/> : null
-                                    }
-
-                                    <div style={{width: '100%', textAlign: 'center'}}>
-                                        <Space>
-                                            {
-                                                this.state.activeStep > 0 ?
-                                                    <MuiButton variant="contained"
-                                                               color="primary"
-                                                               disabled={this.state.activeStep === 0}
-                                                               onClick={this.backStep}
-                                                               style={{
-                                                                   margin: '10pt 0pt 8pt 0pt',
-                                                                   textTransform: 'none'
-                                                               }}>
-                                                        BACK
-                                                    </MuiButton>
-                                                    :
-                                                    null
-                                            }
-
-                                            {
-                                                this.state.activeStep < 4 ?
-                                                    <MuiButton variant="contained"
-                                                               color="primary"
-                                                               disabled={this.state.activeStep === 4}
-                                                               onClick={this.nextStep}
-                                                               style={{
-                                                                   margin: '10pt 0pt 8pt 0pt',
-                                                                   textTransform: 'none'
-                                                               }}>
-                                                        NEXT
-                                                    </MuiButton> :
-                                                    null
-                                            }
-
-                                            {
-                                                this.state.activeStep === 4 ?
-                                                    <MuiButton variant="contained"
-                                                               color="primary"
+                                        {
+                                            getModules(this.state.project)[this.state.activeStep].getTitle &&
+                                            getModules(this.state.project)[this.state.activeStep].getTitle() === 'Enter mortality information' ?
+                                                <MortalityInformation project={this.state.project}
+                                                                      save_mortality_information={this.saveMortalityInformation}
+                                                                      ref={this.mortalityInfoRef}
+                                                /> : null
+                                        }
 
 
-                                                               disabled={!(
-                                                                   this.state.cancer_endpoint &&
-                                                                   this.state.cancer_endpoint.length > 0 &&
-                                                                   this.state.start_of_follow_up !== undefined &&
-                                                                   this.state.start_of_follow_up !== null &&
-                                                                   this.state.start_of_follow_up.start_of_follow_up !== undefined &&
-                                                                   this.state.start_of_follow_up.start_of_follow_up !== null &&
-                                                                   (
-                                                                       (
-                                                                           this.state.start_of_follow_up.start_of_follow_up === 'Other' &&
-                                                                           this.state.start_of_follow_up.start_of_follow_up_specified !== undefined &&
-                                                                           this.state.start_of_follow_up.start_of_follow_up_specified !== null
-                                                                       )
-                                                                       ||
-                                                                       (
-                                                                           this.state.start_of_follow_up.start_of_follow_up !== 'Other' &&
-                                                                           this.state.start_of_follow_up.start_of_follow_up_exclude !== undefined &&
-                                                                           this.state.start_of_follow_up.start_of_follow_up_exclude !== null
-                                                                       )
-                                                                   ) &&
-                                                                   this.state.censoring_rules !== undefined &&
-                                                                   this.state.censoring_rules !== null &&
-                                                                   this.state.censoring_rules.through_2015_12_31 !== undefined &&
-                                                                   this.state.censoring_rules.through_2015_12_31 !== null &&
-                                                                   (
-                                                                       (
-                                                                           this.state.censoring_rules.through_2015_12_31 === true &&
-                                                                           this.state.censoring_rules.end_of_follow_up_exclude !== undefined &&
-                                                                           this.state.censoring_rules.end_of_follow_up_exclude !== null
-                                                                       )
-                                                                       ||
-                                                                       (
-                                                                           this.state.censoring_rules.through_2015_12_31 === false &&
-                                                                           this.state.censoring_rules.end_of_follow_up !== undefined &&
-                                                                           this.state.censoring_rules.end_of_follow_up !== null &&
-                                                                           (
-                                                                               (
-                                                                                   this.state.censoring_rules.end_of_follow_up === 'Other' &&
-                                                                                   this.state.censoring_rules.end_of_follow_up_specified !== undefined &&
-                                                                                   this.state.censoring_rules.end_of_follow_up_specified !== null
-                                                                               )
-                                                                               ||
-                                                                               (
-                                                                                   this.state.censoring_rules.end_of_follow_up !== 'Other' &&
-                                                                                   this.state.censoring_rules.end_of_follow_up_exclude !== undefined &&
-                                                                                   this.state.censoring_rules.end_of_follow_up_exclude !== null
-                                                                               )
-                                                                           )
-                                                                       )
-                                                                   ) &&
-                                                                   this.state.questionnarie &&
-                                                                   (
-                                                                       (
-                                                                           this.state.questionnarie['Q1'] &&
-                                                                           JSON.stringify(this.state.questionnarie['Q1']) !== '{}'
-                                                                       )
-                                                                       ||
-                                                                       (
-                                                                           this.state.questionnarie['Q2'] &&
-                                                                           JSON.stringify(this.state.questionnarie['Q2']) !== '{}'
-                                                                       )
-                                                                       ||
-                                                                       (
-                                                                           this.state.questionnarie['Q3'] &&
-                                                                           JSON.stringify(this.state.questionnarie['Q3']) !== '{}'
-                                                                       )
-                                                                       ||
-                                                                       (
-                                                                           this.state.questionnarie['Q4'] &&
-                                                                           JSON.stringify(this.state.questionnarie['Q4']) !== '{}'
-                                                                       )
-                                                                       ||
-                                                                       (
-                                                                           this.state.questionnarie['Q4mini'] &&
-                                                                           JSON.stringify(this.state.questionnarie['Q4mini']) !== '{}'
-                                                                       )
-                                                                       ||
-                                                                       (
-                                                                           this.state.questionnarie['Q5'] &&
-                                                                           JSON.stringify(this.state.questionnarie['Q5']) !== '{}'
-                                                                       )
-                                                                       ||
-                                                                       (
-                                                                           this.state.questionnarie['Q5mini'] &&
-                                                                           JSON.stringify(this.state.questionnarie['Q5mini']) !== '{}'
-                                                                       )
-                                                                       ||
-                                                                       (
-                                                                           this.state.questionnarie['Q6'] &&
-                                                                           JSON.stringify(this.state.questionnarie['Q6']) !== '{}'
-                                                                       )
-                                                                   )
-                                                               )}
+                                        {
+                                            getModules(this.state.project)[this.state.activeStep].getTitle &&
+                                            getModules(this.state.project)[this.state.activeStep].getTitle() === 'Select questionnaire data' ?
+                                                <QuestionnaireData project={this.state.project}
+                                                                   save_questionnarie={this.saveQuestionnarie}
+                                                                   ref={this.questionnarieRef}
+                                                />
+                                                : null
+                                        }
+
+                                        {
+                                            getModules(this.state.project)[this.state.activeStep].getTitle &&
+                                            getModules(this.state.project)[this.state.activeStep].getTitle() === 'Enter biospecimen information' ?
+                                                <Biospecimens project={this.state.project}
+                                                              save_biospecimen_info={this.saveBiospecimenInformation}
+                                                              ref={this.biospecimenInfoRef}
+                                                />
+                                                : null
+                                        }
+
+                                        {
+                                            getModules(this.state.project)[this.state.activeStep].getTitle &&
+                                            getModules(this.state.project)[this.state.activeStep].getTitle() === 'Enter geospatial information' ?
+                                                <GeospatialData project={this.state.project}
+                                                                save_geospatial_info={this.saveGeospatialInformation}
+                                                                ref={this.geospatialInfoRef}
+                                                />
+                                                : null
+                                        }
+
+                                        {
+                                            getModules(this.state.project)[this.state.activeStep].getTitle &&
+                                            getModules(this.state.project)[this.state.activeStep].getTitle() === 'Enter data sharing information' ?
+                                                <DataSharing project={this.state.project}
+                                                             save_data_sharing_info={this.saveDataSharingInformation}
+                                                             ref={this.dataSharingInfoRef}
+                                                />
+                                                : null
+                                        }
+
+                                        {
+                                            getModules(this.state.project)[this.state.activeStep].getTitle &&
+                                            getModules(this.state.project)[this.state.activeStep].getTitle() === 'Summary' ?
+                                                <Summary project={this.state.project}/>
+                                                : null
+                                        }
 
 
-                                                               onClick={this.downloadData}
-                                                               style={{
-                                                                   margin: '10pt 0pt 8pt 0pt',
-                                                                   textTransform: 'none'
-                                                               }}>
-                                                        DOWNLOAD DATA
-                                                    </MuiButton>
-                                                    :
-                                                    null
-                                            }
+                                        <div style={{width: '100%', textAlign: 'center'}}>
+                                            <Space>
+                                                {
+                                                    this.state.activeStep > 0 ?
+                                                        <MuiButton variant="contained"
+                                                                   color="primary"
+                                                                   disabled={this.state.activeStep === 0}
+                                                                   onClick={this.backStep}
+                                                                   style={{
+                                                                       margin: '10pt 0pt 8pt 0pt',
+                                                                       textTransform: 'none'
+                                                                   }}>
+                                                            BACK
+                                                        </MuiButton>
+                                                        :
+                                                        null
+                                                }
 
-                                        </Space>
-                                    </div>
+                                                {
+                                                    this.state.activeStep < getModules(this.state.project).length - 1 ?
+                                                        <MuiButton variant="contained"
+                                                                   color="primary"
+                                                                   disabled={this.state.activeStep === getModules(this.state.project).length - 1}
+                                                                   onClick={this.nextStep}
+                                                                   style={{
+                                                                       margin: '10pt 0pt 8pt 0pt',
+                                                                       textTransform: 'none'
+                                                                   }}>
+                                                            NEXT
+                                                        </MuiButton> :
+                                                        null
+                                                }
 
-                                </Paper>
+                                                {
+                                                    this.state.activeStep === getModules(this.state.project).length - 1 ?
+                                                        <MuiButton variant="contained"
+                                                                   color="primary"
+                                                                   disabled={!Summary.isComplete(this.state)}
+                                                                   onClick={this.downloadData}
+                                                                   style={{
+                                                                       margin: '10pt 0pt 8pt 0pt',
+                                                                       textTransform: 'none'
+                                                                   }}>
+                                                            DOWNLOAD DATA
+                                                        </MuiButton>
+                                                        :
+                                                        null
+                                                }
+
+                                            </Space>
+                                        </div>
+
+                                    </Paper>
+                                }
+
                             </TabPane>
 
-                            <TabPane key="summary"
-                                     tab={
-                                         <span style={{padding: '0pt 32pt 0pt 32pt'}}>Summary Charts</span>
-                                     }>
-                                <div style={{minHeight: '90vh'}}>
-                                    <SelectedDataSummary
-                                        project={this.state.project}
-                                        caner_endpoint={this.state.cancer_endpoint}
-                                        start_of_follow_up={this.state.start_of_follow_up}
-                                        censoring_rules={this.state.censoring_rules}
-                                        get_current_state={this.getCurrentState}
-                                        ref={this.summaryRef}
-                                    />
-                                </div>
-                            </TabPane>
+                            {
+                                this.state.project.study_design === 'Cohort' &&
+                                this.state.project.endpoint === 'Cancer' ?
+                                    <TabPane key="summary"
+                                             tab={
+                                                 <span style={{padding: '0pt 32pt 0pt 32pt'}}>Summary Charts</span>
+                                             }>
+                                        <div style={{minHeight: '90vh'}}>
+                                            <SelectedDataSummary
+                                                project={this.state.project}
+                                                caner_endpoint={this.state.cancer_endpoint}
+                                                start_of_follow_up={this.state.start_of_follow_up}
+                                                censoring_rules={this.state.censoring_rules}
+                                                get_current_state={this.getCurrentState}
+                                                ref={this.summaryRef}
+                                            />
+                                        </div>
+                                    </TabPane> : null
+                            }
+
 
                             {/*
                             <TabPane key="datalog"

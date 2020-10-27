@@ -6,7 +6,7 @@ const sas_data_type_format = path.join(__dirname, '../../templates/MASTER_Data_T
 
 function getSASInformatvalue(rows, variable) {
     for (var i=0; i<rows.length; i++) {
-        if (rows[i].Variable === variable ) {
+        if (rows[i].Variable === variable || variable === 'participant_key' && rows[i].Variable ==='ssap_id') {
             return rows[i].SASInformat;
         }
     }
@@ -15,7 +15,7 @@ function getSASInformatvalue(rows, variable) {
 
 function getSASFormatvalue(rows, variable) {
     for (var i=0; i<rows.length; i++) {
-        if (rows[i].Variable === variable ) {
+        if (rows[i].Variable === variable || variable === 'participant_key' && rows[i].Variable ==='ssap_id') {
             return rows[i].SASFormat;
         }
     }
@@ -24,7 +24,7 @@ function getSASFormatvalue(rows, variable) {
 
 function getSASLabelvalue(rows, variable) {
     for (var i=0; i<rows.length; i++) {
-        if (rows[i].Variable === variable ) {
+        if (rows[i].Variable === variable || variable === 'participant_key' && rows[i].Variable ==='ssap_id') {
             return rows[i].SASLabel;
         }
     }
@@ -44,11 +44,14 @@ function createSAS(project, final_columns, dir, filename) {
             });
 
             csvFile.write('\tdata analytic_data;\n');
-            csvFile.write(`\t\tinfile '${dir}/${filename}_analytic_data.csv}' delimiter = ',' MISSOVER DSD firstobs=2;\n`);
+            csvFile.write(`\t\tinfile '${dir}/${filename}_analytic_data.csv' delimiter = ',' MISSOVER DSD firstobs=2;\n`);
             csvFile.write(`\n`);
 
             for (var i=0; i<final_columns.length; i++) {
                 let variable = final_columns[i];
+                if (variable === 'ssap_id') {
+                    variable = 'participant_key';
+                }
                 let SASInformatvalue = getSASInformatvalue(rows, variable);
                 csvFile.write(`\t\t\tinformat ${variable} ${SASInformatvalue};\n`);
             }
@@ -56,6 +59,9 @@ function createSAS(project, final_columns, dir, filename) {
             csvFile.write(`\n`);
             for (var i=0; i<final_columns.length; i++) {
                 let variable = final_columns[i];
+                if (variable === 'ssap_id') {
+                    variable = 'participant_key';
+                }
                 let SASFormatvalue = getSASFormatvalue(rows, variable);
                 csvFile.write(`\t\t\tformat ${variable} ${SASFormatvalue};\n`);
             }
@@ -63,14 +69,20 @@ function createSAS(project, final_columns, dir, filename) {
             csvFile.write(`\n`);
             for (var i=0; i<final_columns.length; i++) {
                 let variable = final_columns[i];
+                if (variable === 'ssap_id') {
+                    variable = 'participant_key';
+                }
                 let SASLabelvalue = getSASLabelvalue(rows, variable);
-                csvFile.write(`\t\t\tlabel ${variable} ${SASLabelvalue};\n`);
+                csvFile.write(`\t\t\tlabel ${variable}="${SASLabelvalue}";\n`);
             }
 
             csvFile.write(`\n`);
             csvFile.write(`\t\t\tinput\n`);
             for (var i=0; i<final_columns.length; i++) {
                 let variable = final_columns[i];
+                if (variable === 'ssap_id') {
+                    variable = 'participant_key';
+                }
                 if (i < final_columns.length-1) {
                     csvFile.write(`\t\t\t\t${variable}\n`);
                 } else {

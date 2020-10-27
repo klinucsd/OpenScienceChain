@@ -21,6 +21,33 @@ const root_style = {
 
 class StartOfFollowUp extends React.Component {
 
+    static getTitle = () => {
+        return 'Select start of follow-up';
+    }
+
+    static isComplete = (state) => {
+        return (
+            state.start_of_follow_up !== undefined &&
+            state.start_of_follow_up !== null &&
+            state.start_of_follow_up.start_of_follow_up !== undefined &&
+            state.start_of_follow_up.start_of_follow_up !== null &&
+            (
+                (
+                    state.start_of_follow_up.start_of_follow_up === 'Other' &&
+                    state.start_of_follow_up.start_of_follow_up_specified !== undefined &&
+                    state.start_of_follow_up.start_of_follow_up_specified !== null
+                )
+                ||
+                (
+                    state.start_of_follow_up.start_of_follow_up !== 'Other' &&
+                    state.start_of_follow_up.start_of_follow_up_exclude !== undefined &&
+                    state.start_of_follow_up.start_of_follow_up_exclude !== null
+                )
+            )
+        );
+    }
+
+
     constructor(props) {
         super(props);
         this.state = {
@@ -33,7 +60,7 @@ class StartOfFollowUp extends React.Component {
     componentDidMount() {
         if (this.props.project && this.props.project.start_of_follow_up) {
             let start_of_follow_up = JSON.parse(this.props.project.start_of_follow_up);
-            if (start_of_follow_up)  {
+            if (start_of_follow_up) {
                 this.setState({
                     start_of_follow_up: start_of_follow_up.start_of_follow_up,
                     start_of_follow_up_specified: start_of_follow_up.start_of_follow_up_specified ?
@@ -103,7 +130,7 @@ class StartOfFollowUp extends React.Component {
                 </Typography>
 
                 <Typography style={{padding: '5pt 10pt 0pt 10pt', width: '100%'}}>
-                    For your analysis, when should follow-up begin?  Please select one of the following.
+                    For your analysis, when should follow-up begin? Please select one of the following.
                 </Typography>
 
                 <div style={{padding: '5pt 0pt 10pt 25pt'}}>
@@ -152,26 +179,27 @@ class StartOfFollowUp extends React.Component {
                     <Radio.Group onChange={this.onChangeExclude} value={this.state.start_of_follow_up_exclude}>
                         <table>
                             <tbody style={{verticalAlign: 'super'}}>
-                                <tr>
-                                    <td><Radio style={radioStyle} value={'exclude all'}></Radio></td>
-                                    <td>
-                                        Exclude all participants who had a prevalent cancer of any
-                                        type at the start of follow-up.
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><Radio style={radioStyle} value={'exclude interest'}></Radio></td>
-                                    <td>
-                                        Exclude only the participants who had a prevalent cancer
-                                        of interest (i.e., the cancer endpoint for your analysis)
-                                        at the start of follow-up.
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><Radio style={radioStyle} value={'include all'}></Radio></td>
-                                    <td>Include all participants, even those with prevalent cancer
-                                        at the start of follow-up.</td>
-                                </tr>
+                            <tr>
+                                <td><Radio style={radioStyle} value={'exclude all'}></Radio></td>
+                                <td>
+                                    Exclude all participants who had a prevalent cancer of any
+                                    type at the start of follow-up.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><Radio style={radioStyle} value={'exclude interest'}></Radio></td>
+                                <td>
+                                    Exclude only the participants who had a prevalent cancer
+                                    of interest (i.e., the cancer endpoint for your analysis)
+                                    at the start of follow-up.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><Radio style={radioStyle} value={'include all'}></Radio></td>
+                                <td>Include all participants, even those with prevalent cancer
+                                    at the start of follow-up.
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </Radio.Group>

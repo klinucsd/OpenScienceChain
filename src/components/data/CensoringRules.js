@@ -21,6 +21,45 @@ const root_style = {
 
 class CensoringRules extends React.Component {
 
+    static getTitle = () => {
+        return 'Select censoring rules';
+    }
+
+    static isComplete = (state) => {
+        return (
+            state.censoring_rules !== undefined &&
+            state.censoring_rules !== null &&
+            state.censoring_rules.through_2015_12_31 !== undefined &&
+            state.censoring_rules.through_2015_12_31 !== null &&
+            (
+                (
+                    state.censoring_rules.through_2015_12_31 === true &&
+                    state.censoring_rules.end_of_follow_up_exclude !== undefined &&
+                    state.censoring_rules.end_of_follow_up_exclude !== null
+                )
+                ||
+                (
+                    state.censoring_rules.through_2015_12_31 === false &&
+                    state.censoring_rules.end_of_follow_up !== undefined &&
+                    state.censoring_rules.end_of_follow_up !== null &&
+                    (
+                        (
+                            state.censoring_rules.end_of_follow_up === 'Other' &&
+                            state.censoring_rules.end_of_follow_up_specified !== undefined &&
+                            state.censoring_rules.end_of_follow_up_specified !== null
+                        )
+                        ||
+                        (
+                            state.censoring_rules.end_of_follow_up !== 'Other' &&
+                            state.censoring_rules.end_of_follow_up_exclude !== undefined &&
+                            state.censoring_rules.end_of_follow_up_exclude !== null
+                        )
+                    )
+                )
+            )
+        );
+    }
+
     constructor(props) {
         super(props);
         this.state = {

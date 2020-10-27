@@ -1,126 +1,46 @@
 const all_topic_to_variable =
     {
         "Pre-selected variables": [
-            {
-                "variable": "age_at_baseline",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "adopted",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "twin",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "birthplace",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "birthplace_mom",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "birthplace_dad",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "participant_race",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "nih_ethnic_cat",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "age_mom_atbirth",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "age_dad_atbirth",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "menarche_age",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "oralcntr_ever_q1",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "oralcntr_yrs",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "fullterm_age1st",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "preg_ever_q1",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "preg_total_q1",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "meno_stattype",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "height_q1",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "weight_q1",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "bmi_q1",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "diab_self_q1",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "hbp_self_q1",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "allex_hrs_q1",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "allex_life_hrs",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "vit_mulvit_q1",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "alchl_analyscat",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "smoke_expocat",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "smoke_totyrs",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "smoke_totpackyrs",
-                "questionnarie": "Q1"
-            },
-            {
-                "variable": "cig_day_avg",
-                "questionnarie": "Q1"
-            }
+            {"variable": "age_at_baseline", "questionnarie": "Q1"},
+            {"variable": "adopted", "questionnarie": "Q1"},
+            {"variable": "twin", "questionnarie": "Q1"},
+            {"variable": "birthplace", "questionnarie": "Q1"},
+            {"variable": "birthplace_mom", "questionnarie": "Q1"},
+            {"variable": "birthplace_dad", "questionnarie": "Q1"},
+            {"variable": "participant_race", "questionnarie": "Q1"},
+            {"variable": "nih_ethnic_cat", "questionnarie": "Q1"},
+            {"variable": "age_mom_atbirth", "questionnarie": "Q1"},
+            {"variable": "age_dad_atbirth", "questionnarie": "Q1"},
+            {"variable": "menarche_age", "questionnarie": "Q1"},
+            {"variable": "oralcntr_ever_q1", "questionnarie": "Q1"},
+            {"variable": "oralcntr_yrs", "questionnarie": "Q1"},
+            {"variable": "fullterm_age1st", "questionnarie": "Q1"},
+            {"variable": "preg_ever_q1", "questionnarie": "Q1"},
+            {"variable": "preg_total_q1", "questionnarie": "Q1"},
+            {"variable": "meno_stattype", "questionnarie": "Q1"},
+            {"variable": "height_q1", "questionnarie": "Q1"},
+            {"variable": "weight_q1", "questionnarie": "Q1"},
+            {"variable": "bmi_q1", "questionnarie": "Q1"},
+            {"variable": "endoca_self_q1", "questionnarie": "Q1"},
+            {"variable": "cervca_self_q1", "questionnarie": "Q1"},
+            {"variable": "ovryca_self_q1", "questionnarie": "Q1"},
+            {"variable": "lungca_self_q1", "questionnarie": "Q1"},
+            {"variable": "leuk_self_q1", "questionnarie": "Q1"},
+            {"variable": "hodg_self_q1", "questionnarie": "Q1"},
+            {"variable": "colnca_self_q1", "questionnarie": "Q1"},
+            {"variable": "thyrca_self_q1", "questionnarie": "Q1"},
+            {"variable": "meln_self_q1", "questionnarie": "Q1"},
+            {"variable": "diab_self_q1", "questionnarie": "Q1"},
+            {"variable": "hbp_self_q1", "questionnarie": "Q1"},
+            {"variable": "brca_selfsurvey", "questionnarie": "Q1"},
+            {"variable": "allex_hrs_q1", "questionnarie": "Q1"},
+            {"variable": "allex_life_hrs", "questionnarie": "Q1"},
+            {"variable": "vit_mulvit_q1", "questionnarie": "Q1"},
+            {"variable": "alchl_analyscat", "questionnarie": "Q1"},
+            {"variable": "smoke_expocat", "questionnarie": "Q1"},
+            {"variable": "smoke_totyrs", "questionnarie": "Q1"},
+            {"variable": "smoke_totpackyrs", "questionnarie": "Q1"},
+            {"variable": "cig_day_avg", "questionnarie": "Q1"},
         ],
         "Participant characteristics": [
             {

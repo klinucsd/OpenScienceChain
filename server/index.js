@@ -83,6 +83,14 @@ const Project = sequelize.define(
         start_of_follow_up: Sequelize.TEXT,
         censoring_rules: Sequelize.TEXT,
         questionnarie: Sequelize.TEXT,
+
+        cancer_info: Sequelize.TEXT,
+        hospitalization_info: Sequelize.TEXT,
+        mortality_info: Sequelize.TEXT,
+        biospecimen_info: Sequelize.TEXT,
+        geospatial_info: Sequelize.TEXT,
+        data_sharing_info: Sequelize.TEXT,
+
         version: Sequelize.INTEGER
     });
 
@@ -235,12 +243,16 @@ app.get('/api/user', (req, res) => {
                 // single user
                 if (users && users.length === 1 && users[0].role !== 'admin') {
                     req.session.user = users[0];
+                    var hour = 3600000;
+                    req.session.cookie.expires = new Date(Date.now() + hour);
+                    req.session.cookie.maxAge = 100 * hour;
                 }
                 res.send(JSON.stringify(users));
             }
         })
 });
 
+//let check_users_from_ad = require('./user/check_users_from_ad');
 app.post('/api/login', (req, res) => {
     let email = req.body.params.email;
     let password = req.body.params.password;
@@ -253,13 +265,20 @@ app.post('/api/login', (req, res) => {
         email: email,
         password: password
     };
+
+
     User.findOne(query)
         .then(user => {
             if (user) {
+                var hour = 3600000;
+                req.session.cookie.expires = new Date(Date.now() + hour);
+                req.session.cookie.maxAge = 100 * hour;
                 req.session.user = user;
             }
             res.setHeader('Content-Type', 'application/json');
             res.json(user);
+
+            //check_users_from_ad(User);
         })
 });
 
@@ -676,6 +695,10 @@ app.put('/api/project/:id', (req, res) => {
                 {model: User, as: 'users'},
             ],
         }).then(project => {
+
+            console.log(`------------------------------`);
+            console.log(`project put: ${JSON.stringify(updates)}`);
+
             return project.update(updates);
         }).then(updated_project => {
             if (req.body.users && req.body.users.length > 0) {
@@ -704,7 +727,7 @@ app.put('/api/project/:id', (req, res) => {
         });
     } else {
         res.setHeader('Content-Type', 'application/json');
-        res.send({Error: 'No permission to update this project.'});
+        res.status(400).send({Error: 'No permission to update this project.'});
     }
 });
 
@@ -1160,10 +1183,16 @@ let meta_columns_2 = all_columns.filter(x => !questionnarie_columns.includes(x))
 //console.log("-------------- meta columns --------------");
 //console.log(JSON.stringify(meta_columns_2));
 
+
+let tokens = ["cts_data.sqlite"];
+let task_token = {};
+
 app.get('/api/task_status/:task_id', (req, res) => {
     const task_id = req.params.task_id;
 
-    let sql = `SELECT status FROM task WHERE id='${task_id}'`
+    let sql = `SELECT status FROM task WHERE id='${task_id}'`;
+
+    /*
     sequelize.query(sql)
         .then(result => {
             let data = result[0];
@@ -1174,6 +1203,24 @@ app.get('/api/task_status/:task_id', (req, res) => {
                 res.json({status: 'copying data into a temporary table'})
             }
         });
+    */
+
+    var sqlite3 = require('sqlite3').verbose();
+    //var file = "cts_data.sqlite";
+    var file = task_token[task_id];
+    if (file) {
+        var db = new sqlite3.Database(file);
+        db.all(sql, function (err, rows) {
+            if (rows.length > 0) {
+                res.json({status: rows[0].status})
+            } else {
+                res.json({status: 'copying data into a temporary table'})
+            }
+        });
+        db.close();
+    } else {
+        res.json({status: 'Please wait ...'});
+    }
 });
 
 var fs = require('fs');
@@ -1185,6 +1232,9 @@ app.get('/api/download/data/:id/:abbrev/:task_id/:date_rep', (req, res) => {
     const abbrev = req.params.abbrev;
     const task_id = req.params.task_id;
     const date_rep = req.params.date_rep;
+
+    // handle statistics
+    let statistics = {};
 
     Project.findOne({
         where: {id: id},
@@ -1206,16 +1256,62 @@ app.get('/api/download/data/:id/:abbrev/:task_id/:date_rep', (req, res) => {
             project.questionnarie = JSON.parse(project.questionnarie);
         }
 
-        //console.log("\n=========== download =============");
-        //console.log(JSON.stringify(project));
 
-        //console.log("\n=========== project questionnarie =============");
-        //console.log(JSON.stringify(project.questionnarie));
+        ////////////////////////////////////////////////////////////////
+        //
+        // START: process a project that is not cohort + cancer
+        //
+        ////////////////////////////////////////////////////////////////
 
-        //const db = new Database('cts.sqlite', {verbose: console.log});
+        if (project.cancer_info) {
+            project.cancer_info = JSON.parse(project.cancer_info);
+        }
+
+        if (project.biospecimen_info) {
+            project.biospecimen_info = JSON.parse(project.biospecimen_info);
+        }
+
+        if (project.geospatial_info) {
+            project.geospatial_info = JSON.parse(project.geospatial_info);
+        }
+
+        if (project.data_sharing_info) {
+            project.data_sharing_info = JSON.parse(project.data_sharing_info);
+        }
+
+        if (project.mortality_info) {
+            project.mortality_info = JSON.parse(project.mortality_info);
+        }
+
+        if (project.hospitalization_info) {
+            project.hospitalization_info = JSON.parse(project.hospitalization_info);
+        }
+
+        console.log(`project: ${JSON.stringify(project, null, 2)}`);
+
+        ////////////////////////////////////////////////////////////////
+        //
+        // END: process a project that is not cohort + cancer
+        //
+        ////////////////////////////////////////////////////////////////
+
+
+
+        let token = null;
+        if (tokens.length === 0) {
+            res.status(400).send({
+                message: 'wait'
+            });
+            return;
+        } else {
+            token = tokens.pop();
+            task_token[task_id] = token;
+        }
+
 
         var sqlite3 = require('sqlite3').verbose();
-        var file = "cts.sqlite";
+        //var file = "cts_data.sqlite";
+        var file = token;
         var db = new sqlite3.Database(file);
 
         // check
@@ -1240,1147 +1336,18 @@ app.get('/api/download/data/:id/:abbrev/:task_id/:date_rep', (req, res) => {
                     message: 'wait'
                 });
             } else {
-                db.serialize(function () {
 
-                    let table_name = `ssap_data_${id}_${task_id}`;
+                ////////////////////////////////////////////////////////////////
+                //
+                // START: process a project that is not cohort + cancer
+                //
+                ////////////////////////////////////////////////////////////////
 
-                    let sql = `PRAGMA temp_store = 2`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
+                if (project.study_design !== 'Cohort' || project.endpoint !== 'Cancer') {
 
-                    sql = `INSERT INTO task(id, start_time, status) VALUES('${task_id}', datetime('now'), 'copying data into a temporary table.')`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
+                    console.log(`-------------------------------------------------------`);
+                    console.log(`generate data for a project that is not cohort + cancer`);
 
-                    // create a temporary table
-                    sql = `CREATE TEMP TABLE ${table_name} AS SELECT * FROM ssap_data_2`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // create an index for the temporary table
-                    sql = `CREATE INDEX ${table_name}_idx ON ${table_name}(ssap_id)`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // check
-                    sql = `SELECT count(*) FROM ${table_name}`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.all(sql, function (err, rows) {
-                        rows.forEach(function (row) {
-                            console.log(`table ${table_name} size: ` + JSON.stringify(row));
-                        })
-                    });
-
-                    sql = `UPDATE task SET status='data copied into a temporary table.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // delete the rows with breast_cancer_res_only_ind = 1 when 26000 is not in the selection
-                    let seer_ids = [];
-                    for (var j = 0; j < project.cancer_endpoint.length; j++) {
-                        let item = project.cancer_endpoint[j];
-                        seer_ids.push(item.SEER_ID);
-                    }
-
-                    sql = `DELETE FROM ${table_name} WHERE breast_cancer_res_only_ind = 1`;
-                    if (!seer_ids.includes('26000')) {
-                        console.log("---------------------------------------------------")
-                        console.log(sql);
-                        db.run(sql);
-                    }
-
-                    // check
-                    sql = `SELECT count(*) FROM ${table_name}`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.all(sql, function (err, rows) {
-                        rows.forEach(function (row) {
-                            console.log(`table ${table_name} size after deleting breast_cancer_res_only_ind = 1 : ` + JSON.stringify(row));
-                        })
-                    });
-
-                    sql = `UPDATE task SET status='breast_cancer_res_only_ind was processed.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // If a user selects Questionnaire 2-Questionnaire 6 as the start date,
-                    // remove all rows where their selected date is null.
-                    if (project.start_of_follow_up.start_of_follow_up.startsWith("QNR_") &&
-                        !project.start_of_follow_up.start_of_follow_up.startsWith("QNR_1")) {
-                        sql = `
-                              DELETE FROM ${table_name}
-                               WHERE ${project.start_of_follow_up.start_of_follow_up} is NULL
-                                  OR ${project.start_of_follow_up.start_of_follow_up}=''
-                             `;
-                        console.log("---------------------------------------------------");
-                        console.log(sql);
-                        db.run(sql);
-
-                        // check
-                        sql = `SELECT count(*) FROM ${table_name}`;
-                        console.log("---------------------------------------------------");
-                        console.log(sql);
-                        db.all(sql, function (err, rows) {
-                            rows.forEach(function (row) {
-                                console.log(`table ${table_name} size after delete NULL start of follow up` + JSON.stringify(row));
-                            })
-                        });
-
-                        sql = `UPDATE task SET status='removed all null start of the follow-up.' WHERE id='${task_id}'`;
-                        console.log("---------------------------------------------------");
-                        console.log(sql);
-                        db.run(sql);
-                    }
-
-                    // Add a new column to the analytic data called analysis_start_date
-                    sql = `ALTER TABLE ${table_name} ADD COLUMN analysis_start_date TEXT`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // populate analysis_start_date with the user's selection
-                    if (project.start_of_follow_up.start_of_follow_up.startsWith("QNR_")) {
-                        sql = `UPDATE ${table_name} SET analysis_start_date=${project.start_of_follow_up.start_of_follow_up}`
-                        console.log("---------------------------------------------------");
-                        console.log(sql);
-                        db.run(sql);
-                    } else if (project.start_of_follow_up.start_of_follow_up.startsWith("Other") &&
-                        project.start_of_follow_up.start_of_follow_up_specified) {
-                        let other_date = project.start_of_follow_up.start_of_follow_up_specified.split('T')[0];
-                        sql = `UPDATE ${table_name} SET analysis_start_date='${other_date}'`;
-                        console.log("---------------------------------------------------");
-                        console.log(sql);
-                        db.run(sql);
-                    }
-
-                    sql = `UPDATE task SET status='populated analysis_start_date.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // if (date_of_death_dt ne . and date_of_death_dt < analysis_start_date)
-                    // OR
-                    // (first_moveout_ca_dt ne . and first_moveout_ca_dt < analysis_start_date)
-                    // then DELETE
-
-                    sql =
-                        `
-                        DELETE FROM ${table_name} 
-                         WHERE (
-                                NOT date_of_death_dt is NULL
-                                AND 
-                                NOT date_of_death_dt = ''
-                                AND 
-                                date_of_death_dt <= analysis_start_date
-                               )
-                            OR
-                               (
-                                NOT first_moveout_ca_dt is NULL
-                                AND 
-                                NOT first_moveout_ca_dt = ''
-                                AND 
-                                first_moveout_ca_dt <= analysis_start_date
-                               )   
-                        `;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    sql = `UPDATE task SET status='delete death or move out earlier.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // Add a new column to the analytic data called end_of_followup_date.
-                    sql = `ALTER TABLE ${table_name} ADD COLUMN end_of_followup_date TEXT`;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    if (project.censoring_rules.through_2015_12_31) {
-                        // If the user answers "Yes" to the first question of censering rule,
-                        // populate it with the user's selection (the admin_censoring_date -- currently 12/31/2017).
-                        let end_date = "2017-12-31";
-                        sql = `UPDATE ${table_name} SET end_of_followup_date='${end_date}'`;
-                        console.log("---------------------------------------------------")
-                        console.log(sql);
-                        db.run(sql);
-                    } else if (project.censoring_rules.end_of_follow_up.startsWith("QNR_")) {
-                        // If the user answer "No" to the first question of censering rule and selects another date,
-                        // populate end_of_followup_date with their selected date.
-                        sql = `UPDATE ${table_name} SET end_of_followup_date=${project.censoring_rules.end_of_follow_up}`;
-                        console.log("---------------------------------------------------")
-                        console.log(sql);
-                        db.run(sql);
-                    } else if (project.censoring_rules.end_of_follow_up.startsWith("Other") &&
-                        project.censoring_rules.end_of_follow_up_specified) {
-                        // If the user answer "No" to the first question of censering rule and selects another date,
-                        // populate end_of_followup_date with their selected date.
-                        let other_date = project.censoring_rules.end_of_follow_up_specified.split('T')[0];
-                        sql = `UPDATE ${table_name} SET end_of_followup_date='${other_date}'`;
-                        console.log("---------------------------------------------------")
-                        console.log(sql);
-                        db.run(sql);
-                    }
-
-                    sql = `UPDATE task SET status='populated end_of_followup_date.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // create a new column, case_indicator
-                    sql = `ALTER TABLE ${table_name} ADD COLUMN case_indicator INT`;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    // marks rows that meet the user's endpoint definition and date_dt > analysis_start_date
-                    // with a 1 and all other rows with a 0.
-                    sql = `
-                UPDATE ${table_name}
-                   SET case_indicator=1
-                 WHERE date_dt >= analysis_start_date
-                   AND ${getCoditionForCancerEndpoint(project.cancer_endpoint)}
-                `;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    sql = `UPDATE ${table_name} SET case_indicator=0 WHERE case_indicator is NULL`;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    // check
-                    sql = `SELECT count(*) FROM ${table_name} WHERE case_indicator=1`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.all(sql, function (err, rows) {
-                        rows.forEach(function (row) {
-                            console.log(`table ${table_name} size for case_indicator=1: ` + JSON.stringify(row));
-                        })
-                    });
-
-                    // check
-                    sql = `SELECT count(*) FROM ${table_name} WHERE case_indicator=0`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.all(sql, function (err, rows) {
-                        rows.forEach(function (row) {
-                            console.log(`table ${table_name} size for case_indicator=0: ` + JSON.stringify(row));
-                        })
-                    });
-
-                    sql = `UPDATE task SET status='populated case_indicator.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // add a new column prevalent
-                    sql = `ALTER TABLE ${table_name} ADD COLUMN prevalent INT`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    if (project.start_of_follow_up.start_of_follow_up_exclude) {
-                        if (project.start_of_follow_up.start_of_follow_up_exclude === 'exclude all') {
-
-                            // If DATE_DT is not NULL and DATE_DT < analysis_start_date
-                            // OR brca_selfsurvey='Y' or endoca_self_q1='A' or cervca_self_q1='A'
-                            // or ovryca_self_q1='A' or lungca_self_q1='A' or leuk_self_q1='A'
-                            // or hodg_self_q1='A' or colnca_self_q1='A' or thyrca_self_q1='A'
-                            // or meln_self_q1='A', then prevalent=1
-
-                            sql =
-                                `UPDATE ${table_name} SET prevalent=1
-                                  WHERE (NOT DATE_DT is NULL and NOT DATE_DT = '' and DATE_DT < analysis_start_date)
-                                     OR brca_selfsurvey='Y'
-                                     OR endoca_self_q1='A'
-                                     OR cervca_self_q1='A'
-                                     OR ovryca_self_q1='A'
-                                     OR lungca_self_q1='A'
-                                     OR leuk_self_q1='A'
-                                     OR hodg_self_q1='A'
-                                     OR colnca_self_q1='A'
-                                     OR thyrca_self_q1='A'
-                                     OR meln_self_q1='A'
-                                  `;
-                            console.log("---------------------------------------------------");
-                            console.log(sql);
-                            db.run(sql);
-
-                            // Remove ALL ROWS for participants that have even just one row where prevalent=1
-                            sql = `DELETE FROM ${table_name} WHERE ssap_id IN (SELECT DISTINCT ssap_id FROM ${table_name} WHERE prevalent=1)`;
-                            console.log("---------------------------------------------------");
-                            console.log(sql);
-                            db.run(sql);
-
-                        } else if (project.start_of_follow_up.start_of_follow_up_exclude === 'exclude interest') {
-
-                            let cmd =
-                                `UPDATE ${table_name} SET prevalent=1
-                                  WHERE (${getCoditionForCancerEndpoint(project.cancer_endpoint)}
-                                    AND NOT DATE_DT is NULL and NOT DATE_DT = '' 
-                                    AND DATE_DT < analysis_start_date)
-                                `;
-
-                            var found = false;
-                            if (seer_ids.includes('26000')) {
-                                // User selection includes SEER_ID=26000:
-                                // If row meets the user's endpoint definition
-                                // and DATE_DT is not NULL and DATE_DT < analysis_start_date
-                                // OR brca_selfsurvey='Y'
-                                // then prevalent=1
-                                cmd += ` OR brca_selfsurvey='Y' `;
-                                found = true;
-                            }
-
-                            if (seer_ids.includes('27020') || seer_ids.includes('27030')) {
-                                cmd += " OR endoca_self_q1='A' ";
-                                found = true;
-                            }
-
-                            if (seer_ids.includes('27010')) {
-                                cmd += " OR cervca_self_q1 = 'A' ";
-                                found = true;
-                            }
-
-                            if (seer_ids.includes('27040')) {
-                                cmd += " OR ovryca_self_q1 = 'A' ";
-                                found = true;
-                            }
-
-                            if (seer_ids.includes('27030')) {
-                                cmd += " OR lungca_self_q1 = 'A' ";
-                                found = true;
-                            }
-
-                            if (seer_ids.includes('35011') ||
-                                seer_ids.includes('35012') ||
-                                seer_ids.includes('35013') ||
-                                seer_ids.includes('35014') ||
-                                seer_ids.includes('35015') ||
-                                seer_ids.includes('35016') ||
-                                seer_ids.includes('35017') ||
-                                seer_ids.includes('35018') ||
-                                seer_ids.includes('35019') ||
-                                seer_ids.includes('35020') ||
-
-                                seer_ids.includes('35021') ||
-                                seer_ids.includes('35022') ||
-                                seer_ids.includes('35023') ||
-                                seer_ids.includes('35024') ||
-                                seer_ids.includes('35025') ||
-                                seer_ids.includes('35026') ||
-                                seer_ids.includes('35027') ||
-                                seer_ids.includes('35028') ||
-                                seer_ids.includes('35029') ||
-                                seer_ids.includes('35030') ||
-
-                                seer_ids.includes('35031') ||
-                                seer_ids.includes('35032') ||
-                                seer_ids.includes('35033') ||
-                                seer_ids.includes('35034') ||
-                                seer_ids.includes('35035') ||
-                                seer_ids.includes('35036') ||
-                                seer_ids.includes('35037') ||
-                                seer_ids.includes('35038') ||
-                                seer_ids.includes('35039') ||
-                                seer_ids.includes('35040') ||
-
-                                seer_ids.includes('35041') ||
-                                seer_ids.includes('35042') ||
-                                seer_ids.includes('35043')) {
-                                cmd += " OR leuk_self_q1='A' ";
-                                found = true;
-                            }
-
-                            if (seer_ids.includes('33011') || seer_ids.includes('33012')) {
-                                cmd += " OR hodg_self_q1 = 'A' ";
-                                found = true;
-                            }
-
-                            if (seer_ids.includes('21041') ||
-                                seer_ids.includes('21042') ||
-                                seer_ids.includes('21043') ||
-                                seer_ids.includes('21044') ||
-                                seer_ids.includes('21045') ||
-                                seer_ids.includes('21046') ||
-                                seer_ids.includes('21047') ||
-                                seer_ids.includes('21048') ||
-                                seer_ids.includes('21049') ||
-                                seer_ids.includes('21050') ||
-                                seer_ids.includes('21051') ||
-                                seer_ids.includes('21052') ||
-                                seer_ids.includes('21053') ||
-                                seer_ids.includes('21054') ||
-                                seer_ids.includes('21055') ||
-                                seer_ids.includes('21056') ||
-                                seer_ids.includes('21057') ||
-                                seer_ids.includes('21058') ||
-                                seer_ids.includes('21059') ||
-                                seer_ids.includes('21060')) {
-                                cmd += " OR colnca_self_q1 = 'A' ";
-                                found = true;
-                            }
-
-                            if (seer_ids.includes('32010')) {
-                                cmd += " OR thyrca_self_q1 = 'A' ";
-                                found = true;
-                            }
-
-                            if (seer_ids.includes('25010')) {
-                                cmd += " OR meln_self_q1 = 'A' ";
-                                found = true;
-                            }
-
-                            if (!found) {
-                                // If user's selected cancer does NOT include SEER_ID in
-                                // (26000, 27020, 27030, 27010, 27040, 22030, 35011-35043, 21041-21060, 32010, 25010),
-                                // use this:
-                                // If row meets user's selected cancer criteria
-                                // and DATE_DT is not NULL and DATE_DT < analysis_start_date
-                                // then prevalent=1
-                            }
-
-                            //cmd += `)`;
-                            sql = cmd;
-
-                            console.log("---------------------------------------------------");
-                            console.log(sql);
-                            db.run(sql);
-
-                            // check
-                            sql = `SELECT count(DISTINCT ssap_id) FROM ${table_name}`;
-                            console.log("---------------------------------------------------");
-                            console.log(sql);
-                            db.all(sql, function (err, rows) {
-                                rows.forEach(function (row) {
-                                    console.log(`how many panticipant: ` + JSON.stringify(row));
-                                })
-                            });
-
-                            // check
-                            sql = `SELECT count(DISTINCT ssap_id) FROM ${table_name} WHERE prevalent=1 `;
-                            console.log("---------------------------------------------------");
-                            console.log(sql);
-                            db.all(sql, function (err, rows) {
-                                rows.forEach(function (row) {
-                                    console.log(`row count with prevalent=1: ` + JSON.stringify(row));
-                                })
-                            });
-
-                            // Remove ALL ROWS for participants that have even just one row where prevalent=1
-                            sql = `DELETE FROM ${table_name} WHERE ssap_id IN (SELECT DISTINCT ssap_id FROM ${table_name} WHERE prevalent=1)`;
-                            console.log("---------------------------------------------------");
-                            console.log(sql);
-                            db.run(sql);
-
-                            // check
-                            sql = `SELECT count(DISTINCT ssap_id) FROM ${table_name}`;
-                            console.log("---------------------------------------------------");
-                            console.log(sql);
-                            db.all(sql, function (err, rows) {
-                                rows.forEach(function (row) {
-                                    console.log(`how many panticipant after delete prevalent=1: ` + JSON.stringify(row));
-                                })
-                            });
-
-                        } else if (project.start_of_follow_up.start_of_follow_up_exclude === 'include all') {
-
-                            // If DATE_DT is not NULL and DATE_DT < analysis_start_date
-                            // OR brca_selfsurvey='Y'
-                            // or endoca_self_q1='A'
-                            // or cervca_self_q1='A'
-                            // or ovryca_self_q1='A'
-                            // or lungca_self_q1='A'
-                            // or leuk_self_q1='A'
-                            // or hodg_self_q1='A'
-                            // or colnca_self_q1='A'
-                            // or thyrca_self_q1='A'
-                            // or meln_self_q1='A',
-                            // then prevalent=1;
-                            // else prevalent=0;
-
-                            sql =
-                                `UPDATE ${table_name} SET prevalent=1
-                           WHERE (NOT DATE_DT is NULL and NOT DATE_DT = '' AND DATE_DT < analysis_start_date)
-                              OR brca_selfsurvey='Y'
-                              OR endoca_self_q1='A'
-                              OR cervca_self_q1='A'
-                              OR ovryca_self_q1='A'
-                              OR lungca_self_q1='A'
-                              OR leuk_self_q1='A'
-                              OR hodg_self_q1='A'
-                              OR colnca_self_q1='A'
-                              OR thyrca_self_q1='A'
-                              OR meln_self_q1='A'
-                        `;
-                            console.log("---------------------------------------------------")
-                            console.log(sql);
-                            db.run(sql);
-
-                            // Assign ALL ROWS for participants that have even just one row meeting these conditions as prevalent=1.
-                            sql =
-                                `UPDATE ${table_name}
-                            SET prevalent=1
-                          WHERE ssap_id IN (SELECT DISTINCT ssap_id FROM ${table_name} WHERE prevalent=1)
-                        `;
-                            console.log("---------------------------------------------------")
-                            console.log(sql);
-                            db.run(sql);
-
-                            sql = `UPDATE ${table_name} SET prevalent=0 WHERE prevalent is NULL`;
-                            console.log("---------------------------------------------------")
-                            console.log(sql);
-                            db.run(sql);
-                        }
-                    }
-
-                    sql = `UPDATE task SET status='populated prevalent.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // Create a new date column called "firstselectedcancer_date."
-                    sql = `ALTER TABLE ${table_name} ADD COLUMN firstselectedcancer_date TEXT`;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    let min_dt_table_name = `${table_name}_min_dt`;
-                    sql = `
-                CREATE TEMP TABLE ${min_dt_table_name} AS
-                SELECT ssap_id, min(date_dt) as min_date_dt
-                  FROM ${table_name}
-                 WHERE case_indicator=1 
-                   AND NOT date_dt is NULL
-                   AND NOT date_dt = ''
-                 GROUP BY ssap_id
-                `;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    //check
-                    sql = `SELECT count(*) FROM ${min_dt_table_name} `;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.all(sql, function (err, rows) {
-                        rows.forEach(function (row) {
-                            console.log(`table ${min_dt_table_name}: ` + JSON.stringify(row));
-                        })
-                    });
-
-                    // Within rows where case_indicator=1,
-                    // take the DATE_DT from the first row for each participant and put it in firstselectedcancer_date.
-                    // All rows for a participant should have the SAME firstselectedcancer_date
-                    // this date should be pulled down for all rows for a participant. See image in next cell.
-                    // Participants who have no rows where case_indicator=1 will have a null value for this column.
-
-                    sql = `
-                UPDATE ${table_name}
-                   SET firstselectedcancer_date = (
-                        SELECT min_date_dt
-                          FROM ${min_dt_table_name}
-                         WHERE ${table_name}.ssap_id = ssap_id
-                       )
-                `;
-                    // WHERE case_indicator=1
-
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    sql = `UPDATE task SET status='populated firstselectedcancer_date.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // Create a new date column called "firstothercancer_date."
-                    sql = `ALTER TABLE ${table_name} ADD COLUMN firstothercancer_date TEXT`;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    // Within rows where case_indicator=0 AND DATE_DT is NOT null
-                    // AND  date_dt > analysis_start_date,
-                    // take the DATE_DT from the first row for each participant and put it in the firstothercancer_date.
-
-                    let min_dt_other_table_name = `${table_name}_min_dt_other`;
-                    sql = `
-                CREATE TEMP TABLE ${min_dt_other_table_name} AS
-                SELECT ssap_id, min(date_dt) as min_date_dt
-                  FROM ${table_name}
-                 WHERE case_indicator=0 
-                   AND NOT date_dt is NULL
-                   AND NOT date_dt = ''
-                   AND date_dt >= analysis_start_date
-                 GROUP BY ssap_id
-                `;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    // create an index for the table min_dt_other_table_name
-                    sql = `CREATE INDEX ${min_dt_other_table_name}_idx ON ${min_dt_other_table_name}(ssap_id)`;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    //check
-                    sql = `SELECT count(*) FROM ${min_dt_other_table_name} `;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.all(sql, function (err, rows) {
-                        rows.forEach(function (row) {
-                            console.log(`table ${min_dt_other_table_name}: ` + JSON.stringify(row));
-                        })
-                    });
-
-                    // All rows for a participant should have the SAME firstothercancer_date.
-                    // this date should be pulled down for all rows for a participant. See image in above cell.
-                    //
-                    // Participants who have no rows where case_indicator=0 and DATE_DT is not null
-                    // will have a null value for this column.
-
-                    sql = `
-                UPDATE ${table_name}
-                   SET firstothercancer_date = (
-                        SELECT min_date_dt
-                          FROM ${min_dt_other_table_name}
-                         WHERE ${table_name}.ssap_id = ssap_id
-                       )
-                `;
-                    /*
-                     WHERE case_indicator=0
-                       AND NOT date_dt is NULL
-                       AND date_dt > analysis_start_date
-                     */
-
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    sql = `UPDATE task SET status='populated firstothercancer_date.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // Create a new date column called analysis_end_date.
-                    sql = `ALTER TABLE ${table_name} ADD COLUMN analysis_end_date TEXT`;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    var found = false;
-                    if (seer_ids.includes('27020') || seer_ids.includes('27030')) {
-                        // If user's selections include SEER_ID=27020 or 27030:
-                        // analysis_end_date=min(DATE_OF_DEATH_DT, first_moveout_ca_dt,
-                        // firstothercancer_date, firstselectedcancer_date, end_of_followup_date, HYSTERECTOMY_DT)
-
-                        if (project.censoring_rules && project.censoring_rules.end_of_follow_up_exclude === 'default') {
-
-                            sql =
-                                `UPDATE ${table_name}
-                        SET analysis_end_date = 
-                               min(CASE 
-                                      WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31' 
-                                      ELSE DATE_OF_DEATH_DT 
-                                   END, 
-                                   CASE 
-                                      WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31' 
-                                      ELSE first_moveout_ca_dt 
-                                   END,    
-                                   CASE 
-                                      WHEN firstothercancer_date = '' OR firstothercancer_date IS NULL THEN '2999-12-31' 
-                                      ELSE firstothercancer_date
-                                   END,     
-                                   CASE 
-                                      WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31' 
-                                      ELSE firstselectedcancer_date
-                                   END, 
-                                   CASE 
-                                      WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31' 
-                                      ELSE end_of_followup_date
-                                   END,
-                                   CASE 
-                                      WHEN HYSTERECTOMY_DT = '' OR HYSTERECTOMY_DT IS NULL THEN '2999-12-31' 
-                                      ELSE HYSTERECTOMY_DT
-                                   END
-                                   )
-                      WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
-                         OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
-                         OR (NOT firstothercancer_date is NULL AND NOT firstothercancer_date = '')
-                         OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '') 
-                         OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')  
-                         OR (NOT HYSTERECTOMY_DT is NULL AND NOT HYSTERECTOMY_DT = '')            
-                    `;
-
-                        } else {
-
-                            sql =
-                                `UPDATE ${table_name}
-                        SET analysis_end_date = 
-                               min(CASE 
-                                      WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31' 
-                                      ELSE DATE_OF_DEATH_DT 
-                                   END, 
-                                   CASE 
-                                      WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31' 
-                                      ELSE first_moveout_ca_dt 
-                                   END,       
-                                   CASE 
-                                      WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31' 
-                                      ELSE firstselectedcancer_date
-                                   END, 
-                                   CASE 
-                                      WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31' 
-                                      ELSE end_of_followup_date
-                                   END,
-                                   CASE 
-                                      WHEN HYSTERECTOMY_DT = '' OR HYSTERECTOMY_DT IS NULL THEN '2999-12-31' 
-                                      ELSE HYSTERECTOMY_DT
-                                   END
-                                   )
-                      WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
-                         OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
-                         OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '') 
-                         OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')  
-                         OR (NOT HYSTERECTOMY_DT is NULL AND NOT HYSTERECTOMY_DT = '')            
-                    `;
-                        }
-
-                        console.log("---------------------------------------------------")
-                        console.log(sql);
-                        db.run(sql);
-
-                        found = true;
-                    }
-
-                    if (seer_ids.includes('27040')) {
-                        // If user's selections include SEER_ID=27040:
-                        // analysis_end_date=min(DATE_OF_DEATH_DT,  first_moveout_ca_dt, firstothercancer_date,
-                        // firstselectedcancer_date, end_of_followup_date, BILATERAL_OOPHORECTOMY_DT)
-
-                        if (project.censoring_rules && project.censoring_rules.end_of_follow_up_exclude === 'default') {
-                            sql =
-                                `UPDATE ${table_name}
-                        SET analysis_end_date = 
-                               min(CASE 
-                                      WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31' 
-                                      ELSE DATE_OF_DEATH_DT 
-                                   END, 
-                                   CASE 
-                                      WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31' 
-                                      ELSE first_moveout_ca_dt 
-                                   END,    
-                                   CASE 
-                                      WHEN firstothercancer_date = '' OR firstothercancer_date IS NULL THEN '2999-12-31' 
-                                      ELSE firstothercancer_date
-                                   END,     
-                                   CASE 
-                                      WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31' 
-                                      ELSE firstselectedcancer_date
-                                   END, 
-                                   CASE 
-                                      WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31' 
-                                      ELSE end_of_followup_date
-                                   END,
-                                   CASE 
-                                      WHEN BILATERAL_OOPHORECTOMY_DT = '' OR BILATERAL_OOPHORECTOMY_DT IS NULL THEN '2999-12-31' 
-                                      ELSE BILATERAL_OOPHORECTOMY_DT
-                                   END
-                                   )
-                      WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
-                         OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
-                         OR (NOT firstothercancer_date is NULL AND NOT firstothercancer_date = '')
-                         OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '') 
-                         OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')  
-                         OR (NOT BILATERAL_OOPHORECTOMY_DT is NULL AND NOT BILATERAL_OOPHORECTOMY_DT = '')        
-                    `;
-                        } else {
-                            sql =
-                                `UPDATE ${table_name}
-                        SET analysis_end_date = 
-                               min(CASE 
-                                      WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31' 
-                                      ELSE DATE_OF_DEATH_DT 
-                                   END, 
-                                   CASE 
-                                      WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31' 
-                                      ELSE first_moveout_ca_dt 
-                                   END,         
-                                   CASE 
-                                      WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31' 
-                                      ELSE firstselectedcancer_date
-                                   END, 
-                                   CASE 
-                                      WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31' 
-                                      ELSE end_of_followup_date
-                                   END,
-                                   CASE 
-                                      WHEN BILATERAL_OOPHORECTOMY_DT = '' OR BILATERAL_OOPHORECTOMY_DT IS NULL THEN '2999-12-31' 
-                                      ELSE BILATERAL_OOPHORECTOMY_DT
-                                   END
-                                   )
-                      WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
-                         OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
-                         OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '') 
-                         OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')  
-                         OR (NOT BILATERAL_OOPHORECTOMY_DT is NULL AND NOT BILATERAL_OOPHORECTOMY_DT = '')        
-                    `;
-                        }
-
-                        console.log("---------------------------------------------------")
-                        console.log(sql);
-                        db.run(sql);
-
-                        found = true;
-                    }
-
-                    if (seer_ids.includes('26000')) {
-
-                        // If user's selections include SEER_ID=26000:
-                        // analysis_end_date=min(DATE_OF_DEATH_DT,  first_moveout_ca_dt,
-                        // firstothercancer_date, firstselectedcancer_date, end_of_followup_date,
-                        // BILATERAL_MASTECTOMY_DT)
-
-                        if (project.censoring_rules && project.censoring_rules.end_of_follow_up_exclude === 'default') {
-
-                            sql =
-                                `UPDATE ${table_name}
-                        SET analysis_end_date = 
-                               min(CASE 
-                                      WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31' 
-                                      ELSE DATE_OF_DEATH_DT 
-                                   END, 
-                                   CASE 
-                                      WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31' 
-                                      ELSE first_moveout_ca_dt 
-                                   END,    
-                                   CASE 
-                                      WHEN firstothercancer_date = '' OR firstothercancer_date IS NULL THEN '2999-12-31' 
-                                      ELSE firstothercancer_date
-                                   END,     
-                                   CASE 
-                                      WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31' 
-                                      ELSE firstselectedcancer_date
-                                   END, 
-                                   CASE 
-                                      WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31' 
-                                      ELSE end_of_followup_date
-                                   END,
-                                   CASE 
-                                      WHEN BILATERAL_MASTECTOMY_DT = '' OR BILATERAL_MASTECTOMY_DT IS NULL THEN '2999-12-31' 
-                                      ELSE BILATERAL_MASTECTOMY_DT
-                                   END
-                                   )
-                      WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
-                         OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
-                         OR (NOT firstothercancer_date is NULL AND NOT firstothercancer_date = '')
-                         OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '') 
-                         OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')  
-                         OR (NOT BILATERAL_MASTECTOMY_DT is NULL AND NOT BILATERAL_MASTECTOMY_DT = '')        
-                    `;
-
-                        } else {
-
-                            // If "DO NOT CENSOR AT OTHER CANCER DIAGNOSIS" was selected in the censoring rules module,
-                            // "firstothercancer_date" will not be needed here either.
-
-                            sql =
-                                `UPDATE ${table_name}
-                        SET analysis_end_date = 
-                               min(CASE 
-                                      WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31' 
-                                      ELSE DATE_OF_DEATH_DT 
-                                   END, 
-                                   CASE 
-                                      WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31' 
-                                      ELSE first_moveout_ca_dt 
-                                   END,        
-                                   CASE 
-                                      WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31' 
-                                      ELSE firstselectedcancer_date
-                                   END, 
-                                   CASE 
-                                      WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31' 
-                                      ELSE end_of_followup_date
-                                   END,
-                                   CASE 
-                                      WHEN BILATERAL_MASTECTOMY_DT = '' OR BILATERAL_MASTECTOMY_DT IS NULL THEN '2999-12-31' 
-                                      ELSE BILATERAL_MASTECTOMY_DT
-                                   END
-                                   )
-                      WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
-                         OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
-                         OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '') 
-                         OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')  
-                         OR (NOT BILATERAL_MASTECTOMY_DT is NULL AND NOT BILATERAL_MASTECTOMY_DT = '')        
-                    `;
-                        }
-
-                        console.log("---------------------------------------------------")
-                        console.log(sql);
-                        db.run(sql);
-
-                        found = true;
-                    }
-
-                    if (!found) {
-
-                        // If user's selections do not include SEER_ID in (27020, 27030, 27040 or 26000), use this:
-                        // analysis_end_date=min(DATE_OF_DEATH_DT, first_moveout_ca_dt, firstothercancer_date,
-                        // firstselectedcancer_date, end_of_followup_date)
-
-                        if (project.censoring_rules && project.censoring_rules.end_of_follow_up_exclude === 'default') {
-                            sql =
-                                `UPDATE ${table_name}
-                                    SET analysis_end_date = 
-                               min(CASE 
-                                      WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31' 
-                                      ELSE DATE_OF_DEATH_DT 
-                                   END, 
-                                   CASE 
-                                      WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31' 
-                                      ELSE first_moveout_ca_dt 
-                                   END,    
-                                   CASE 
-                                      WHEN firstothercancer_date = '' OR firstothercancer_date IS NULL THEN '2999-12-31' 
-                                      ELSE firstothercancer_date
-                                   END,     
-                                   CASE 
-                                      WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31' 
-                                      ELSE firstselectedcancer_date
-                                   END, 
-                                   CASE 
-                                      WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31' 
-                                      ELSE end_of_followup_date
-                                   END)
-                                WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
-                                   OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
-                                   OR (NOT firstothercancer_date is NULL AND NOT firstothercancer_date = '')
-                                   OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '') 
-                                   OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')          
-                               `;
-                        } else {
-                            sql =
-                                `UPDATE ${table_name}
-                        SET analysis_end_date = 
-                               min(CASE 
-                                      WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31' 
-                                      ELSE DATE_OF_DEATH_DT 
-                                   END, 
-                                   CASE 
-                                      WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31' 
-                                      ELSE first_moveout_ca_dt 
-                                   END,        
-                                   CASE 
-                                      WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31' 
-                                      ELSE firstselectedcancer_date
-                                   END, 
-                                   CASE 
-                                      WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31' 
-                                      ELSE end_of_followup_date
-                                   END)
-                      WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
-                         OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
-                         OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '') 
-                         OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')          
-                    `;
-                        }
-
-                        console.log("---------------------------------------------------")
-                        console.log(sql);
-                        db.run(sql);
-
-                    }
-
-                    // check
-                    sql = `SELECT count(*) FROM ${table_name} WHERE NOT analysis_end_date is NULL`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.all(sql, function (err, rows) {
-                        rows.forEach(function (row) {
-                            console.log(`table ${table_name} NOT analysis_end_date is NULL: ` + JSON.stringify(row));
-                        })
-                    });
-
-                    sql = `UPDATE task SET status='populated analysis_end_date.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // check
-                    sql = `SELECT count(*) FROM ${table_name} WHERE date_dt > analysis_end_date`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.all(sql, function (err, rows) {
-                        rows.forEach(function (row) {
-                            console.log(`table ${table_name} date_dt > analysis_end_date: ` + JSON.stringify(row));
-                        })
-                    });
-
-                    // Create the event variable
-                    sql = `ALTER TABLE ${table_name} ADD COLUMN event INT`;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    // if analysis_end_date=end_of_followup_date then event=5
-                    // if analysis_end_date=DATE_OF_DEATH_DT then event=4
-                    // if analysis_end_date=first_moveout_ca_dt then event=3
-                    // if analysis_end_date=firstothercancer_date then event=2
-                    //
-                    // (add these 3 where applicable)
-                    // if analysis_end_date=HYSTERECTOMY_DT then event=6
-                    // if analysis_end_date=BILATERAL_MASTECTOMY_DT then event=7
-                    // if analysis_end_date=BILATERAL_OOPHORECTOMY_DT then event=8
-                    //
-                    //
-                    // if analysis_end_date=firstselectedcancer_date then event=1
-                    //
-                    // The order is significant because sometimes these events fall on the same day.
-                    // This is the prioritization order:
-                    // firstselectedcancer_date, (hysterectomy, bilateral mastectomy or oophorectomy dates if applicable),
-                    // firstothercancer_date,  first_moveout_ca_dt, date_of_death_dt, end_of_follow_up_date)
-
-                    sql =
-                        `UPDATE ${table_name} 
-                            SET event = CASE WHEN analysis_end_date=firstselectedcancer_date THEN 1 ELSE NULL END
-                          WHERE NOT analysis_end_date is NULL
-                            AND NOT firstselectedcancer_date is NULL
-                        `;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    if (seer_ids.includes('27020') || seer_ids.includes('27030')) {
-                        sql =
-                            `UPDATE ${table_name} 
-                                SET event = CASE WHEN analysis_end_date=HYSTERECTOMY_DT THEN 6 ELSE NULL END
-                              WHERE NOT analysis_end_date is NULL
-                                AND NOT HYSTERECTOMY_DT is NULL
-                                AND NOT HYSTERECTOMY_DT = ''
-                                AND event is NULL
-                            `;
-                        console.log("---------------------------------------------------")
-                        console.log(sql);
-                        db.run(sql);
-                    }
-
-                    if (seer_ids.includes('26000')) {
-                        sql =
-                            `UPDATE ${table_name} 
-                                SET event = CASE WHEN analysis_end_date=BILATERAL_MASTECTOMY_DT THEN 7 ELSE NULL END
-                              WHERE NOT analysis_end_date is NULL
-                                AND NOT BILATERAL_MASTECTOMY_DT is NULL
-                                AND NOT BILATERAL_MASTECTOMY_DT = ''
-                                AND event is NULL
-                            `;
-                        console.log("---------------------------------------------------")
-                        console.log(sql);
-                        db.run(sql);
-                    }
-
-                    if (seer_ids.includes('27040')) {
-                        sql =
-                            `UPDATE ${table_name} 
-                                SET event = CASE WHEN analysis_end_date=BILATERAL_OOPHORECTOMY_DT THEN 8 ELSE NULL END
-                              WHERE NOT analysis_end_date is NULL
-                                AND NOT BILATERAL_OOPHORECTOMY_DT is NULL
-                                AND NOT BILATERAL_OOPHORECTOMY_DT = ''
-                                AND event is NULL
-                        `;
-                        console.log("---------------------------------------------------")
-                        console.log(sql);
-                        db.run(sql);
-                    }
-
-                    if (project.censoring_rules && project.censoring_rules.end_of_follow_up_exclude === 'default') {
-                        sql =
-                            `UPDATE ${table_name} 
-                                SET event = CASE WHEN analysis_end_date=firstothercancer_date THEN 2 ELSE NULL END
-                              WHERE NOT analysis_end_date is NULL
-                                AND NOT firstothercancer_date is NULL
-                                AND event is NULL
-                        `;
-                        console.log("---------------------------------------------------")
-                        console.log(sql);
-                        db.run(sql);
-                    }
-
-                    sql =
-                        `UPDATE ${table_name} 
-                            SET event = CASE WHEN analysis_end_date=first_moveout_ca_dt THEN 3 ELSE NULL END
-                          WHERE NOT analysis_end_date is NULL
-                            AND NOT first_moveout_ca_dt is NULL
-                            AND NOT first_moveout_ca_dt = ''
-                            AND event is NULL
-                        `;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    sql =
-                        `UPDATE ${table_name} 
-                            SET event = CASE WHEN analysis_end_date=DATE_OF_DEATH_DT THEN 4 ELSE NULL END
-                          WHERE NOT analysis_end_date is NULL
-                            AND NOT DATE_OF_DEATH_DT is NULL
-                            AND NOT DATE_OF_DEATH_DT = ''
-                            AND event is NULL
-                        `;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    sql =
-                        `UPDATE ${table_name} 
-                            SET event = CASE WHEN analysis_end_date=end_of_followup_date THEN 5 ELSE NULL END
-                          WHERE NOT analysis_end_date is NULL
-                            AND NOT end_of_followup_date is NULL
-                            AND event is NULL
-                        `;
-                    console.log("---------------------------------------------------")
-                    console.log(sql);
-                    db.run(sql);
-
-                    sql = `UPDATE task SET status='populated event.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // Remove all rows where date_dt > analysis_end_date
-                    sql = `DELETE FROM ${table_name} WHERE date_dt > analysis_end_date`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    sql = `UPDATE task SET status='remove all rows where date_dt > analysis_end_date.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // Remove all rows where analysis_start_date=analysis_end_date
-                    sql = `DELETE FROM ${table_name} WHERE analysis_start_date >= analysis_end_date`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    sql = `UPDATE task SET status='remove all rows with the analysis start date not less than the analysis end date.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    // build columns
                     let selected_columns = [];
                     for (const [questionnarie, variables] of Object.entries(project.questionnarie)) {
                         for (const [variable, value] of Object.entries(variables)) {
@@ -2388,145 +1355,196 @@ app.get('/api/download/data/:id/:abbrev/:task_id/:date_rep', (req, res) => {
                         }
                     }
 
-                    //console.log("\n=========== selected_columns =============");
-                    //console.log(JSON.stringify(selected_columns));
+                    let data_sql =
+                        `WITH participant_rowid AS (
+                              SELECT ssap_id, min(rowid) as rid
+                                FROM ssap_data_2 
+                               GROUP BY ssap_id)
+                        SELECT ssap_data_2.ssap_id as participant_key,
+                               date_of_birth_dt,
+                               date_of_death_dt,
+                               cause_of_death_cde,
+                               cause_of_death_dsc,
+                               qnr_1_fill_dt,
+                               qnr_2_fill_dt,
+                               qnr_3_fill_dt,
+                               qnr_4_fill_dt,
+                               qnr_4_mini_fill_dt,
+                               qnr_5_fill_dt,
+                               qnr_5_mini_fill_dt,
+                               qnr_6_fill_dt,
+                               breast_cancer_res_only_ind,
+                               ses_quartile_ind,
+                               blockgroup90_urban_cat,
+                               hysterectomy_dt,
+                               hysterectomy_ind,
+                               bilateral_mastectomy_dt,
+                               bilateral_mastectomy_ind,
+                               bilateral_oophorectomy_dt,
+                               bilateral_oophorectomy_ind,
+                               first_moveout_ca_dt,
+                               
+                               ${selected_columns.map((column, i) => 
+                                   column 
+                                )}
+                              
+                          FROM ssap_data_2, participant_rowid
+                         WHERE ssap_data_2.rowid = participant_rowid.rid
+                        `;
 
-                    let no_need_columns = questionnarie_columns.filter(x => !selected_columns.includes(x));
-                    let final_columns = all_columns.filter(x => !no_need_columns.includes(x));
-                    final_columns = final_columns.filter(x => x !== 'breast_cancer_res_only_ind');
+                    console.log(data_sql);
 
-                    console.log("\n=========== final columns =============");
-                    console.log(JSON.stringify(final_columns));
+                    let final_columns_ext =
+                        [
+                            'participant_key',
+                            'date_of_birth_dt',
+                            'date_of_death_dt',
+                            'cause_of_death_cde',
+                            'cause_of_death_dsc',
+                            'qnr_1_fill_dt',
+                            'qnr_2_fill_dt',
+                            'qnr_3_fill_dt',
+                            'qnr_4_fill_dt',
+                            'qnr_4_mini_fill_dt',
+                            'qnr_5_fill_dt',
+                            'qnr_5_mini_fill_dt',
+                            'qnr_6_fill_dt',
+                            'breast_cancer_res_only_ind',
+                            'ses_quartile_ind',
+                            'blockgroup90_urban_cat',
+                            'hysterectomy_dt',
+                            'hysterectomy_ind',
+                            'bilateral_mastectomy_dt',
+                            'bilateral_mastectomy_ind',
+                            'bilateral_oophorectomy_dt',
+                            'bilateral_oophorectomy_ind',
+                            'first_moveout_ca_dt',
+                            ...selected_columns,
+                        ];
 
-                    // process columns
-                    let real_columns = "";
-                    for (var i = 0; i < final_columns.length; i++) {
-                        if (i > 0) {
-                            real_columns += ", ";
-                        }
-                        real_columns += final_columns[i];
-                    }
+                    console.log(`final_columns_ext: ${JSON.stringify(final_columns_ext, null, 2)}`);
 
-                    // add case_indicator
-                    real_columns += ", case_indicator";
+                    db.serialize(function () {
 
-                    // add analysis_start_date
-                    real_columns += ", analysis_start_date";
+                        // check
+                        let table_name = 'ssap_data_2';
 
-                    // add end_of_followup_date
-                    real_columns += ", end_of_followup_date";
-
-                    // add prevalent column
-                    if (project.start_of_follow_up.start_of_follow_up_exclude &&
-                        project.start_of_follow_up.start_of_follow_up_exclude === 'include all') {
-                        real_columns += ", prevalent ";
-                    }
-
-                    // add column firstselectedcancer_date
-                    real_columns += ", firstselectedcancer_date";
-
-                    // add column firstothercancer_date
-                    real_columns += ", firstothercancer_date";
-
-                    // add column analysis_end_date
-                    real_columns += ", analysis_end_date ";
-
-                    // add column event
-                    real_columns += ", event"
-
-                    console.log("\n=========== real_columns =============");
-                    console.log(real_columns);
-
-                    // check
-                    sql = `SELECT count(*) as total_size FROM ${table_name}`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    var total_size = 0;
-                    db.all(sql, function (err, rows) {
-                        rows.forEach(function (row) {
-                            console.log(`table ${table_name} size before downloading: ` + JSON.stringify(row));
-                        });
-                        total_size = rows[0].total_size;
-                        console.log(`total size = ${total_size}`);
-                    });
-
-                    sql = `UPDATE task SET status='converting data into CSV.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
-
-                    let output_dir = `${output_folder}/${project.project_number}_${project.abbrev}/v${project.version < 10 ? '0' + project.version : project.version}`;
-                    if (!fs.existsSync(output_dir)){
-                        fs.mkdirSync(output_dir, { recursive: true });
-                    }
-
-                    let shared_dir = `${shared_folder}/${project.project_number}_${project.abbrev}/v${project.version < 10 ? '0' + project.version : project.version}`
-                    if (!fs.existsSync(shared_dir)){
-                        fs.mkdirSync(shared_dir, { recursive: true });
-                    }
-
-                    // download
-                    // filename : ####_PROJECT_v##_YYYYMMDD_hhmm
-                    let filename = `${project.project_number}_${project.abbrev}_v${project.version < 10 ? '0' + project.version : project.version}_${date_rep}`;
-
-                    var csvFile = fs.createWriteStream(`${output_dir}/${filename}_analytic_data.csv`, {
-                        flags: 'a'
-                    });
-
-                    res.header('Content-Type', 'text/csv');
-                    //res.attachment(abbrev + '_' + new Date().getTime() + '.csv');
-                    res.attachment(filename + '_analytic_data.csv');
-                    var count = 1;
-                    var page_size = 20000;
-                    var done = false;
-                    const json2csv = new Parser();
-                    for (var page = 0; page < 10; page++) {
-                        sql = `SELECT ${real_columns} FROM ${table_name} LIMIT ${page_size} OFFSET ${page * page_size}`;
-
+                        let sql = `INSERT INTO task(id, start_time, status) VALUES('${task_id}', datetime('now'), 'copying data into a temporary table.')`;
                         console.log("---------------------------------------------------");
                         console.log(sql);
+                        db.run(sql);
 
-                        var current_page = page;
-                        db.each(sql,
-                            [],
-                            function (err, row) {
-                                if (err) {
-                                    console.log('error: ' + err);
-                                } else {
-                                    //console.log(count);
-                                    let csv = json2csv.parse(row);
-                                    if (count !== 1) {
-                                        csv = csv.split('\n')[1];
-                                    } else {
-                                        csv = csv.split('\n')[0] + '\n' + csv.split('\n')[1];
-                                    }
-                                    res.write(csv + '\n');
-                                    csvFile.write(csv + '\n');
-                                    count++;
-                                }
-                            },
-                            function (err, row_count) {
-                                if (!done) {
-                                    console.log(`${count} items were prepared`);
-                                    if (count >= total_size) {
-                                        console.log("done");
-                                        res.end();
-                                        csvFile.end();
-                                        done = true;
-                                    }
-                                }
+                        sql = `SELECT count(DISTINCT ssap_id) as total_size FROM ${table_name}`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        var total_size = 0;
+                        db.all(sql, function (err, rows) {
+                            rows.forEach(function (row) {
+                                console.log(`table ${table_name} size before downloading: ` + JSON.stringify(row));
                             });
+                            total_size = rows[0].total_size;
+                            console.log(`total size = ${total_size}`);
+                        });
 
-                    }
+                        sql = `UPDATE task SET status='converting data into CSV.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
 
 
-                    sql = `UPDATE task SET status='The data was generated.' WHERE id='${task_id}'`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
+                        let output_dir = `${output_folder}/${project.project_number}_${project.abbrev}/v${project.version < 10 ? '0' + project.version : project.version}`;
+                        if (!fs.existsSync(output_dir)) {
+                            fs.mkdirSync(output_dir, {recursive: true});
+                        }
 
-                    sql =
-                        `
+                        let shared_dir = `${shared_folder}/${project.project_number}_${project.abbrev}/v${project.version < 10 ? '0' + project.version : project.version}`
+                        if (!fs.existsSync(shared_dir)) {
+                            fs.mkdirSync(shared_dir, {recursive: true});
+                        }
+
+                        // download
+                        // filename : ####_PROJECT_v##_YYYYMMDD_hhmm
+                        let filename = `${project.project_number}_${project.abbrev}_v${project.version < 10 ? '0' + project.version : project.version}_${date_rep}`;
+
+                        var csvFile = fs.createWriteStream(`${output_dir}/${filename}_analytic_data.csv`, {
+                            flags: 'a'
+                        });
+
+                        res.header('Content-Type', 'text/csv');
+                        //res.attachment(abbrev + '_' + new Date().getTime() + '.csv');
+                        res.attachment(filename + '_analytic_data.csv');
+                        var count = 1;
+                        var page_size = 20000;
+                        var done = false;
+                        const json2csv = new Parser();
+                        for (var page = 0; page < 10; page++) {
+                            sql =
+                                `
+                                 ${data_sql} 
+                                 LIMIT ${page_size} OFFSET ${page * page_size}
+                               `;
+
+                            console.log("---------------------------------------------------");
+                            console.log(sql);
+
+                            var current_page = page;
+                            db.each(sql,
+                                [],
+                                function (err, row) {
+                                    if (err) {
+                                        console.log('error: ' + err);
+                                    } else {
+                                        //console.log(count);
+                                        let csv = json2csv.parse(row);
+                                        if (count !== 1) {
+                                            csv = csv.split('\n')[1];
+                                        } else {
+                                            csv = csv.split('\n')[0] + '\n' + csv.split('\n')[1];
+                                        }
+                                        res.write(csv + '\n');
+                                        csvFile.write(csv + '\n');
+                                        count++;
+                                    }
+                                },
+                                function (err, row_count) {
+                                    if (!done) {
+                                        console.log(`${count} items were prepared`);
+                                        if (count >= total_size) {
+                                            console.log("done");
+                                            res.end();
+                                            csvFile.end();
+                                            done = true;
+
+                                            sql = "SELECT `Variable name`, Description from questionnarie_metadata_2";
+                                            sequelize.query(sql)
+                                                .then(result => {
+                                                    let data = result[0];
+                                                    let map = {};
+                                                    for (var i = 0; i < data.length; i++) {
+                                                        map[data[i]['Variable name']] = data[i].Description;
+                                                    }
+
+                                                    let path = `${shared_dir}/${filename}_summary.pdf`;
+                                                    createPDF(project, map, path, statistics);
+                                                });
+
+                                            tokens.push(token);
+                                            task_token[task_id] = undefined;
+
+                                        }
+                                    }
+                                });
+
+                        }
+
+
+                        sql = `UPDATE task SET status='The data was generated.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        sql =
+                            `
                            INSERT INTO task_log(project_id, 
                                                 version, 
                                                 filename, 
@@ -2544,44 +1562,1599 @@ app.get('/api/download/data/:id/:abbrev/:task_id/:date_rep', (req, res) => {
                                 '${JSON.stringify(project.questionnarie)}'
                             )                   
                         `;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        //db.run(sql);
+                        sequelize.query(sql)
+                            .then(result => {
+                                console.log("saved the task definition.");
+                            })
+                            .catch(err => {
+                                console.log("saving the task deinition failed.")
+                            });
 
-                    sql = `UPDATE projects SET version = version + 1 WHERE id=${project.id}`;
-                    console.log("---------------------------------------------------");
-                    console.log(sql);
-                    db.run(sql);
 
-                    // create a output_file file for the user's selection
-                    sql = "SELECT `Variable name`, Description from questionnarie_metadata_2";
-                    sequelize.query(sql)
-                        .then(result => {
-                            let data = result[0];
-                            let map = {};
-                            for (var i=0; i<data.length; i++) {
-                                map[data[i]['Variable name']] = data[i].Description;
-                            }
+                        /*
+                        sql = `UPDATE projects SET version = version + 1 WHERE id=${project.id}`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+                         */
 
-                            let path = `${shared_dir}/${filename}_summary.pdf` ;
-                            createPDF(project, map, path);
+                        console.log("updating the project version.");
+                        let updated_project = {...project};
+                        updated_project.version = project.version + 1;
+                        project.update(updated_project)
+                            .then(function (rowsUpdated) {
+                                console.log("updated project version");
+                            });
+
+
+                        // create SAS file
+                        createSAS(project, final_columns_ext, output_dir, filename);
+
+                        // create Format CSV file
+                        createFormatCSV(project, final_columns_ext, output_dir, filename);
+
+                        // create SAS Data Call
+                        createSASDataCall(project, output_dir, filename, shared_dir);
+
+                        // create R Data Call
+                        createRDataCall(project, output_dir, filename, shared_dir);
+
+                        // create Dictionary
+                        createSSAPDictionary(project, final_columns_ext, output_dir, filename, shared_dir);
+
+                    });
+
+                    tokens.push(token);
+                    task_token[task_id] = undefined;
+                } else {
+
+                    ////////////////////////////////////////////////////////////////
+                    //
+                    // END: process a project that is not cohort + cancer
+                    //
+                    ////////////////////////////////////////////////////////////////
+
+
+                    db.serialize(function () {
+
+                        let table_name = `ssap_data_${id}_${task_id}`;
+
+                        let sql = `PRAGMA temp_store = 2`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        sql = `INSERT INTO task(id, start_time, status) VALUES('${task_id}', datetime('now'), 'copying data into a temporary table.')`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // create a temporary table
+                        sql = `CREATE TEMP TABLE ${table_name} AS SELECT * FROM ssap_data_2`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // create an index for the temporary table
+                        sql = `CREATE INDEX ${table_name}_idx ON ${table_name}(ssap_id)`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // check
+                        sql = `SELECT count(*) FROM ${table_name}`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.all(sql, function (err, rows) {
+                            rows.forEach(function (row) {
+                                console.log(`table ${table_name} size: ` + JSON.stringify(row));
+                            })
                         });
 
-                    // create SAS file
-                    createSAS(project, final_columns, output_dir, filename);
+                        sql = `UPDATE task SET status='data copied into a temporary table.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
 
-                    // create Format CSV file
-                    createFormatCSV(project, final_columns, output_dir, filename);
+                        // delete the rows with breast_cancer_res_only_ind = 1 when 26000 is not in the selection
+                        let seer_ids = [];
+                        for (var j = 0; j < project.cancer_endpoint.length; j++) {
+                            let item = project.cancer_endpoint[j];
+                            seer_ids.push(item.SEER_ID);
+                        }
 
-                    // create SAS Data Call
-                    createSASDataCall(project, output_dir, filename, shared_dir);
+                        if (!seer_ids.includes('26000')) {
 
-                    // create R Data Call
-                    createRDataCall(project, output_dir, filename, shared_dir);
+                            // handle statistics
+                            sql = `SELECT count(DISTINCT ssap_id) as total FROM ${table_name} WHERE breast_cancer_res_only_ind=1`;
+                            console.log("---------------------------------------------------");
+                            console.log(sql);
+                            db.all(sql, function (err, rows) {
+                                rows.forEach(function (row) {
+                                    statistics.breast_only = row.total;
+                                })
+                            });
 
-                    // create Dictionary
-                    createSSAPDictionary(project, final_columns, output_dir, filename, shared_dir);
-                });
+                            sql = `DELETE FROM ${table_name} WHERE breast_cancer_res_only_ind = 1`;
+                            console.log("---------------------------------------------------")
+                            console.log(sql);
+                            db.run(sql);
+                        }
+
+                        // check
+                        sql = `SELECT count(*) FROM ${table_name}`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.all(sql, function (err, rows) {
+                            rows.forEach(function (row) {
+                                console.log(`table ${table_name} size after deleting breast_cancer_res_only_ind = 1 : ` + JSON.stringify(row));
+                            })
+                        });
+
+                        sql = `UPDATE task SET status='breast_cancer_res_only_ind was processed.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // If a user selects Questionnaire 2-Questionnaire 6 as the start date,
+                        // remove all rows where their selected date is null.
+                        if (project.start_of_follow_up.start_of_follow_up.startsWith("QNR_") &&
+                            !project.start_of_follow_up.start_of_follow_up.startsWith("QNR_1")) {
+
+                            // handle statistics
+                            sql = `SELECT count(DISTINCT ssap_id) as total 
+                                 FROM ${table_name} 
+                                WHERE ${project.start_of_follow_up.start_of_follow_up} is NULL
+                                  OR ${project.start_of_follow_up.start_of_follow_up}=''
+                              `;
+                            console.log("---------------------------------------------------");
+                            console.log(sql);
+                            db.all(sql, function (err, rows) {
+                                rows.forEach(function (row) {
+                                    statistics.not_complete_questionnarie = row.total;
+                                    statistics.not_complete_questionnarie_name = project.start_of_follow_up.start_of_follow_up
+                                })
+                            });
+
+                            sql = `
+                              DELETE FROM ${table_name}
+                               WHERE ${project.start_of_follow_up.start_of_follow_up} is NULL
+                                  OR ${project.start_of_follow_up.start_of_follow_up}=''
+                             `;
+                            console.log("---------------------------------------------------");
+                            console.log(sql);
+                            db.run(sql);
+
+                            // check
+                            sql = `SELECT count(*) FROM ${table_name}`;
+                            console.log("---------------------------------------------------");
+                            console.log(sql);
+                            db.all(sql, function (err, rows) {
+                                rows.forEach(function (row) {
+                                    console.log(`table ${table_name} size after delete NULL start of follow up` + JSON.stringify(row));
+                                })
+                            });
+
+                            sql = `UPDATE task SET status='removed all null start of the follow-up.' WHERE id='${task_id}'`;
+                            console.log("---------------------------------------------------");
+                            console.log(sql);
+                            db.run(sql);
+                        }
+
+                        // Add a new column to the analytic data called analysis_start_date
+                        sql = `ALTER TABLE ${table_name} ADD COLUMN analysis_start_date TEXT`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // populate analysis_start_date with the user's selection
+                        if (project.start_of_follow_up.start_of_follow_up.startsWith("QNR_")) {
+                            sql = `UPDATE ${table_name} SET analysis_start_date=${project.start_of_follow_up.start_of_follow_up}`
+                            console.log("---------------------------------------------------");
+                            console.log(sql);
+                            db.run(sql);
+                        } else if (project.start_of_follow_up.start_of_follow_up.startsWith("Other") &&
+                            project.start_of_follow_up.start_of_follow_up_specified) {
+                            let other_date = project.start_of_follow_up.start_of_follow_up_specified.split('T')[0];
+                            sql = `UPDATE ${table_name} SET analysis_start_date='${other_date}'`;
+                            console.log("---------------------------------------------------");
+                            console.log(sql);
+                            db.run(sql);
+                        }
+
+                        sql = `UPDATE task SET status='populated analysis_start_date.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // if (date_of_death_dt ne . and date_of_death_dt < analysis_start_date)
+                        // OR
+                        // (first_moveout_ca_dt ne . and first_moveout_ca_dt < analysis_start_date)
+                        // then DELETE
+                        /*
+                        sql =
+                            `
+                            DELETE FROM ${table_name}
+                             WHERE (
+                                    NOT date_of_death_dt is NULL
+                                    AND
+                                    NOT date_of_death_dt = ''
+                                    AND
+                                    date_of_death_dt <= analysis_start_date
+                                   )
+                                OR
+                                   (
+                                    NOT first_moveout_ca_dt is NULL
+                                    AND
+                                    NOT first_moveout_ca_dt = ''
+                                    AND
+                                    first_moveout_ca_dt <= analysis_start_date
+                                   )
+                            `;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        sql = `UPDATE task SET status='delete death or move out earlier.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+                         */
+
+                        // Add a new column to the analytic data called end_of_followup_date.
+                        sql = `ALTER TABLE ${table_name} ADD COLUMN end_of_followup_date TEXT`;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        if (project.censoring_rules.through_2015_12_31) {
+                            // If the user answers "Yes" to the first question of censering rule,
+                            // populate it with the user's selection (the admin_censoring_date -- currently 12/31/2017).
+                            let end_date = "2017-12-31";
+                            sql = `UPDATE ${table_name} SET end_of_followup_date='${end_date}'`;
+                            console.log("---------------------------------------------------")
+                            console.log(sql);
+                            db.run(sql);
+                        } else if (project.censoring_rules.end_of_follow_up.startsWith("QNR_")) {
+                            // If the user answer "No" to the first question of censering rule and selects another date,
+                            // populate end_of_followup_date with their selected date.
+                            sql = `UPDATE ${table_name} SET end_of_followup_date=${project.censoring_rules.end_of_follow_up}`;
+                            console.log("---------------------------------------------------")
+                            console.log(sql);
+                            db.run(sql);
+                        } else if (project.censoring_rules.end_of_follow_up.startsWith("Other") &&
+                            project.censoring_rules.end_of_follow_up_specified) {
+                            // If the user answer "No" to the first question of censering rule and selects another date,
+                            // populate end_of_followup_date with their selected date.
+                            let other_date = project.censoring_rules.end_of_follow_up_specified.split('T')[0];
+                            sql = `UPDATE ${table_name} SET end_of_followup_date='${other_date}'`;
+                            console.log("---------------------------------------------------")
+                            console.log(sql);
+                            db.run(sql);
+                        }
+
+                        sql = `UPDATE task SET status='populated end_of_followup_date.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // create a new column, case_indicator
+                        sql = `ALTER TABLE ${table_name} ADD COLUMN case_indicator INT`;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        // marks rows that meet the user's endpoint definition and date_dt > analysis_start_date
+                        // with a 1 and all other rows with a 0.
+                        sql = `
+                UPDATE ${table_name}
+                   SET case_indicator=1
+                 WHERE date_dt >= analysis_start_date
+                   AND ${getCoditionForCancerEndpoint(project.cancer_endpoint)}
+                `;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        sql = `UPDATE ${table_name} SET case_indicator=0 WHERE case_indicator is NULL`;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        // check
+                        sql = `SELECT count(*) FROM ${table_name} WHERE case_indicator=1`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.all(sql, function (err, rows) {
+                            rows.forEach(function (row) {
+                                console.log(`table ${table_name} size for case_indicator=1: ` + JSON.stringify(row));
+                            })
+                        });
+
+                        // check
+                        sql = `SELECT count(*) FROM ${table_name} WHERE case_indicator=0`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.all(sql, function (err, rows) {
+                            rows.forEach(function (row) {
+                                console.log(`table ${table_name} size for case_indicator=0: ` + JSON.stringify(row));
+                            })
+                        });
+
+                        sql = `UPDATE task SET status='populated case_indicator.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // add a new column prevalent
+                        sql = `ALTER TABLE ${table_name} ADD COLUMN prevalent INT`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        if (project.start_of_follow_up.start_of_follow_up_exclude) {
+                            if (project.start_of_follow_up.start_of_follow_up_exclude === 'exclude all') {
+
+                                // If DATE_DT is not NULL and DATE_DT < analysis_start_date
+                                // OR brca_selfsurvey='Y' or endoca_self_q1='A' or cervca_self_q1='A'
+                                // or ovryca_self_q1='A' or lungca_self_q1='A' or leuk_self_q1='A'
+                                // or hodg_self_q1='A' or colnca_self_q1='A' or thyrca_self_q1='A'
+                                // or meln_self_q1='A', then prevalent=1
+
+                                sql =
+                                    `UPDATE ${table_name} SET prevalent=1
+                                  WHERE (NOT DATE_DT is NULL and NOT DATE_DT = '' and DATE_DT < analysis_start_date)
+                                     OR brca_selfsurvey='Y'
+                                     OR endoca_self_q1='A'
+                                     OR cervca_self_q1='A'
+                                     OR ovryca_self_q1='A'
+                                     OR lungca_self_q1='A'
+                                     OR leuk_self_q1='A'
+                                     OR hodg_self_q1='A'
+                                     OR colnca_self_q1='A'
+                                     OR thyrca_self_q1='A'
+                                     OR meln_self_q1='A'
+                                  `;
+                                console.log("---------------------------------------------------");
+                                console.log(sql);
+                                db.run(sql);
+
+                                // handle statistics
+                                sql = `SELECT count(DISTINCT ssap_id) as total 
+                                     FROM ${table_name} 
+                                    WHERE prevalent=1
+                              `;
+                                console.log("---------------------------------------------------");
+                                console.log(sql);
+                                db.all(sql, function (err, rows) {
+                                    rows.forEach(function (row) {
+                                        statistics.exclude_prevalent = row.total;
+                                    })
+                                });
+
+                                // Remove ALL ROWS for participants that have even just one row where prevalent=1
+                                sql = `DELETE FROM ${table_name} WHERE ssap_id IN (SELECT DISTINCT ssap_id FROM ${table_name} WHERE prevalent=1)`;
+                                console.log("---------------------------------------------------");
+                                console.log(sql);
+                                db.run(sql);
+
+                            } else if (project.start_of_follow_up.start_of_follow_up_exclude === 'exclude interest') {
+
+                                let cmd =
+                                    `UPDATE ${table_name} SET prevalent=1
+                                  WHERE (${getCoditionForCancerEndpoint(project.cancer_endpoint)}
+                                    AND NOT DATE_DT is NULL and NOT DATE_DT = '' 
+                                    AND DATE_DT < analysis_start_date)
+                                `;
+
+                                var found = false;
+                                if (seer_ids.includes('26000')) {
+                                    // User selection includes SEER_ID=26000:
+                                    // If row meets the user's endpoint definition
+                                    // and DATE_DT is not NULL and DATE_DT < analysis_start_date
+                                    // OR brca_selfsurvey='Y'
+                                    // then prevalent=1
+                                    cmd += ` OR brca_selfsurvey='Y' `;
+                                    found = true;
+                                }
+
+                                if (seer_ids.includes('27020') || seer_ids.includes('27030')) {
+                                    cmd += " OR endoca_self_q1='A' ";
+                                    found = true;
+                                }
+
+                                if (seer_ids.includes('27010')) {
+                                    cmd += " OR cervca_self_q1 = 'A' ";
+                                    found = true;
+                                }
+
+                                if (seer_ids.includes('27040')) {
+                                    cmd += " OR ovryca_self_q1 = 'A' ";
+                                    found = true;
+                                }
+
+                                if (seer_ids.includes('22030')) {
+                                    cmd += " OR lungca_self_q1 = 'A' ";
+                                    found = true;
+                                }
+
+                                if (seer_ids.includes('35011') ||
+                                    seer_ids.includes('35012') ||
+                                    seer_ids.includes('35013') ||
+                                    seer_ids.includes('35014') ||
+                                    seer_ids.includes('35015') ||
+                                    seer_ids.includes('35016') ||
+                                    seer_ids.includes('35017') ||
+                                    seer_ids.includes('35018') ||
+                                    seer_ids.includes('35019') ||
+                                    seer_ids.includes('35020') ||
+
+                                    seer_ids.includes('35021') ||
+                                    seer_ids.includes('35022') ||
+                                    seer_ids.includes('35023') ||
+                                    seer_ids.includes('35024') ||
+                                    seer_ids.includes('35025') ||
+                                    seer_ids.includes('35026') ||
+                                    seer_ids.includes('35027') ||
+                                    seer_ids.includes('35028') ||
+                                    seer_ids.includes('35029') ||
+                                    seer_ids.includes('35030') ||
+
+                                    seer_ids.includes('35031') ||
+                                    seer_ids.includes('35032') ||
+                                    seer_ids.includes('35033') ||
+                                    seer_ids.includes('35034') ||
+                                    seer_ids.includes('35035') ||
+                                    seer_ids.includes('35036') ||
+                                    seer_ids.includes('35037') ||
+                                    seer_ids.includes('35038') ||
+                                    seer_ids.includes('35039') ||
+                                    seer_ids.includes('35040') ||
+
+                                    seer_ids.includes('35041') ||
+                                    seer_ids.includes('35042') ||
+                                    seer_ids.includes('35043')) {
+                                    cmd += " OR leuk_self_q1='A' ";
+                                    found = true;
+                                }
+
+                                if (seer_ids.includes('33011') || seer_ids.includes('33012')) {
+                                    cmd += " OR hodg_self_q1 = 'A' ";
+                                    found = true;
+                                }
+
+                                if (seer_ids.includes('21041') ||
+                                    seer_ids.includes('21042') ||
+                                    seer_ids.includes('21043') ||
+                                    seer_ids.includes('21044') ||
+                                    seer_ids.includes('21045') ||
+                                    seer_ids.includes('21046') ||
+                                    seer_ids.includes('21047') ||
+                                    seer_ids.includes('21048') ||
+                                    seer_ids.includes('21049') ||
+                                    seer_ids.includes('21050') ||
+                                    seer_ids.includes('21051') ||
+                                    seer_ids.includes('21052') ||
+                                    seer_ids.includes('21053') ||
+                                    seer_ids.includes('21054') ||
+                                    seer_ids.includes('21055') ||
+                                    seer_ids.includes('21056') ||
+                                    seer_ids.includes('21057') ||
+                                    seer_ids.includes('21058') ||
+                                    seer_ids.includes('21059') ||
+                                    seer_ids.includes('21060')) {
+                                    cmd += " OR colnca_self_q1 = 'A' ";
+                                    found = true;
+                                }
+
+                                if (seer_ids.includes('32010')) {
+                                    cmd += " OR thyrca_self_q1 = 'A' ";
+                                    found = true;
+                                }
+
+                                if (seer_ids.includes('25010')) {
+                                    cmd += " OR meln_self_q1 = 'A' ";
+                                    found = true;
+                                }
+
+                                if (!found) {
+                                    // If user's selected cancer does NOT include SEER_ID in
+                                    // (26000, 27020, 27030, 27010, 27040, 22030, 35011-35043, 21041-21060, 32010, 25010),
+                                    // use this:
+                                    // If row meets user's selected cancer criteria
+                                    // and DATE_DT is not NULL and DATE_DT < analysis_start_date
+                                    // then prevalent=1
+                                }
+
+                                //cmd += `)`;
+                                sql = cmd;
+
+                                console.log("---------------------------------------------------");
+                                console.log(sql);
+                                db.run(sql);
+
+                                // check
+                                sql = `SELECT count(DISTINCT ssap_id) FROM ${table_name}`;
+                                console.log("---------------------------------------------------");
+                                console.log(sql);
+                                db.all(sql, function (err, rows) {
+                                    rows.forEach(function (row) {
+                                        console.log(`how many panticipant: ` + JSON.stringify(row));
+                                    })
+                                });
+
+                                // handle statistics
+                                sql = `SELECT count(DISTINCT ssap_id) as total FROM ${table_name} WHERE prevalent=1 `;
+                                console.log("---------------------------------------------------");
+                                console.log(sql);
+                                db.all(sql, function (err, rows) {
+                                    rows.forEach(function (row) {
+                                        console.log(`row count with prevalent=1: ` + JSON.stringify(row));
+                                        statistics.exclude_prevalent = row.total;
+                                    })
+                                });
+
+                                // Remove ALL ROWS for participants that have even just one row where prevalent=1
+                                sql = `DELETE FROM ${table_name} WHERE ssap_id IN (SELECT DISTINCT ssap_id FROM ${table_name} WHERE prevalent=1)`;
+                                console.log("---------------------------------------------------");
+                                console.log(sql);
+                                db.run(sql);
+
+                                // check
+                                sql = `SELECT count(DISTINCT ssap_id) FROM ${table_name}`;
+                                console.log("---------------------------------------------------");
+                                console.log(sql);
+                                db.all(sql, function (err, rows) {
+                                    rows.forEach(function (row) {
+                                        console.log(`how many panticipant after delete prevalent=1: ` + JSON.stringify(row));
+                                    })
+                                });
+
+                            } else if (project.start_of_follow_up.start_of_follow_up_exclude === 'include all') {
+
+                                // If DATE_DT is not NULL and DATE_DT < analysis_start_date
+                                // OR brca_selfsurvey='Y'
+                                // or endoca_self_q1='A'
+                                // or cervca_self_q1='A'
+                                // or ovryca_self_q1='A'
+                                // or lungca_self_q1='A'
+                                // or leuk_self_q1='A'
+                                // or hodg_self_q1='A'
+                                // or colnca_self_q1='A'
+                                // or thyrca_self_q1='A'
+                                // or meln_self_q1='A',
+                                // then prevalent=1;
+                                // else prevalent=0;
+
+                                sql =
+                                    `UPDATE ${table_name} SET prevalent=1
+                           WHERE (NOT DATE_DT is NULL and NOT DATE_DT = '' AND DATE_DT < analysis_start_date)
+                              OR brca_selfsurvey='Y'
+                              OR endoca_self_q1='A'
+                              OR cervca_self_q1='A'
+                              OR ovryca_self_q1='A'
+                              OR lungca_self_q1='A'
+                              OR leuk_self_q1='A'
+                              OR hodg_self_q1='A'
+                              OR colnca_self_q1='A'
+                              OR thyrca_self_q1='A'
+                              OR meln_self_q1='A'
+                        `;
+                                console.log("---------------------------------------------------")
+                                console.log(sql);
+                                db.run(sql);
+
+                                // Assign ALL ROWS for participants that have even just one row meeting these conditions as prevalent=1.
+                                sql =
+                                    `UPDATE ${table_name}
+                            SET prevalent=1
+                          WHERE ssap_id IN (SELECT DISTINCT ssap_id FROM ${table_name} WHERE prevalent=1)
+                        `;
+                                console.log("---------------------------------------------------")
+                                console.log(sql);
+                                db.run(sql);
+
+                                sql = `UPDATE ${table_name} SET prevalent=0 WHERE prevalent is NULL`;
+                                console.log("---------------------------------------------------")
+                                console.log(sql);
+                                db.run(sql);
+                            }
+                        }
+
+                        sql = `UPDATE task SET status='populated prevalent.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // Create a new date column called "firstselectedcancer_date."
+                        sql = `ALTER TABLE ${table_name} ADD COLUMN firstselectedcancer_date TEXT`;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        let min_dt_table_name = `${table_name}_min_dt`;
+                        sql = `
+                CREATE TEMP TABLE ${min_dt_table_name} AS
+                SELECT ssap_id, min(date_dt) as min_date_dt
+                  FROM ${table_name}
+                 WHERE case_indicator=1 
+                   AND NOT date_dt is NULL
+                   AND NOT date_dt = ''
+                 GROUP BY ssap_id
+                `;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        //check
+                        sql = `SELECT count(*) FROM ${min_dt_table_name} `;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.all(sql, function (err, rows) {
+                            rows.forEach(function (row) {
+                                console.log(`table ${min_dt_table_name}: ` + JSON.stringify(row));
+                            })
+                        });
+
+                        // Within rows where case_indicator=1,
+                        // take the DATE_DT from the first row for each participant and put it in firstselectedcancer_date.
+                        // All rows for a participant should have the SAME firstselectedcancer_date
+                        // this date should be pulled down for all rows for a participant. See image in next cell.
+                        // Participants who have no rows where case_indicator=1 will have a null value for this column.
+
+                        sql = `
+                            UPDATE ${table_name}
+                               SET firstselectedcancer_date = (
+                                     SELECT min_date_dt
+                                       FROM ${min_dt_table_name}
+                                      WHERE ${table_name}.ssap_id = ssap_id
+                                   )
+                         `;
+                        // WHERE case_indicator=1
+
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        sql = `UPDATE task SET status='populated firstselectedcancer_date.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // Create a new date column called "firstothercancer_date."
+                        sql = `ALTER TABLE ${table_name} ADD COLUMN firstothercancer_date TEXT`;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        // Within rows where case_indicator=0 AND DATE_DT is NOT null
+                        // AND  date_dt > analysis_start_date,
+                        // take the DATE_DT from the first row for each participant and put it in the firstothercancer_date.
+
+                        let min_dt_other_table_name = `${table_name}_min_dt_other`;
+                        sql = `
+                            CREATE TEMP TABLE ${min_dt_other_table_name} AS
+                            SELECT ssap_id, min(date_dt) as min_date_dt
+                              FROM ${table_name}
+                             WHERE case_indicator=0 
+                               AND NOT date_dt is NULL
+                               AND NOT date_dt = ''
+                               AND date_dt >= analysis_start_date
+                             GROUP BY ssap_id
+                          `;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        // create an index for the table min_dt_other_table_name
+                        sql = `CREATE INDEX ${min_dt_other_table_name}_idx ON ${min_dt_other_table_name}(ssap_id)`;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        //check
+                        sql = `SELECT count(*) FROM ${min_dt_other_table_name} `;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.all(sql, function (err, rows) {
+                            rows.forEach(function (row) {
+                                console.log(`table ${min_dt_other_table_name}: ` + JSON.stringify(row));
+                            })
+                        });
+
+                        // All rows for a participant should have the SAME firstothercancer_date.
+                        // this date should be pulled down for all rows for a participant. See image in above cell.
+                        //
+                        // Participants who have no rows where case_indicator=0 and DATE_DT is not null
+                        // will have a null value for this column.
+
+                        sql = `
+                           UPDATE ${table_name}
+                              SET firstothercancer_date = (
+                                     SELECT min_date_dt
+                                       FROM ${min_dt_other_table_name}
+                                      WHERE ${table_name}.ssap_id = ssap_id
+                                  )
+                          `;
+                        /*
+                         WHERE case_indicator=0
+                           AND NOT date_dt is NULL
+                           AND date_dt > analysis_start_date
+                         */
+
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        sql = `UPDATE task SET status='populated firstothercancer_date.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // Create a new date column called analysis_end_date.
+                        sql = `ALTER TABLE ${table_name} ADD COLUMN analysis_end_date TEXT`;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        // START: fix the bug for setting up analysis_end_date
+                        let analysis_end_date_attributes = [];
+                        analysis_end_date_attributes.push('date_of_death_dt');
+                        analysis_end_date_attributes.push('first_moveout_ca_dt');
+                        analysis_end_date_attributes.push('firstselectedcancer_date');
+                        analysis_end_date_attributes.push('end_of_followup_date');
+
+                        if (project.censoring_rules && project.censoring_rules.end_of_follow_up_exclude === 'default') {
+                            analysis_end_date_attributes.push('firstothercancer_date');
+                        }
+
+                        if (seer_ids.includes('27020') ||
+                            seer_ids.includes('27030')) {
+                            analysis_end_date_attributes.push('HYSTERECTOMY_DT');
+                        }
+
+                        if (seer_ids.includes('27040')) {
+                            analysis_end_date_attributes.push('BILATERAL_OOPHORECTOMY_DT');
+                        }
+
+                        if (seer_ids.includes('26000')) {
+                            analysis_end_date_attributes.push('BILATERAL_MASTECTOMY_DT');
+                        }
+
+                        sql = `
+                             UPDATE ${table_name}
+                                SET analysis_end_date = min(`;
+
+                        let first = true;
+                        analysis_end_date_attributes.forEach(attr => {
+                            if (!first) {
+                                sql += `                                    
+                                     ,`;
+                            }
+                            sql += `
+                                     CASE
+                                         WHEN ${attr} = '' OR ${attr} IS NULL
+                                         THEN '2999-12-31'
+                                         ELSE ${attr}
+                                     END `;
+                            first = false;
+                        });
+
+                        sql += `                                     )
+                               WHERE `;
+
+                        first = true;
+                        analysis_end_date_attributes.forEach(attr => {
+                            if (!first) {
+                                sql += `
+                                   OR `;
+                            }
+                            sql += ` (NOT ${attr} is NULL AND NOT ${attr} = '') `;
+                            first = false;
+                        });
+
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        // END: fix the bug for setting up analysis_end_date
+
+
+                        /*
+                        var found = false;
+                        if (seer_ids.includes('27020') || seer_ids.includes('27030')) {
+                            // If user's selections include SEER_ID=27020 or 27030:
+                            // analysis_end_date=min(DATE_OF_DEATH_DT, first_moveout_ca_dt,
+                            // firstothercancer_date, firstselectedcancer_date, end_of_followup_date, HYSTERECTOMY_DT)
+
+                            if (project.censoring_rules && project.censoring_rules.end_of_follow_up_exclude === 'default') {
+
+                                sql =
+                                    `UPDATE ${table_name}
+                            SET analysis_end_date =
+                                   min(CASE
+                                          WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31'
+                                          ELSE DATE_OF_DEATH_DT
+                                       END,
+                                       CASE
+                                          WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31'
+                                          ELSE first_moveout_ca_dt
+                                       END,
+                                       CASE
+                                          WHEN firstothercancer_date = '' OR firstothercancer_date IS NULL THEN '2999-12-31'
+                                          ELSE firstothercancer_date
+                                       END,
+                                       CASE
+                                          WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31'
+                                          ELSE firstselectedcancer_date
+                                       END,
+                                       CASE
+                                          WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31'
+                                          ELSE end_of_followup_date
+                                       END,
+                                       CASE
+                                          WHEN HYSTERECTOMY_DT = '' OR HYSTERECTOMY_DT IS NULL THEN '2999-12-31'
+                                          ELSE HYSTERECTOMY_DT
+                                       END
+                                       )
+                          WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
+                             OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
+                             OR (NOT firstothercancer_date is NULL AND NOT firstothercancer_date = '')
+                             OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '')
+                             OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')
+                             OR (NOT HYSTERECTOMY_DT is NULL AND NOT HYSTERECTOMY_DT = '')
+                        `;
+
+                            } else {
+
+                                sql =
+                                    `UPDATE ${table_name}
+                            SET analysis_end_date =
+                                   min(CASE
+                                          WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31'
+                                          ELSE DATE_OF_DEATH_DT
+                                       END,
+                                       CASE
+                                          WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31'
+                                          ELSE first_moveout_ca_dt
+                                       END,
+                                       CASE
+                                          WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31'
+                                          ELSE firstselectedcancer_date
+                                       END,
+                                       CASE
+                                          WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31'
+                                          ELSE end_of_followup_date
+                                       END,
+                                       CASE
+                                          WHEN HYSTERECTOMY_DT = '' OR HYSTERECTOMY_DT IS NULL THEN '2999-12-31'
+                                          ELSE HYSTERECTOMY_DT
+                                       END
+                                       )
+                          WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
+                             OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
+                             OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '')
+                             OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')
+                             OR (NOT HYSTERECTOMY_DT is NULL AND NOT HYSTERECTOMY_DT = '')
+                        `;
+                            }
+
+                            console.log("---------------------------------------------------")
+                            console.log(sql);
+                            db.run(sql);
+
+                            found = true;
+                        }
+
+                        if (seer_ids.includes('27040')) {
+                            // If user's selections include SEER_ID=27040:
+                            // analysis_end_date=min(DATE_OF_DEATH_DT,  first_moveout_ca_dt, firstothercancer_date,
+                            // firstselectedcancer_date, end_of_followup_date, BILATERAL_OOPHORECTOMY_DT)
+
+                            if (project.censoring_rules && project.censoring_rules.end_of_follow_up_exclude === 'default') {
+                                sql =
+                                    `UPDATE ${table_name}
+                            SET analysis_end_date =
+                                   min(CASE
+                                          WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31'
+                                          ELSE DATE_OF_DEATH_DT
+                                       END,
+                                       CASE
+                                          WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31'
+                                          ELSE first_moveout_ca_dt
+                                       END,
+                                       CASE
+                                          WHEN firstothercancer_date = '' OR firstothercancer_date IS NULL THEN '2999-12-31'
+                                          ELSE firstothercancer_date
+                                       END,
+                                       CASE
+                                          WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31'
+                                          ELSE firstselectedcancer_date
+                                       END,
+                                       CASE
+                                          WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31'
+                                          ELSE end_of_followup_date
+                                       END,
+                                       CASE
+                                          WHEN BILATERAL_OOPHORECTOMY_DT = '' OR BILATERAL_OOPHORECTOMY_DT IS NULL THEN '2999-12-31'
+                                          ELSE BILATERAL_OOPHORECTOMY_DT
+                                       END
+                                       )
+                          WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
+                             OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
+                             OR (NOT firstothercancer_date is NULL AND NOT firstothercancer_date = '')
+                             OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '')
+                             OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')
+                             OR (NOT BILATERAL_OOPHORECTOMY_DT is NULL AND NOT BILATERAL_OOPHORECTOMY_DT = '')
+                        `;
+                            } else {
+                                sql =
+                                    `UPDATE ${table_name}
+                            SET analysis_end_date =
+                                   min(CASE
+                                          WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31'
+                                          ELSE DATE_OF_DEATH_DT
+                                       END,
+                                       CASE
+                                          WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31'
+                                          ELSE first_moveout_ca_dt
+                                       END,
+                                       CASE
+                                          WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31'
+                                          ELSE firstselectedcancer_date
+                                       END,
+                                       CASE
+                                          WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31'
+                                          ELSE end_of_followup_date
+                                       END,
+                                       CASE
+                                          WHEN BILATERAL_OOPHORECTOMY_DT = '' OR BILATERAL_OOPHORECTOMY_DT IS NULL THEN '2999-12-31'
+                                          ELSE BILATERAL_OOPHORECTOMY_DT
+                                       END
+                                       )
+                          WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
+                             OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
+                             OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '')
+                             OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')
+                             OR (NOT BILATERAL_OOPHORECTOMY_DT is NULL AND NOT BILATERAL_OOPHORECTOMY_DT = '')
+                        `;
+                            }
+
+                            console.log("---------------------------------------------------")
+                            console.log(sql);
+                            db.run(sql);
+
+                            found = true;
+                        }
+
+                        if (seer_ids.includes('26000')) {
+
+                            // If user's selections include SEER_ID=26000:
+                            // analysis_end_date=min(DATE_OF_DEATH_DT,  first_moveout_ca_dt,
+                            // firstothercancer_date, firstselectedcancer_date, end_of_followup_date,
+                            // BILATERAL_MASTECTOMY_DT)
+
+                            if (project.censoring_rules && project.censoring_rules.end_of_follow_up_exclude === 'default') {
+
+                                sql =
+                                    `UPDATE ${table_name}
+                            SET analysis_end_date =
+                                   min(CASE
+                                          WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31'
+                                          ELSE DATE_OF_DEATH_DT
+                                       END,
+                                       CASE
+                                          WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31'
+                                          ELSE first_moveout_ca_dt
+                                       END,
+                                       CASE
+                                          WHEN firstothercancer_date = '' OR firstothercancer_date IS NULL THEN '2999-12-31'
+                                          ELSE firstothercancer_date
+                                       END,
+                                       CASE
+                                          WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31'
+                                          ELSE firstselectedcancer_date
+                                       END,
+                                       CASE
+                                          WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31'
+                                          ELSE end_of_followup_date
+                                       END,
+                                       CASE
+                                          WHEN BILATERAL_MASTECTOMY_DT = '' OR BILATERAL_MASTECTOMY_DT IS NULL THEN '2999-12-31'
+                                          ELSE BILATERAL_MASTECTOMY_DT
+                                       END
+                                       )
+                          WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
+                             OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
+                             OR (NOT firstothercancer_date is NULL AND NOT firstothercancer_date = '')
+                             OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '')
+                             OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')
+                             OR (NOT BILATERAL_MASTECTOMY_DT is NULL AND NOT BILATERAL_MASTECTOMY_DT = '')
+                        `;
+
+                            } else {
+
+                                // If "DO NOT CENSOR AT OTHER CANCER DIAGNOSIS" was selected in the censoring rules module,
+                                // "firstothercancer_date" will not be needed here either.
+
+                                sql =
+                                    `UPDATE ${table_name}
+                            SET analysis_end_date =
+                                   min(CASE
+                                          WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31'
+                                          ELSE DATE_OF_DEATH_DT
+                                       END,
+                                       CASE
+                                          WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31'
+                                          ELSE first_moveout_ca_dt
+                                       END,
+                                       CASE
+                                          WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31'
+                                          ELSE firstselectedcancer_date
+                                       END,
+                                       CASE
+                                          WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31'
+                                          ELSE end_of_followup_date
+                                       END,
+                                       CASE
+                                          WHEN BILATERAL_MASTECTOMY_DT = '' OR BILATERAL_MASTECTOMY_DT IS NULL THEN '2999-12-31'
+                                          ELSE BILATERAL_MASTECTOMY_DT
+                                       END
+                                       )
+                          WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
+                             OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
+                             OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '')
+                             OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')
+                             OR (NOT BILATERAL_MASTECTOMY_DT is NULL AND NOT BILATERAL_MASTECTOMY_DT = '')
+                        `;
+                            }
+
+                            console.log("---------------------------------------------------")
+                            console.log(sql);
+                            db.run(sql);
+
+                            found = true;
+                        }
+
+                        if (!found) {
+
+                            // If user's selections do not include SEER_ID in (27020, 27030, 27040 or 26000), use this:
+                            // analysis_end_date=min(DATE_OF_DEATH_DT, first_moveout_ca_dt, firstothercancer_date,
+                            // firstselectedcancer_date, end_of_followup_date)
+
+                            if (project.censoring_rules && project.censoring_rules.end_of_follow_up_exclude === 'default') {
+                                sql =
+                                    `UPDATE ${table_name}
+                                        SET analysis_end_date =
+                                   min(CASE
+                                          WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31'
+                                          ELSE DATE_OF_DEATH_DT
+                                       END,
+                                       CASE
+                                          WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31'
+                                          ELSE first_moveout_ca_dt
+                                       END,
+                                       CASE
+                                          WHEN firstothercancer_date = '' OR firstothercancer_date IS NULL THEN '2999-12-31'
+                                          ELSE firstothercancer_date
+                                       END,
+                                       CASE
+                                          WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31'
+                                          ELSE firstselectedcancer_date
+                                       END,
+                                       CASE
+                                          WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31'
+                                          ELSE end_of_followup_date
+                                       END)
+                                    WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
+                                       OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
+                                       OR (NOT firstothercancer_date is NULL AND NOT firstothercancer_date = '')
+                                       OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '')
+                                       OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')
+                                   `;
+                            } else {
+                                sql =
+                                    `UPDATE ${table_name}
+                            SET analysis_end_date =
+                                   min(CASE
+                                          WHEN DATE_OF_DEATH_DT = '' OR DATE_OF_DEATH_DT IS NULL THEN '2999-12-31'
+                                          ELSE DATE_OF_DEATH_DT
+                                       END,
+                                       CASE
+                                          WHEN first_moveout_ca_dt = '' OR first_moveout_ca_dt IS NULL THEN '2999-12-31'
+                                          ELSE first_moveout_ca_dt
+                                       END,
+                                       CASE
+                                          WHEN firstselectedcancer_date = '' OR firstselectedcancer_date IS NULL THEN '2999-12-31'
+                                          ELSE firstselectedcancer_date
+                                       END,
+                                       CASE
+                                          WHEN end_of_followup_date = '' OR end_of_followup_date IS NULL THEN '2999-12-31'
+                                          ELSE end_of_followup_date
+                                       END)
+                          WHERE (NOT DATE_OF_DEATH_DT is NULL AND NOT DATE_OF_DEATH_DT = '')
+                             OR (NOT first_moveout_ca_dt is NULL AND NOT first_moveout_ca_dt = '')
+                             OR (NOT firstselectedcancer_date is NULL AND NOT firstselectedcancer_date = '')
+                             OR (NOT end_of_followup_date is NULL AND NOT end_of_followup_date = '')
+                        `;
+                            }
+
+                            console.log("---------------------------------------------------")
+                            console.log(sql);
+                            db.run(sql);
+
+                        }
+                        */
+
+                        // check
+                        sql = `SELECT count(*) FROM ${table_name} WHERE NOT analysis_end_date is NULL`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.all(sql, function (err, rows) {
+                            rows.forEach(function (row) {
+                                console.log(`table ${table_name} NOT analysis_end_date is NULL: ` + JSON.stringify(row));
+                            })
+                        });
+
+                        sql = `UPDATE task SET status='populated analysis_end_date.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // check
+                        sql = `SELECT count(*) FROM ${table_name} WHERE date_dt > analysis_end_date`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.all(sql, function (err, rows) {
+                            rows.forEach(function (row) {
+                                console.log(`table ${table_name} date_dt > analysis_end_date: ` + JSON.stringify(row));
+                            })
+                        });
+
+                        // Create the event variable
+                        sql = `ALTER TABLE ${table_name} ADD COLUMN event INT`;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        // if analysis_end_date=end_of_followup_date then event=5
+                        // if analysis_end_date=DATE_OF_DEATH_DT then event=4
+                        // if analysis_end_date=first_moveout_ca_dt then event=3
+                        // if analysis_end_date=firstothercancer_date then event=2
+                        //
+                        // (add these 3 where applicable)
+                        // if analysis_end_date=HYSTERECTOMY_DT then event=6
+                        // if analysis_end_date=BILATERAL_MASTECTOMY_DT then event=7
+                        // if analysis_end_date=BILATERAL_OOPHORECTOMY_DT then event=8
+                        //
+                        //
+                        // if analysis_end_date=firstselectedcancer_date then event=1
+                        //
+                        // The order is significant because sometimes these events fall on the same day.
+                        // This is the prioritization order:
+                        // firstselectedcancer_date, (hysterectomy, bilateral mastectomy or oophorectomy dates if applicable),
+                        // firstothercancer_date,  first_moveout_ca_dt, date_of_death_dt, end_of_follow_up_date)
+
+                        sql =
+                            `UPDATE ${table_name} 
+                            SET event = CASE WHEN analysis_end_date=firstselectedcancer_date THEN 1 ELSE NULL END
+                          WHERE NOT analysis_end_date is NULL
+                            AND NOT firstselectedcancer_date is NULL
+                        `;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        if (seer_ids.includes('27020') || seer_ids.includes('27030')) {
+                            sql =
+                                `UPDATE ${table_name} 
+                                SET event = CASE WHEN analysis_end_date=HYSTERECTOMY_DT THEN 6 ELSE NULL END
+                              WHERE NOT analysis_end_date is NULL
+                                AND NOT HYSTERECTOMY_DT is NULL
+                                AND NOT HYSTERECTOMY_DT = ''
+                                AND event is NULL
+                            `;
+                            console.log("---------------------------------------------------")
+                            console.log(sql);
+                            db.run(sql);
+                        }
+
+                        if (seer_ids.includes('26000')) {
+                            sql =
+                                `UPDATE ${table_name} 
+                                SET event = CASE WHEN analysis_end_date=BILATERAL_MASTECTOMY_DT THEN 7 ELSE NULL END
+                              WHERE NOT analysis_end_date is NULL
+                                AND NOT BILATERAL_MASTECTOMY_DT is NULL
+                                AND NOT BILATERAL_MASTECTOMY_DT = ''
+                                AND event is NULL
+                            `;
+                            console.log("---------------------------------------------------")
+                            console.log(sql);
+                            db.run(sql);
+                        }
+
+                        if (seer_ids.includes('27040')) {
+                            sql =
+                                `UPDATE ${table_name} 
+                                SET event = CASE WHEN analysis_end_date=BILATERAL_OOPHORECTOMY_DT THEN 8 ELSE NULL END
+                              WHERE NOT analysis_end_date is NULL
+                                AND NOT BILATERAL_OOPHORECTOMY_DT is NULL
+                                AND NOT BILATERAL_OOPHORECTOMY_DT = ''
+                                AND event is NULL
+                        `;
+                            console.log("---------------------------------------------------")
+                            console.log(sql);
+                            db.run(sql);
+                        }
+
+                        if (project.censoring_rules && project.censoring_rules.end_of_follow_up_exclude === 'default') {
+                            sql =
+                                `UPDATE ${table_name} 
+                                SET event = CASE WHEN analysis_end_date=firstothercancer_date THEN 2 ELSE NULL END
+                              WHERE NOT analysis_end_date is NULL
+                                AND NOT firstothercancer_date is NULL
+                                AND event is NULL
+                        `;
+                            console.log("---------------------------------------------------")
+                            console.log(sql);
+                            db.run(sql);
+                        }
+
+                        sql =
+                            `UPDATE ${table_name} 
+                            SET event = CASE WHEN analysis_end_date=first_moveout_ca_dt THEN 3 ELSE NULL END
+                          WHERE NOT analysis_end_date is NULL
+                            AND NOT first_moveout_ca_dt is NULL
+                            AND NOT first_moveout_ca_dt = ''
+                            AND event is NULL
+                        `;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        sql =
+                            `UPDATE ${table_name} 
+                            SET event = CASE WHEN analysis_end_date=DATE_OF_DEATH_DT THEN 4 ELSE NULL END
+                          WHERE NOT analysis_end_date is NULL
+                            AND NOT DATE_OF_DEATH_DT is NULL
+                            AND NOT DATE_OF_DEATH_DT = ''
+                            AND event is NULL
+                        `;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        sql =
+                            `UPDATE ${table_name} 
+                            SET event = CASE WHEN analysis_end_date=end_of_followup_date THEN 5 ELSE NULL END
+                          WHERE NOT analysis_end_date is NULL
+                            AND NOT end_of_followup_date is NULL
+                            AND event is NULL
+                        `;
+                        console.log("---------------------------------------------------")
+                        console.log(sql);
+                        db.run(sql);
+
+                        sql = `UPDATE task SET status='populated event.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // handle statistics
+                        sql = `SELECT count(DISTINCT ssap_id) as total
+                             FROM ${table_name}
+                            WHERE (event=1 OR event=2) AND date_dt > analysis_end_date
+                               OR analysis_start_date >= analysis_end_date
+                          `;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.all(sql, function (err, rows) {
+                            rows.forEach(function (row) {
+                                statistics.censored_before_start = row.total;
+                            })
+                        });
+
+                        // Remove all rows where date_dt > analysis_end_date
+                        // Remove all rows where (event=1 or event=2) AND date_dt > analysis_end_date
+                        sql = `DELETE FROM ${table_name} WHERE (event=1 OR event=2) AND date_dt > analysis_end_date`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        sql = `UPDATE task SET status='remove all rows where date_dt > analysis_end_date.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // Remove all rows where analysis_start_date=analysis_end_date
+                        sql = `DELETE FROM ${table_name} WHERE analysis_start_date >= analysis_end_date`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // handle statistics
+                        sql = `SELECT count(DISTINCT ssap_id) as total
+                             FROM ${table_name}
+                          `;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.all(sql, function (err, rows) {
+                            rows.forEach(function (row) {
+                                statistics.final_population = row.total;
+                            })
+                        });
+
+
+                        sql = `UPDATE task SET status='remove all rows with the analysis start date not less than the analysis end date.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        // build columns
+                        let selected_columns = [];
+                        for (const [questionnarie, variables] of Object.entries(project.questionnarie)) {
+                            for (const [variable, value] of Object.entries(variables)) {
+                                selected_columns.push(variable);
+                            }
+                        }
+
+                        //console.log("\n=========== selected_columns =============");
+                        //console.log(JSON.stringify(selected_columns));
+
+                        let no_need_columns = questionnarie_columns.filter(x => !selected_columns.includes(x));
+                        let final_columns = all_columns.filter(x => !no_need_columns.includes(x));
+                        final_columns = final_columns.filter(x => x !== 'breast_cancer_res_only_ind');
+
+                        console.log("\n=========== final columns =============");
+                        console.log(JSON.stringify(final_columns));
+
+                        // process columns
+                        let real_columns = "";
+                        for (var i = 0; i < final_columns.length; i++) {
+                            if (i > 0) {
+                                real_columns += ", ";
+                            }
+                            real_columns += final_columns[i];
+                            if (final_columns[i] === 'ssap_id') {
+                                real_columns += ' AS participant_key'
+                            }
+                        }
+
+                        // add case_indicator
+                        real_columns += ", case_indicator";
+
+                        // add analysis_start_date
+                        real_columns += ", analysis_start_date";
+
+                        // add end_of_followup_date
+                        real_columns += ", end_of_followup_date";
+
+                        // add prevalent column
+                        if (project.start_of_follow_up.start_of_follow_up_exclude &&
+                            project.start_of_follow_up.start_of_follow_up_exclude === 'include all') {
+                            real_columns += ", prevalent ";
+                        }
+
+                        // add column firstselectedcancer_date
+                        real_columns += ", firstselectedcancer_date";
+
+                        // add column firstothercancer_date
+                        real_columns += ", firstothercancer_date";
+
+                        // add column analysis_end_date
+                        real_columns += ", analysis_end_date ";
+
+                        // add column event
+                        real_columns += ", event"
+
+                        let final_columns_ext =
+                            [...final_columns,
+                                'case_indicator',
+                                'analysis_start_date',
+                                'end_of_followup_date'
+                            ];
+
+                        if (project.start_of_follow_up.start_of_follow_up_exclude &&
+                            project.start_of_follow_up.start_of_follow_up_exclude === 'include all') {
+                            final_columns_ext.push('prevalent');
+                        }
+
+                        final_columns_ext.push('firstselectedcancer_date');
+                        final_columns_ext.push('firstothercancer_date');
+                        final_columns_ext.push('analysis_end_date');
+                        final_columns_ext.push('event');
+
+                        console.log("\n=========== real_columns =============");
+                        console.log(real_columns);
+
+                        // check
+                        sql = `SELECT count(*) as total_size FROM ${table_name}`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        var total_size = 0;
+                        db.all(sql, function (err, rows) {
+                            rows.forEach(function (row) {
+                                console.log(`table ${table_name} size before downloading: ` + JSON.stringify(row));
+                            });
+                            total_size = rows[0].total_size;
+                            console.log(`total size = ${total_size}`);
+                        });
+
+                        sql = `UPDATE task SET status='converting data into CSV.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        let output_dir = `${output_folder}/${project.project_number}_${project.abbrev}/v${project.version < 10 ? '0' + project.version : project.version}`;
+                        if (!fs.existsSync(output_dir)) {
+                            fs.mkdirSync(output_dir, {recursive: true});
+                        }
+
+                        let shared_dir = `${shared_folder}/${project.project_number}_${project.abbrev}/v${project.version < 10 ? '0' + project.version : project.version}`
+                        if (!fs.existsSync(shared_dir)) {
+                            fs.mkdirSync(shared_dir, {recursive: true});
+                        }
+
+                        // download
+                        // filename : ####_PROJECT_v##_YYYYMMDD_hhmm
+                        let filename = `${project.project_number}_${project.abbrev}_v${project.version < 10 ? '0' + project.version : project.version}_${date_rep}`;
+
+                        var csvFile = fs.createWriteStream(`${output_dir}/${filename}_analytic_data.csv`, {
+                            flags: 'a'
+                        });
+
+                        res.header('Content-Type', 'text/csv');
+                        //res.attachment(abbrev + '_' + new Date().getTime() + '.csv');
+                        res.attachment(filename + '_analytic_data.csv');
+                        var count = 1;
+                        var page_size = 20000;
+                        var done = false;
+                        const json2csv = new Parser();
+                        for (var page = 0; page < 10; page++) {
+                            sql = `SELECT ${real_columns} FROM ${table_name} LIMIT ${page_size} OFFSET ${page * page_size}`;
+
+                            console.log("---------------------------------------------------");
+                            console.log(sql);
+
+                            var current_page = page;
+                            db.each(sql,
+                                [],
+                                function (err, row) {
+                                    if (err) {
+                                        console.log('error: ' + err);
+                                    } else {
+                                        //console.log(count);
+                                        let csv = json2csv.parse(row);
+                                        if (count !== 1) {
+                                            csv = csv.split('\n')[1];
+                                        } else {
+                                            csv = csv.split('\n')[0] + '\n' + csv.split('\n')[1];
+                                        }
+                                        res.write(csv + '\n');
+                                        csvFile.write(csv + '\n');
+                                        count++;
+                                    }
+                                },
+                                function (err, row_count) {
+                                    if (!done) {
+                                        console.log(`${count} items were prepared`);
+                                        if (count >= total_size) {
+                                            console.log("done");
+                                            res.end();
+                                            csvFile.end();
+                                            done = true;
+
+                                            sql = "SELECT `Variable name`, Description from questionnarie_metadata_2";
+                                            sequelize.query(sql)
+                                                .then(result => {
+                                                    let data = result[0];
+                                                    let map = {};
+                                                    for (var i = 0; i < data.length; i++) {
+                                                        map[data[i]['Variable name']] = data[i].Description;
+                                                    }
+
+                                                    let path = `${shared_dir}/${filename}_summary.pdf`;
+                                                    createPDF(project, map, path, statistics);
+                                                });
+
+                                            tokens.push(token);
+                                            task_token[task_id] = undefined;
+
+                                        }
+                                    }
+                                });
+
+                        }
+
+
+                        sql = `UPDATE task SET status='The data was generated.' WHERE id='${task_id}'`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+
+                        sql =
+                            `
+                           INSERT INTO task_log(project_id, 
+                                                version, 
+                                                filename, 
+                                                cancer_endpoint, 
+                                                start_of_follow_up, 
+                                                censoring_rules, 
+                                                questionnaire)
+                            VALUES(
+                                ${project.id},
+                                ${project.version},
+                                '${filename}',
+                                '${JSON.stringify(project.cancer_endpoint)}',
+                                '${JSON.stringify(project.start_of_follow_up)}',
+                                '${JSON.stringify(project.censoring_rules)}',
+                                '${JSON.stringify(project.questionnarie)}'
+                            )                   
+                        `;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        //db.run(sql);
+                        sequelize.query(sql)
+                            .then(result => {
+                                console.log("saved the task definition.");
+                            })
+                            .catch(err => {
+                                console.log("saving the task deinition failed.")
+                            });
+
+
+                        /*
+                        sql = `UPDATE projects SET version = version + 1 WHERE id=${project.id}`;
+                        console.log("---------------------------------------------------");
+                        console.log(sql);
+                        db.run(sql);
+                         */
+
+                        console.log("updating the project version.");
+                        let updated_project = {...project};
+                        updated_project.version = project.version + 1;
+                        project.update(updated_project)
+                            .then(function (rowsUpdated) {
+                                console.log("updated project version");
+                            });
+
+
+                        // create a output_file file for the user's selection
+                        /*
+                        sql = "SELECT `Variable name`, Description from questionnarie_metadata_2";
+                        sequelize.query(sql)
+                            .then(result => {
+                                let data = result[0];
+                                let map = {};
+                                for (var i=0; i<data.length; i++) {
+                                    map[data[i]['Variable name']] = data[i].Description;
+                                }
+
+                                let path = `${shared_dir}/${filename}_summary.pdf` ;
+                                createPDF(project, map, path, statistics);
+                            });
+                         */
+
+                        // create SAS file
+                        createSAS(project, final_columns_ext, output_dir, filename);
+
+                        // create Format CSV file
+                        createFormatCSV(project, final_columns_ext, output_dir, filename);
+
+                        // create SAS Data Call
+                        createSASDataCall(project, output_dir, filename, shared_dir);
+
+                        // create R Data Call
+                        createRDataCall(project, output_dir, filename, shared_dir);
+
+                        // create Dictionary
+                        createSSAPDictionary(project, final_columns_ext, output_dir, filename, shared_dir);
+                    });
+
+                }
             }
             db.close();
         });

@@ -417,19 +417,21 @@ class ProjectList extends React.Component {
                                                             <Text>{project.endpoint}</Text>
                                                             <br/>
 
-                                                            {project.biospecimens || project.geospatial_data ? (
+                                                            {project.biospecimens || project.geospatial_data || project.data_sharing? (
                                                                 <>
                                                                     <Text style={subtitle_style}>Include Data: </Text>
                                                                     <Text>
                                                                         {project.biospecimens ? "Biospecimens" : null}
                                                                         {project.biospecimens && project.geospatial_data ? ", " : null}
                                                                         {project.geospatial_data ? "Geospatial Data" : null}
+                                                                        {(project.biospecimens || project.geospatial_data) && project.data_sharing ? ", " : null}
+                                                                        {project.data_sharing ? "Data-sharing" : null}
                                                                     </Text>
                                                                 </>
                                                             ) : null}
 
                                                             {
-                                                                project.biospecimens || project.geospatial_data ?
+                                                                project.biospecimens || project.geospatial_data || project.data_sharing ?
                                                                     <br/> : null
                                                             }
 

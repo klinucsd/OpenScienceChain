@@ -37,7 +37,7 @@ const categorized_site_group_names = [
     {
         category: 'Digestive System',
         names: ['Gallbladder', 'Other Biliary', 'Pancreas', 'Retroperitoneum',
-            'Peritoneum', 'Omentum and Mesentery', 'Other Digestive Organs']
+            'Peritoneum, Omentum and Mesentery', 'Other Digestive Organs']
     },
     {
         category: 'Respiratory System',
@@ -804,6 +804,14 @@ let getDistinctValues = (data, name) => {
 }
 
 class CancerEndpoint extends React.Component {
+
+    static getTitle = () => {
+        return 'Select cancer endpoint';
+    }
+
+    static isComplete = (state) => {
+        return state.cancer_endpoint && state.cancer_endpoint.length > 0;
+    }
 
     constructor(props) {
         super(props);

@@ -19,7 +19,7 @@ function createFormatCSV(project, final_columns, dir, filename) {
             const json2csv = new Parser();
 
             for (var i=0; i<rows.length; i++) {
-                if (final_columns.includes(rows[i].Variable)) {
+                if (final_columns.includes(rows[i].Variable) || rows[i].Variable === 'participant_key') {
                     let csv = json2csv.parse(rows[i]);
                     if (i !== 0) {
                         csv = csv.split('\n')[1];

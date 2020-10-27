@@ -1,6 +1,16 @@
 import React from 'react';
 import {Typography, Card} from 'antd';
 import axios from "axios";
+import CancerEndpoint from "./CancerEndpoint";
+import StartOfFollowUp from "./StartOfFollowUp";
+import CensoringRules from "./CensoringRules";
+import QuestionnaireData from "./questionnarie/QuestionnaireData";
+import CancerInformation from "./CancerInformation";
+import HospitalizationInformation from "./HospitalizationInformation";
+import MortalityInformation from "./MortalityInformation";
+import Biospecimens from "./Biospecimens";
+import GeospatialData from "./GeospatialData";
+import DataSharing from "./DataSharing";
 
 const {Text} = Typography;
 
@@ -15,6 +25,47 @@ class Summary extends React.Component {
         this.state = {
             variable_details: []
         };
+    }
+
+    static getTitle = () => {
+        return 'Summary';
+    }
+
+    static isComplete = (state) => {
+
+        let project = state.project;
+        let modules = [];
+        if (project.endpoint === 'Cancer') {
+            if (project.study_design === 'Cohort') {
+                modules = [CancerEndpoint, StartOfFollowUp, CensoringRules, QuestionnaireData];
+            } else {
+                modules = [CancerInformation, QuestionnaireData];
+            }
+        } else if (project.endpoint === 'Hospitalization') {
+            modules = [HospitalizationInformation, QuestionnaireData];
+        } else if (project.endpoint === 'Mortality') {
+            modules = [MortalityInformation, QuestionnaireData];
+        }
+
+        if (project.biospecimens) {
+            modules.push(Biospecimens);
+        }
+
+        if (project.geospatial_data) {
+            modules.push(GeospatialData);
+        }
+
+        if (project.data_sharing) {
+            modules.push(DataSharing);
+        }
+
+        for (var i = 0; i < modules.length; i++) {
+            if (!modules[i].isComplete(state)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     componentDidMount() {
@@ -94,286 +145,299 @@ class Summary extends React.Component {
         }
     }
 
-    render() {
+    cancerEndpointSummary = (index) => {
         return (
-            <div style={{padding: '10pt 50pt 20pt 50pt'}}>
-                <Card size="small"
-                      title="Cancer Endpoint"
-                      headStyle={{backgroundColor: 'rgb(216, 236, 243)'}}
-                      style={{width: '100%'}}>
-                    {
-                        this.cancer_endpoints === undefined || this.cancer_endpoints === null || this.cancer_endpoints.length === 0 ?
-                            <div style={{padding: '10pt 20pt 10pt 20pt'}}>
-                                <Text type="danger">
-                                    No selected cancer points.
-                                </Text>
-                            </div>
-                            :
-                            <table style={{width: '100%'}}>
+            <Card key={'module-' + index}
+                  size="small"
+                  title="Cancer Endpoint"
+                  headStyle={{backgroundColor: 'rgb(216, 236, 243)'}}
+                  style={{width: '100%'}}>
+                {
+                    this.cancer_endpoints === undefined || this.cancer_endpoints === null || this.cancer_endpoints.length === 0 ?
+                        <div style={{padding: '10pt 20pt 10pt 20pt'}}>
+                            <Text type="danger">
+                                No selected cancer points.
+                            </Text>
+                        </div>
+                        :
+                        <table style={{width: '100%'}}>
+                            <tbody>
+                            <tr>
+                                <th style={{
+                                    paddingLeft: '20pt',
+                                    fontSize: 12,
+                                    width: 150,
+                                }}>
+                                    Site Group Name
+                                </th>
+
+                                <th style={{
+                                    paddingLeft: '20pt',
+                                    fontSize: 12,
+                                    width: 150,
+                                }}>SEER ID
+                                </th>
+
+                                <th style={{
+                                    paddingLeft: '20pt',
+                                    fontSize: 12,
+                                    width: 150,
+                                }}>ICD O3 CDE
+                                </th>
+
+                                <th style={{
+                                    paddingLeft: '20pt',
+                                    fontSize: 12,
+                                    width: 150,
+                                }}>Histologic Type
+                                </th>
+
+                            </tr>
+                            {this.cancer_endpoints.map((cp, i) => (
+                                <tr key={'cancer_endpoint-' + i}>
+                                    <td style={{
+                                        paddingLeft: '20pt',
+                                        fontSize: 12,
+                                        width: 150,
+                                        backgroundColor: (i % 2 === 1 ? 'white' : '#eee')
+                                    }}>
+                                        {cp.SITE_GROUP_NME}
+                                    </td>
+                                    <td style={{
+                                        paddingLeft: '20pt',
+                                        fontSize: 12,
+                                        width: 150,
+                                        backgroundColor: (i % 2 === 1 ? 'white' : '#eee')
+                                    }}>
+                                        {cp.SEER_ID}
+                                    </td>
+                                    <td style={{
+                                        paddingLeft: '20pt',
+                                        fontSize: 12,
+                                        width: 150,
+                                        backgroundColor: (i % 2 === 1 ? 'white' : '#eee')
+                                    }}>
+                                        {cp.ICD_O3_CDE}
+                                    </td>
+                                    <td style={{
+                                        paddingLeft: '20pt',
+                                        fontSize: 12,
+                                        width: 150,
+                                        backgroundColor: (i % 2 === 1 ? 'white' : '#eee')
+                                    }}>
+                                        {cp.HISTOLOGIC_ICDO3_TYP === '' ? 'Unknown' : cp.HISTOLOGIC_ICDO3_TYP}
+                                    </td>
+                                </tr>
+                            ))
+                            }
+                            </tbody>
+                        </table>
+                }
+
+            </Card>
+        );
+    }
+
+    startOfFollowupSummary = (index) => {
+        return (
+            <Card key={'module-' + index}
+                  size="small"
+                  title="Start of Follow-up"
+                  headStyle={{backgroundColor: 'rgb(216, 236, 243)'}}
+                  style={{width: '100%', margin: '20pt 0pt 0pt 0pt'}}>
+
+                {
+                    this.start_of_followup === undefined || this.start_of_followup === null ?
+                        <div style={{padding: '10pt 20pt 10pt 20pt'}}>
+                            <Text type="danger">
+                                No selected start of followup.
+                            </Text>
+                        </div>
+                        :
+                        <div style={{padding: '10pt 20pt 10pt 20pt'}}>
+                            <table>
                                 <tbody>
                                 <tr>
-                                    <th style={{
-                                        paddingLeft: '20pt',
-                                        fontSize: 12,
-                                        width: 150,
-                                    }}>
-                                        Site Group Name
-                                    </th>
-
-                                    <th style={{
-                                        paddingLeft: '20pt',
-                                        fontSize: 12,
-                                        width: 150,
-                                    }}>SEER ID
-                                    </th>
-
-                                    <th style={{
-                                        paddingLeft: '20pt',
-                                        fontSize: 12,
-                                        width: 150,
-                                    }}>ICD O3 CDE
-                                    </th>
-
-                                    <th style={{
-                                        paddingLeft: '20pt',
-                                        fontSize: 12,
-                                        width: 150,
-                                    }}>Histologic Type
-                                    </th>
-
+                                    <td>
+                                        <Text style={{fontWeight: 'bold', paddingRight: '10pt'}}>
+                                            Follow-up begins:
+                                        </Text>
+                                    </td>
+                                    <td>
+                                        {
+                                            this.start_of_followup.start_of_follow_up ?
+                                                <Text
+                                                    type={this.getStartOfFollowUpDisplay(this.start_of_followup) === 'Not selected' ?
+                                                        'danger' : null
+                                                    }>
+                                                    {this.getStartOfFollowUpDisplay(this.start_of_followup)}
+                                                </Text>
+                                                :
+                                                <Text type="danger">
+                                                    Not selected.
+                                                </Text>
+                                        }
+                                    </td>
                                 </tr>
-                                {this.cancer_endpoints.map((cp, i) => (
-                                    <tr key={'cancer_endpoint-' + i}>
-                                        <td style={{
-                                            paddingLeft: '20pt',
-                                            fontSize: 12,
-                                            width: 150,
-                                            backgroundColor: (i % 2 === 1 ? 'white' : '#eee')
+                                <tr>
+                                    <td style={{verticalAlign: 'top'}}>
+                                        <Text style={{
+                                            fontWeight: 'bold',
+                                            paddingRight: '10pt',
+                                            whiteSpace: 'nowrap',
                                         }}>
-                                            {cp.SITE_GROUP_NME}
-                                        </td>
-                                        <td style={{
-                                            paddingLeft: '20pt',
-                                            fontSize: 12,
-                                            width: 150,
-                                            backgroundColor: (i % 2 === 1 ? 'white' : '#eee')
-                                        }}>
-                                            {cp.SEER_ID}
-                                        </td>
-                                        <td style={{
-                                            paddingLeft: '20pt',
-                                            fontSize: 12,
-                                            width: 150,
-                                            backgroundColor: (i % 2 === 1 ? 'white' : '#eee')
-                                        }}>
-                                            {cp.ICD_O3_CDE}
-                                        </td>
-                                        <td style={{
-                                            paddingLeft: '20pt',
-                                            fontSize: 12,
-                                            width: 150,
-                                            backgroundColor: (i % 2 === 1 ? 'white' : '#eee')
-                                        }}>
-                                            {cp.HISTOLOGIC_ICDO3_TYP === '' ? 'Unknown' : cp.HISTOLOGIC_ICDO3_TYP}
-                                        </td>
-                                    </tr>
-                                ))
-                                }
-                                </tbody>
-                            </table>
-                    }
-
-                </Card>
-
-                <Card size="small"
-                      title="Start of Follow-up"
-                      headStyle={{backgroundColor: 'rgb(216, 236, 243)'}}
-                      style={{width: '100%', margin: '20pt 0pt 0pt 0pt'}}>
-
-                    {
-                        this.start_of_followup === undefined || this.start_of_followup === null ?
-                            <div style={{padding: '10pt 20pt 10pt 20pt'}}>
-                                <Text type="danger">
-                                    No selected start of followup.
-                                </Text>
-                            </div>
-                            :
-                            <div style={{padding: '10pt 20pt 10pt 20pt'}}>
-                                <table>
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            <Text style={{fontWeight: 'bold', paddingRight: '10pt'}}>
-                                                Follow-up begins:
-                                            </Text>
-                                        </td>
-                                        <td>
-                                            {
-                                                this.start_of_followup.start_of_follow_up ?
-                                                    <Text
-                                                        type={this.getStartOfFollowUpDisplay(this.start_of_followup) === 'Not selected' ?
-                                                            'danger' : null
-                                                        }>
-                                                        {this.getStartOfFollowUpDisplay(this.start_of_followup)}
-                                                    </Text>
-                                                    :
-                                                    <Text type="danger">
-                                                        Not selected.
-                                                    </Text>
-                                            }
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style={{verticalAlign: 'top'}}>
-                                            <Text style={{
-                                                fontWeight: 'bold',
-                                                paddingRight: '10pt',
-                                                whiteSpace: 'nowrap',
-                                            }}>
-                                                Participants with prevalent cancer :
-                                            </Text>
-                                        </td>
-                                        <td>
-                                            {
-                                                this.start_of_followup.start_of_follow_up_exclude ?
-                                                    <Text>
-                                                        {
-                                                            this.start_of_followup.start_of_follow_up_exclude === 'exclude all' ?
-                                                                <Text>
-                                                                    Exclude all participants who had a prevalent
-                                                                    cancer of any type at the start of follow-up.
-                                                                </Text>
-                                                                :
-                                                                this.start_of_followup.start_of_follow_up_exclude === 'exclude interest' ?
-                                                                    <Text>
-                                                                        Exclude only the participants who had a
-                                                                        prevalent cancer of interest (i.e., the cancer
-                                                                        endpoint for your analysis) at the start of
-                                                                        follow-up.
-                                                                    </Text>
-                                                                    :
-                                                                    this.start_of_followup.start_of_follow_up_exclude === 'include all' ?
-                                                                        <Text>
-                                                                            Include all participants, even those with
-                                                                            prevalent cancer at the start of follow-up.
-                                                                        </Text>
-                                                                        :
-                                                                        <Text type="danger">
-                                                                            Not selected.
-                                                                        </Text>
-                                                        }
-                                                    </Text>
-                                                    :
-                                                    <Text type="danger">
-                                                        Not selected.
-                                                    </Text>
-                                            }
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-
-                    }
-
-                </Card>
-
-                <Card size="small"
-                      title="Censoring Rules"
-                      headStyle={{backgroundColor: 'rgb(216, 236, 243)'}}
-                      style={{width: '100%', margin: '20pt 0pt 0pt 0pt'}}>
-
-                    {
-                        this.censoring_rules === undefined || this.censoring_rules === null ?
-                            <div style={{padding: '10pt 20pt 10pt 20pt'}}>
-                                <Text type="danger">
-                                    No selected censoring rules.
-                                </Text>
-                            </div>
-                            :
-                            <div style={{padding: '10pt 20pt 10pt 20pt'}}>
-                                <table>
-                                    <tbody>
-                                    <tr>
-                                        <td style={{verticalAlign: 'top'}}>
-                                            <Text style={{
-                                                fontWeight: 'bold',
-                                                paddingRight: '10pt',
-                                                whiteSpace: 'nowrap',
-                                            }}>
-                                                Follow-up ends :
-                                            </Text>
-                                        </td>
-                                        <td>
-                                            {
-                                                this.censoring_rules.through_2015_12_31 ?
-                                                    <Text style={{paddingRight: '10pt'}}>
-                                                        Include all eligible cases diagnosed through 12/31/2017.
-                                                    </Text>
-                                                    :
-                                                    this.censoring_rules.end_of_follow_up ?
-                                                        <Text
-                                                            type={this.getEndOfFollowUpDisplay(this.censoring_rules) === 'Not selected' ?
-                                                                'danger' : null
-                                                            }>
-                                                            {this.getEndOfFollowUpDisplay(this.censoring_rules)}
-                                                        </Text>
-                                                        :
-                                                        <Text type="danger">
-                                                            Not include all eligible cases diagnosed through 12/31/2017.
-                                                            But no specified time.
-                                                        </Text>
-                                            }
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style={{verticalAlign: 'top'}}>
-                                            <Text style={{
-                                                fontWeight: 'bold',
-                                                paddingRight: '10pt',
-                                                whiteSpace: 'nowrap',
-                                            }}>
-                                                Participants with any other cancer:
-                                            </Text>
-                                        </td>
-                                        <td>
-                                            {
-                                                this.censoring_rules.end_of_follow_up_exclude ?
-                                                    (
-                                                        this.censoring_rules.end_of_follow_up_exclude === 'default' ?
+                                            Participants with prevalent cancer :
+                                        </Text>
+                                    </td>
+                                    <td>
+                                        {
+                                            this.start_of_followup.start_of_follow_up_exclude ?
+                                                <Text>
+                                                    {
+                                                        this.start_of_followup.start_of_follow_up_exclude === 'exclude all' ?
                                                             <Text>
-                                                                Use the default CTS rules. Follow-up time will end at
-                                                                the earliest of the dates described above.
+                                                                Exclude all participants who had a prevalent
+                                                                cancer of any type at the start of follow-up.
                                                             </Text>
                                                             :
-                                                            <Text>
-                                                                Do not censor at diagnosis of any other cancer.
-                                                                Follow-up time will end at the earliest of the other
-                                                                dates described above.
-                                                            </Text>
-                                                    ) :
-                                                    <Text type="danger">
-                                                        Not specified.
+                                                            this.start_of_followup.start_of_follow_up_exclude === 'exclude interest' ?
+                                                                <Text>
+                                                                    Exclude only the participants who had a
+                                                                    prevalent cancer of interest (i.e., the cancer
+                                                                    endpoint for your analysis) at the start of
+                                                                    follow-up.
+                                                                </Text>
+                                                                :
+                                                                this.start_of_followup.start_of_follow_up_exclude === 'include all' ?
+                                                                    <Text>
+                                                                        Include all participants, even those with
+                                                                        prevalent cancer at the start of follow-up.
+                                                                    </Text>
+                                                                    :
+                                                                    <Text type="danger">
+                                                                        Not selected.
+                                                                    </Text>
+                                                    }
+                                                </Text>
+                                                :
+                                                <Text type="danger">
+                                                    Not selected.
+                                                </Text>
+                                        }
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                }
+
+            </Card>
+        );
+    }
+
+    censoringRulesSummary = (index) => {
+        return (
+            <Card key={'module-' + index}
+                  size="small"
+                  title="Censoring Rules"
+                  headStyle={{backgroundColor: 'rgb(216, 236, 243)'}}
+                  style={{width: '100%', margin: '20pt 0pt 0pt 0pt'}}>
+
+                {
+                    this.censoring_rules === undefined || this.censoring_rules === null ?
+                        <div style={{padding: '10pt 20pt 10pt 20pt'}}>
+                            <Text type="danger">
+                                No selected censoring rules.
+                            </Text>
+                        </div>
+                        :
+                        <div style={{padding: '10pt 20pt 10pt 20pt'}}>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td style={{verticalAlign: 'top'}}>
+                                        <Text style={{
+                                            fontWeight: 'bold',
+                                            paddingRight: '10pt',
+                                            whiteSpace: 'nowrap',
+                                        }}>
+                                            Follow-up ends :
+                                        </Text>
+                                    </td>
+                                    <td>
+                                        {
+                                            this.censoring_rules.through_2015_12_31 ?
+                                                <Text style={{paddingRight: '10pt'}}>
+                                                    Include all eligible cases diagnosed through 12/31/2017.
+                                                </Text>
+                                                :
+                                                this.censoring_rules.end_of_follow_up ?
+                                                    <Text
+                                                        type={this.getEndOfFollowUpDisplay(this.censoring_rules) === 'Not selected' ?
+                                                            'danger' : null
+                                                        }>
+                                                        {this.getEndOfFollowUpDisplay(this.censoring_rules)}
                                                     </Text>
-                                            }
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                    }
+                                                    :
+                                                    <Text type="danger">
+                                                        Not include all eligible cases diagnosed through 12/31/2017.
+                                                        But no specified time.
+                                                    </Text>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style={{verticalAlign: 'top'}}>
+                                        <Text style={{
+                                            fontWeight: 'bold',
+                                            paddingRight: '10pt',
+                                            whiteSpace: 'nowrap',
+                                        }}>
+                                            Participants with any other cancer:
+                                        </Text>
+                                    </td>
+                                    <td>
+                                        {
+                                            this.censoring_rules.end_of_follow_up_exclude ?
+                                                (
+                                                    this.censoring_rules.end_of_follow_up_exclude === 'default' ?
+                                                        <Text>
+                                                            Use the default CTS rules. Follow-up time will end at
+                                                            the earliest of the dates described above.
+                                                        </Text>
+                                                        :
+                                                        <Text>
+                                                            Do not censor at diagnosis of any other cancer.
+                                                            Follow-up time will end at the earliest of the other
+                                                            dates described above.
+                                                        </Text>
+                                                ) :
+                                                <Text type="danger">
+                                                    Not specified.
+                                                </Text>
+                                        }
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                }
 
-                </Card>
+            </Card>
+        );
+    }
 
-                <Card size="small"
-                      title="Selected Variables in Questionnaire"
-                      headStyle={{backgroundColor: 'rgb(216, 236, 243)'}}
-                      style={{width: '100%', margin: '20pt 0pt 0pt 0pt'}}>
-                    {
-                        Object.keys(this.questionnarie).map((questionnarie, i) => (
-                            Object.keys(this.questionnarie[questionnarie]).length > 0 ?
-                                <div key={'my-selections-' + i}>
+    questionnaireSummary = (index) => {
+        return (
+            <Card key={'module-' + index}
+                  size="small"
+                  title="Selected Variables in Questionnaire"
+                  headStyle={{backgroundColor: 'rgb(216, 236, 243)'}}
+                  style={{width: '100%', margin: '20pt 0pt 0pt 0pt'}}>
+                {
+                    Object.keys(this.questionnarie).map((questionnarie, i) => (
+                        Object.keys(this.questionnarie[questionnarie]).length > 0 ?
+                            <div key={'my-selections-' + i}>
                                                 <span style={{
                                                     fontWeight: 'bold',
                                                     fontSize: 12,
@@ -390,45 +454,95 @@ class Summary extends React.Component {
                                                 }
                                                 </span>
 
-                                    <table style={{width: '100%'}}>
-                                        <tbody>
-                                        {
-                                            Object.keys(this.questionnarie[questionnarie]).sort().map((variable, j) => (
-                                                <tr key={'variable-' + i + '-' + j}>
-                                                    <td style={{
-                                                        paddingLeft: '20pt',
-                                                        fontSize: 12,
-                                                        width: 230,
-                                                        verticalAlign: 'top',
-                                                        backgroundColor: (j % 2 === 1 ? 'white' : '#eee')
-                                                    }}
-                                                    >
-                                                        {variable}
-                                                    </td>
+                                <table style={{width: '100%'}}>
+                                    <tbody>
+                                    {
+                                        Object.keys(this.questionnarie[questionnarie]).sort().map((variable, j) => (
+                                            <tr key={'variable-' + i + '-' + j}>
+                                                <td style={{
+                                                    paddingLeft: '20pt',
+                                                    fontSize: 12,
+                                                    width: 230,
+                                                    verticalAlign: 'top',
+                                                    backgroundColor: (j % 2 === 1 ? 'white' : '#eee')
+                                                }}
+                                                >
+                                                    {variable}
+                                                </td>
 
-                                                    <td style={{
-                                                        paddingLeft: '20pt',
-                                                        fontSize: 12,
-                                                        backgroundColor: (j % 2 === 1 ? 'white' : '#eee')
-                                                    }}>
-                                                        {this.getDetails(questionnarie, variable)}
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        }
+                                                <td style={{
+                                                    paddingLeft: '20pt',
+                                                    fontSize: 12,
+                                                    backgroundColor: (j % 2 === 1 ? 'white' : '#eee')
+                                                }}>
+                                                    {this.getDetails(questionnarie, variable)}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    }
 
-                                        <tr>
-                                            <td style={{height: '2pt'}}></td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                :
-                                null
-                        ))
-                    }
+                                    <tr>
+                                        <td style={{height: '2pt'}}></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            :
+                            null
+                    ))
+                }
+            </Card>
+        );
+    }
 
-                </Card>
+
+    render() {
+
+        let project = this.props.project;
+        //console.log(`${JSON.stringify(project, null, 2)}`);
+
+        let modules = [];
+        if (project.endpoint === 'Cancer') {
+            if (project.study_design === 'Cohort') {
+                modules = [CancerEndpoint, StartOfFollowUp, CensoringRules, QuestionnaireData];
+            } else {
+                modules = [CancerInformation, QuestionnaireData];
+            }
+        } else if (project.endpoint === 'Hospitalization') {
+            modules = [HospitalizationInformation, QuestionnaireData];
+        } else if (project.endpoint === 'Mortality') {
+            modules = [MortalityInformation, QuestionnaireData];
+        }
+
+        if (project.biospecimens) {
+            modules.push(Biospecimens);
+        }
+
+        if (project.geospatial_data) {
+            modules.push(GeospatialData);
+        }
+
+        if (project.data_sharing) {
+            modules.push(DataSharing);
+        }
+
+        return (
+            <div style={{padding: '10pt 30pt 20pt 30pt'}}>
+
+                {
+                    modules.map((module, i) =>
+                        module.getTitle() === 'Select questionnaire data' ?
+                            this.questionnaireSummary(i) :
+                            module.getTitle() === 'Select cancer endpoint' ?
+                                this.cancerEndpointSummary(i) :
+                                module.getTitle() === 'Select start of follow-up' ?
+                                    this.startOfFollowupSummary(i) :
+                                    module.getTitle() === 'Select censoring rules' ?
+                                        this.censoringRulesSummary(i) :
+                                        module.getSummary(this.props.project, i)
+                    )
+                }
+
             </div>
         );
     }

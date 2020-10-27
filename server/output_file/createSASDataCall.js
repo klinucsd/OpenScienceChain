@@ -1,6 +1,5 @@
 
 const fs = require('fs');
-const parse = require('csv-parse');
 const path = require('path');
 const sas_data_call_template = path.join(__dirname, '../../templates/Template_SAS_Data_Call.sas');
 

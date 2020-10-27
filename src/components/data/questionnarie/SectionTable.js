@@ -6,7 +6,7 @@ import axios from "axios";
 import './card_container.css';
 import preselected_variables from '../../../model/preselected_variables';
 
-class QuestionnaireTable extends React.Component {
+class SectionTable extends React.Component {
 
     constructor(props) {
         super(props);
@@ -19,6 +19,13 @@ class QuestionnaireTable extends React.Component {
             section_to_variable: {},
             expandAll: true,
             searchTerm: this.props.searchTerm
+        };
+    }
+
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state,callback)=>{
+            return;
         };
     }
 
@@ -531,4 +538,4 @@ class QuestionnaireTable extends React.Component {
     }
 }
 
-export default QuestionnaireTable;
+export default SectionTable;

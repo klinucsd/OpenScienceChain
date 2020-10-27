@@ -7,7 +7,6 @@ import './questionnarie.css';
 import SectionTable from "./SectionTable";
 import all_topic_to_variable from '../../../model/topic_variables';
 import TopicVariableTable from "./topic/TopicVariableTable";
-
 const {Search} = Input;
 const {TabPane} = Tabs;
 
@@ -51,6 +50,62 @@ class QuestionnaireData extends React.Component {
 
         this.topicRef = React.createRef();
         this.allTopicRef = React.createRef();
+    }
+
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state,callback)=>{
+            return;
+        };
+    }
+
+    static getTitle = () => {
+        return 'Select questionnaire data';
+    }
+
+    static isComplete = (state) => {
+        return state.questionnarie &&
+            (
+                (
+                    state.questionnarie['Q1'] &&
+                    JSON.stringify(state.questionnarie['Q1']) !== '{}'
+                )
+                ||
+                (
+                    state.questionnarie['Q2'] &&
+                    JSON.stringify(state.questionnarie['Q2']) !== '{}'
+                )
+                ||
+                (
+                    state.questionnarie['Q3'] &&
+                    JSON.stringify(state.questionnarie['Q3']) !== '{}'
+                )
+                ||
+                (
+                    state.questionnarie['Q4'] &&
+                    JSON.stringify(state.questionnarie['Q4']) !== '{}'
+                )
+                ||
+                (
+                    state.questionnarie['Q4mini'] &&
+                    JSON.stringify(state.questionnarie['Q4mini']) !== '{}'
+                )
+                ||
+                (
+                    state.questionnarie['Q5'] &&
+                    JSON.stringify(state.questionnarie['Q5']) !== '{}'
+                )
+                ||
+                (
+                    state.questionnarie['Q5mini'] &&
+                    JSON.stringify(state.questionnarie['Q5mini']) !== '{}'
+                )
+                ||
+                (
+                    state.questionnarie['Q6'] &&
+                    JSON.stringify(state.questionnarie['Q6']) !== '{}'
+                )
+            );
     }
 
     viewByTopics = () => {
@@ -215,6 +270,11 @@ class QuestionnaireData extends React.Component {
     getSelectedTopicVariables = (topic) => {
         let result = [];
         let all_variables = all_topic_to_variable[topic];
+
+        if (topic === 'Pre-selected variables') {
+            console.log("check 100 ====> " + JSON.stringify(all_variables));
+        }
+
         for (var i = 0; i < all_variables.length; i++) {
             let variable = all_variables[i].variable;
             let questionnarie = all_variables[i].questionnarie;
@@ -222,6 +282,11 @@ class QuestionnaireData extends React.Component {
                 result.push(variable);
             }
         }
+
+        if (topic === 'Pre-selected variables') {
+            console.log("check 200 ====> " + JSON.stringify(result));
+        }
+
         return result;
     }
 
