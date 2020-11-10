@@ -551,35 +551,77 @@ function createPDF(project, variable_desciption, path, statistics) {
                                      project.hospitalization_info.procedure_endpoint_type : ''
                             }  
                         </td>
-                    </tr>
+                    </tr> 
                     <tr>
                         <td style="text-align: left; color: #484848; width: 35%; vertical-align: top;">
-                            <b>ICD-9 codes to identify endpoints:</b>
+                            <b>Hospitalization endpoints:</b>
                         </td>
                         <td style="text-align: left; color: #484848; width: 65%; line-height: 1.6;">
                             ${
                                 project.hospitalization_info.hospitalization_endpoint === null ||
                                 project.hospitalization_info.hospitalization_endpoint === undefined ||
                                 project.hospitalization_info.hospitalization_endpoint.trim().length === 0 ?
-                                    'Not specified' :
-                                    project.hospitalization_info.hospitalization_endpoint
+                                    'Not specified' : ''
                             }
                         </td>
                     </tr>
-                    <tr>
-                        <td style="text-align: left; color: #484848; width: 35%; vertical-align: top;">
-                            <b>ICD-10 codes to identify endpoints:</b>
-                        </td>
-                        <td style="text-align: left; color: #484848; width: 65%; line-height: 1.6;">
-                            ${
-                                project.hospitalization_info.hospitalization_endpoint_10 === null ||
-                                project.hospitalization_info.hospitalization_endpoint_10 === undefined ||
-                                project.hospitalization_info.hospitalization_endpoint_10.trim().length === 0 ?
-                                    'Not specified' :
-                                    project.hospitalization_info.hospitalization_endpoint_10
-                            }
-                        </td>
-                    </tr>
+                   `;
+
+
+        if (project.hospitalization_info.hospitalization_endpoints !== null &&
+            project.hospitalization_info.hospitalization_endpoints !== undefined &&
+            project.hospitalization_info.hospitalization_endpoints.length > 0) {
+
+            html += ` 
+                      <tr>
+                          <td colSpan=2>
+                              <table style="margin: 5px 10px 5px 10px; width: 100%">
+                                  <tbody>
+                                      <tr style="font-size: 6pt;">
+                                          <td style="width: 25%; padding: 1px; font-weight: bold; background-color: lightgray; border: solid 1px white">
+                                            Condition
+                                          </td>
+                                          <td style="width: 25%; padding: 1px; font-weight: bold; background-color: lightgray; border: solid 1px white">
+                                             ICD-9 codes
+                                          </td>
+                                          <td style="width: 25%; padding: 1px; font-weight: bold; background-color: lightgray; border: solid 1px white">
+                                             ICD-10 codes
+                                          </td>
+                                          <td style="width: 25%; padding: 1px; font-weight: bold; background-color: lightgray; border: solid 1px white">
+                                             Other criteria
+                                          </td>             
+                                      </tr>
+                     `;
+
+            for (var i=0; i<project.hospitalization_info.hospitalization_endpoints.length; i++) {
+                let endpoint = project.hospitalization_info.hospitalization_endpoints[i];
+                html += `
+                         <tr style="font-size: 6pt;">
+                             <td style="width: 25%; padding: 1px; background-color: ${i % 2 === 0 ? 'white' : '#f0f0f0'}; border: solid 1px white; vertical-align: top">
+                                  ${endpoint.condition? endpoint.condition : ''}
+                             </td>
+                             <td style="width: 25%; padding: 1px; background-color: ${i % 2 === 0 ? 'white' : '#f0f0f0'}; border: solid 1px white; vertical-align: top">
+                                   ${endpoint.icd9? endpoint.icd9 : ''}
+                             </td>
+                             <td style="width: 25%; padding: 1px; background-color: ${i % 2 === 0 ? 'white' : '#f0f0f0'}; border: solid 1px white; vertical-align: top">
+                                   ${endpoint.icd10? endpoint.icd10 : ''}
+                             </td>
+                             <td style="width: 25%; padding: 1px; background-color: ${i % 2 === 0 ? 'white' : '#f0f0f0'}; border: solid 1px white; vertical-align: top">
+                                   ${endpoint.other? endpoint.other : ''}
+                             </td>
+                         </tr>
+                        `;
+            }
+
+            html += `                                         
+                               </tbody>
+                            </table>
+                         </td>
+                      </tr> 
+                    `;
+        }
+
+        html += ` 
                     <tr>
                         <td style="text-align: left; color: #484848; width: 35%; vertical-align: top;">
                             <b>Prioritize diagnoses/procedures on the same day:</b>

@@ -249,8 +249,185 @@ app.get('/api/user', (req, res) => {
                 }
                 res.send(JSON.stringify(users));
             }
+
+            try {
+                var jsforce = require('jsforce');
+                var conn = new jsforce.Connection({loginUrl: 'https://test.salesforce.com'});
+                conn.login('klin@cts.org.dev', 'lajolla92037CfHBOAkBY56GIcTtR2KruTU0', function (err, userInfo) {
+                    if (err) {
+                        return console.error(err);
+                    }
+                    getSSAPNewCases(conn);
+                });
+            } catch (e) {
+                console.log(e);
+            }
+
         })
 });
+
+let projectExists = (projects, ssap_case) => {
+    for (var i = 0; i < projects.length; i++) {
+        if (projects[i].abbrev === ssap_case.Analysis_Abbreviation__c
+            && projects[i].project_number + '' === ssap_case.Analysis_Number__c
+            && projects[i].name === ssap_case.Analysis_Name__c) {
+            return true;
+        }
+    }
+    return false;
+}
+
+let getSSAPNewCases = (conn) => {
+    var sqlite3 = require('sqlite3').verbose();
+    var db = new sqlite3.Database('cts.sqlite');
+    let sql = `
+        SELECT id,
+               abbrev,
+               name,
+               project_number,
+               biospecimens,
+               geospatial_data,
+               data_sharing,
+               endpoint,
+               study_design
+          FROM projects`;
+    db.all(sql, function (err, projects) {
+        conn.query(
+                `SELECT Id,
+                        Analysis_Abbreviation__c,
+                        Analysis_Name__c,
+                        Analysis_Number__c,
+                        Analysis_Biospecimens__c,
+                        Analysis_Data_Sharing__c,
+                        Analysis_Endpoint__c,
+                        Analysis_Geospatial__c,
+                        Analysis_Proposal_Status__c,
+                        Analysis_Study_Design__c,
+                        RecordTypeId
+                   FROM Case
+                  WHERE RecordTypeId = '012q00000001qe0AAA' 
+                `
+        ).then(
+            function (ssap_cases) {
+                let cases_ids_str = '';
+                ssap_cases.records.map((ssap_case, i) => {
+                    if (ssap_case.Analysis_Proposal_Status__c === 'Approved' && !projectExists(projects, ssap_case)) {
+                        if (cases_ids_str !== '') {
+                            cases_ids_str += ` OR `;
+                        }
+                        cases_ids_str += `ParentId = '${ssap_case.Id}'`;
+                    }
+                });
+
+                if (cases_ids_str !== '') {
+                    conn.query(
+                            `SELECT MemberId, ParentId FROM CaseTeamMember WHERE ${cases_ids_str}`
+                    ).then(
+                        function (members) {
+                            console.log(`Team Members: ${JSON.stringify(members.records, null, 2)}`);
+
+                            let members_ids_str = '';
+                            members.records.map((member, i) => {
+                                if (members_ids_str !== '') {
+                                    members_ids_str += ` OR `;
+                                }
+                                members_ids_str += `Id = '${member.MemberId}'`;
+                            });
+
+                            if (members_ids_str !== '') {
+                                conn.query(
+                                        `SELECT Id, Email FROM User WHERE ${members_ids_str}`
+                                ).then(
+                                    function (users) {
+                                        console.log(`Users: ${JSON.stringify(users.records, null, 2)}`);
+
+                                        let conditions = [];
+                                        for (var i = 0; i < users.records.length; i++) {
+                                            conditions.push({email: users.records[i].Email});
+                                        }
+                                        console.log(`conditions: ${JSON.stringify(conditions, null, 2)}`);
+
+                                        const {Op} = require("sequelize");
+                                        User.findAll({
+                                            where: {[Op.or]: conditions}
+                                        }).then(ssap_users => {
+                                            console.log(`ssap_users: ${JSON.stringify(ssap_users, null, 2)}`);
+
+                                            ssap_cases.records.map((ssap_case, i) => {
+                                                if (ssap_case.Analysis_Proposal_Status__c === 'Approved') {
+                                                    if (projectExists(projects, ssap_case)) {
+                                                        console.log(`project exists: ${JSON.stringify(ssap_case, null, 2)}`);
+                                                    } else {
+                                                        console.log(`project doesn't exist: ${JSON.stringify(ssap_case, null, 2)}`);
+
+                                                        // find all users for this case
+                                                        let case_users = [];
+                                                        for (var i = 0; i < members.records.length; i++) {
+                                                            if (members.records[i].ParentId === ssap_case.Id) {
+                                                                for (var j = 0; j < users.records.length; j++) {
+                                                                    if (users.records[j].Id === members.records[i].MemberId) {
+                                                                        for (var k = 0; k < ssap_users.length; k++) {
+                                                                            if (ssap_users[k].email === users.records[j].Email) {
+                                                                                case_users.push(ssap_users[k]);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+
+                                                        console.log(`users: ${JSON.stringify(case_users, null, 2)}`)
+
+                                                        Project.create({
+                                                            name: ssap_case.Analysis_Name__c,
+                                                            abbrev: ssap_case.Analysis_Abbreviation__c,
+                                                            study_design: ssap_case.Analysis_Study_Design__c,
+                                                            endpoint: ssap_case.Analysis_Endpoint__c,
+                                                            biospecimens: ssap_case.Analysis_Biospecimens__c,
+                                                            geospatial_data: ssap_case.Analysis_Geospatial__c,
+                                                            data_sharing: ssap_case.Analysis_Data_Sharing__c,
+                                                            project_number: ssap_case.Analysis_Number__c,
+                                                        }).then(project => {
+                                                            console.log(`create project: ${JSON.stringify(project, null, 2)}`);
+                                                            project.setUsers(case_users);
+                                                        });
+                                                    }
+                                                }
+                                            })
+                                        }).catch(error => {
+                                            console.log(error);
+                                        });
+                                    },
+                                    function (err) {
+                                        if (err) {
+                                            return console.error(err);
+                                        }
+                                    }
+                                )
+                            }
+
+
+                        },
+                        function (err, members) {
+                            if (err) {
+                                return console.error(err);
+                            }
+                        }
+                    )
+                }
+            },
+            function (err) {
+                if (err) {
+                    return console.error(err);
+                }
+            }
+        )
+
+    });
+    db.close();
+
+}
+
 
 //let check_users_from_ad = require('./user/check_users_from_ad');
 app.post('/api/login', (req, res) => {
@@ -265,7 +442,6 @@ app.post('/api/login', (req, res) => {
         email: email,
         password: password
     };
-
 
     User.findOne(query)
         .then(user => {
@@ -288,6 +464,19 @@ app.post('/api/logout', (req, res) => {
         req.session.user = undefined;
         res.json({OK: true});
     }
+
+    try {
+        var jsforce = require('jsforce');
+        var conn = new jsforce.Connection({loginUrl: 'https://test.salesforce.com'});
+        conn.login('klin@cts.org.dev', 'lajolla92037CfHBOAkBY56GIcTtR2KruTU0', function (err, userInfo) {
+            if (err) {
+                return console.error(err);
+            }
+            getSSAPNewCases(conn);
+        });
+    } catch (e) {
+        console.log(e);
+    }
 });
 
 app.get('/api/project', (req, res) => {
@@ -306,6 +495,7 @@ app.get('/api/project', (req, res) => {
                     projects[j].users[i].password = undefined;
                 }
             }
+
 
             res.setHeader('Content-Type', 'application/json');
             if (req.session.user) {
@@ -1296,7 +1486,6 @@ app.get('/api/download/data/:id/:abbrev/:task_id/:date_rep', (req, res) => {
         ////////////////////////////////////////////////////////////////
 
 
-
         let token = null;
         if (tokens.length === 0) {
             res.status(400).send({
@@ -1384,9 +1573,9 @@ app.get('/api/download/data/:id/:abbrev/:task_id/:date_rep', (req, res) => {
                                bilateral_oophorectomy_ind,
                                first_moveout_ca_dt,
                                
-                               ${selected_columns.map((column, i) => 
-                                   column 
-                                )}
+                               ${selected_columns.map((column, i) =>
+                            column
+                        )}
                               
                           FROM ssap_data_2, participant_rowid
                          WHERE ssap_data_2.rowid = participant_rowid.rid

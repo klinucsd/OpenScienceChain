@@ -7,6 +7,7 @@ import {Input, Radio, DatePicker, Checkbox, Card} from 'antd';
 import moment from 'moment';
 import HospitalizationRecordTypeSorter from './HospitalizationRecordTypeSorter';
 import {Typography as AntTypography} from 'antd';
+import EditableTable from "./EditableTable";
 
 const {Text} = AntTypography;
 const {TextArea} = Input;
@@ -67,10 +68,8 @@ class HospitalizationInformation extends React.Component {
                 state.hospitalization_info.procedure_endpoint === true ?
                     state.hospitalization_info.procedure_endpoint_type !== null : true
             ) &&
-            state.hospitalization_info.hospitalization_endpoint !== null &&
-            state.hospitalization_info.hospitalization_endpoint.trim().length > 0 &&
-            state.hospitalization_info.hospitalization_endpoint_10 !== null &&
-            state.hospitalization_info.hospitalization_endpoint_10.trim().length > 0 &&
+            state.hospitalization_info.hospitalization_endpoints !== null &&
+            state.hospitalization_info.hospitalization_endpoints.length > 0 &&
             state.hospitalization_info.endpoint_priority !== null &&
             (state.hospitalization_info.endpoint_priority === 'Depends on' ?
                     state.hospitalization_info.endpoint_priority_detail !== null &&
@@ -123,26 +122,26 @@ class HospitalizationInformation extends React.Component {
                                     <td>
                                         <Text>
                                             {
-                                            hospitalization_info.hospitalization_record === null ?
-                                                'Not specified' :
-                                                (
-                                                    hospitalization_info.hospitalization_record === 'First of any source' ?
-                                                        'First of any source'
-                                                        :
-                                                        `First of 
+                                                hospitalization_info.hospitalization_record === null ?
+                                                    'Not specified' :
+                                                    (
+                                                        hospitalization_info.hospitalization_record === 'First of any source' ?
+                                                            'First of any source'
+                                                            :
+                                                            `First of 
                                                              ${hospitalization_info.patient_discharge ? 'Patient Discharge' : ''}${
-                                                            hospitalization_info.ambulatory_surgery ?
-                                                                (hospitalization_info.patient_discharge ? ', ' : '') + 'Ambulatory Surgery' : ''
-                                                            }${
-                                                            hospitalization_info.emergency_department ?
-                                                                (
-                                                                    hospitalization_info.patient_discharge ||
-                                                                    hospitalization_info.ambulatory_surgery ? ', ' : ''
-                                                                ) + 'Emergency Department' : ''
-                                                            }
+                                                                hospitalization_info.ambulatory_surgery ?
+                                                                    (hospitalization_info.patient_discharge ? ', ' : '') + 'Ambulatory Surgery' : ''
+                                                                }${
+                                                                hospitalization_info.emergency_department ?
+                                                                    (
+                                                                        hospitalization_info.patient_discharge ||
+                                                                        hospitalization_info.ambulatory_surgery ? ', ' : ''
+                                                                    ) + 'Emergency Department' : ''
+                                                                }
                                                             `
-                                                )
-                                        }
+                                                    )
+                                            }
                                         </Text>
                                     </td>
                                 </tr>
@@ -197,39 +196,116 @@ class HospitalizationInformation extends React.Component {
                                 <tr>
                                     <td>
                                         <Text style={{fontWeight: 'bold', paddingRight: '10pt'}}>
-                                            ICD-9 codes to identify endpoints:
+                                            Hospitalization endpoints:
                                         </Text>
                                     </td>
                                     <td>
-                                        <Text>
-                                            {
-                                                hospitalization_info.hospitalization_endpoint === null ||
-                                                hospitalization_info.hospitalization_endpoint === undefined ||
-                                                hospitalization_info.hospitalization_endpoint.trim().length === 0 ?
-                                                    'Not specified' :
-                                                    hospitalization_info.hospitalization_endpoint
-                                            }
-                                        </Text>
+                                        {
+                                            hospitalization_info.hospitalization_endpoints === null ||
+                                            hospitalization_info.hospitalization_endpoints === undefined ||
+                                            hospitalization_info.hospitalization_endpoints.length === 0 ?
+                                                <Text>Not specified</Text>
+                                                : null
+                                        }
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <Text style={{fontWeight: 'bold', paddingRight: '10pt'}}>
-                                            ICD-10 codes to identify endpoints:
-                                        </Text>
-                                    </td>
-                                    <td>
-                                        <Text>
-                                            {
-                                                hospitalization_info.hospitalization_endpoint_10 === null ||
-                                                hospitalization_info.hospitalization_endpoint_10 === undefined ||
-                                                hospitalization_info.hospitalization_endpoint_10.trim().length === 0 ?
-                                                    'Not specified' :
-                                                    hospitalization_info.hospitalization_endpoint_10
-                                            }
-                                        </Text>
-                                    </td>
-                                </tr>
+                                {
+                                    hospitalization_info.hospitalization_endpoints !== null &&
+                                    hospitalization_info.hospitalization_endpoints !== undefined &&
+                                    hospitalization_info.hospitalization_endpoints.length > 0 ?
+                                        <tr>
+                                            <td colSpan={2}>
+                                                <table border={0} style={{margin: '5px 50px 5px 50px', width: '100%'}}>
+                                                    <tbody>
+                                                    <tr style={{}}>
+                                                        <td style={{
+                                                            width: '25%',
+                                                            padding: '3px 5px 3px 5px',
+                                                            fontSize: '9pt',
+                                                            fontWeight: 'bold',
+                                                            backgroundColor: 'lightgray',
+                                                            border: 'solid 1px white'
+                                                        }}>Condition
+                                                        </td>
+                                                        <td style={{
+                                                            width: '25%',
+                                                            padding: '3px 5px 3px 5px',
+                                                            fontSize: '9pt',
+                                                            fontWeight: 'bold',
+                                                            backgroundColor: 'lightgray',
+                                                            border: 'solid 1px white'
+                                                        }}>ICD-9 codes
+                                                        </td>
+                                                        <td style={{
+                                                            width: '25%',
+                                                            padding: '3px 5px 3px 5px',
+                                                            fontSize: '9pt',
+                                                            fontWeight: 'bold',
+                                                            backgroundColor: 'lightgray',
+                                                            border: 'solid 1px white'
+                                                        }}>ICD-10 codes
+                                                        </td>
+                                                        <td style={{
+                                                            width: '25%',
+                                                            padding: '3px 5px 3px 5px',
+                                                            fontSize: '9pt',
+                                                            fontWeight: 'bold',
+                                                            backgroundColor: 'lightgray',
+                                                            border: 'solid 1px white'
+                                                        }}>Other criteria
+                                                        </td>
+                                                    </tr>
+                                                    {hospitalization_info.hospitalization_endpoints.map((endpoint, i) => {
+                                                        return <tr>
+                                                            <td style={{
+                                                                width: '25%',
+                                                                padding: '3px 5px 3px 5px',
+                                                                fontSize: '9pt',
+                                                                backgroundColor: i % 2 === 0 ? 'white' : '#f0f0f0',
+                                                                border: 'solid 1px white',
+                                                                verticalAlign: 'top'
+                                                            }}>
+                                                                {endpoint.condition}
+                                                            </td>
+                                                            <td style={{
+                                                                width: '25%',
+                                                                padding: '3px 5px 3px 5px',
+                                                                fontSize: '9pt',
+                                                                backgroundColor: i % 2 === 0 ? 'white' : '#f0f0f0',
+                                                                border: 'solid 1px white',
+                                                                verticalAlign: 'top'
+                                                            }}>
+                                                                {endpoint.icd9}
+                                                            </td>
+                                                            <td style={{
+                                                                width: '25%',
+                                                                padding: '3px 5px 3px 5px',
+                                                                fontSize: '9pt',
+                                                                backgroundColor: i % 2 === 0 ? 'white' : '#f0f0f0',
+                                                                border: 'solid 1px white',
+                                                                verticalAlign: 'top'
+                                                            }}>
+                                                                {endpoint.icd10}
+                                                            </td>
+                                                            <td style={{
+                                                                width: '25%',
+                                                                padding: '3px 5px 3px 5px',
+                                                                fontSize: '9pt',
+                                                                backgroundColor: i % 2 === 0 ? 'white' : '#f0f0f0',
+                                                                border: 'solid 1px white',
+                                                                verticalAlign: 'top'
+                                                            }}>
+                                                                {endpoint.other}
+                                                            </td>
+                                                        </tr>
+                                                    })
+                                                    }
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        : null
+                                }
                                 <tr>
                                     <td>
                                         <Text style={{fontWeight: 'bold', paddingRight: '10pt', whiteSpace: 'nowrap'}}>
@@ -364,6 +440,7 @@ class HospitalizationInformation extends React.Component {
             endpoint_priority_detail: null,
             hospitalization_endpoint: null,
             hospitalization_endpoint_10: null,
+            hospitalization_endpoints: [],
             start_date: 'QNR_1_FILL_DT',
             specified_start_date: null,
             include_prevalent: null,
@@ -375,6 +452,7 @@ class HospitalizationInformation extends React.Component {
         }
 
         this.sorterRef = React.createRef();
+        this.endpointsRef = React.createRef();
     }
 
     componentDidMount() {
@@ -394,6 +472,7 @@ class HospitalizationInformation extends React.Component {
                     endpoint_priority_detail: hospitalization_info.endpoint_priority_detail,
                     hospitalization_endpoint: hospitalization_info.hospitalization_endpoint,
                     hospitalization_endpoint_10: hospitalization_info.hospitalization_endpoint_10,
+                    hospitalization_endpoints: hospitalization_info.hospitalization_endpoints,
                     start_date: hospitalization_info.start_date,
                     specified_start_date: hospitalization_info.specified_start_date ? moment.utc(hospitalization_info.specified_start_date) : null,
                     include_prevalent: hospitalization_info.include_prevalent,
@@ -402,7 +481,12 @@ class HospitalizationInformation extends React.Component {
                     specified_end_date: hospitalization_info.specified_end_date ? moment.utc(hospitalization_info.specified_end_date) : null,
                     additional_info: hospitalization_info.additional_info,
                     hospitalization_record_order: hospitalization_info.hospitalization_record_order
-                })
+                });
+
+                if (this.endpointsRef.current && this.endpointsRef.current.setData) {
+                    this.endpointsRef.current.setData(hospitalization_info.hospitalization_endpoints);
+                }
+
             }
         }
     }
@@ -421,6 +505,7 @@ class HospitalizationInformation extends React.Component {
             endpoint_priority_detail: null,
             hospitalization_endpoint: null,
             hospitalization_endpoint_10: null,
+            hospitalization_endpoints: [],
             start_date: 'QNR_1_FILL_DT',
             specified_start_date: null,
             include_prevalent: null,
@@ -616,6 +701,7 @@ class HospitalizationInformation extends React.Component {
             endpoint_priority_detail: this.state.endpoint_priority_detail,
             hospitalization_endpoint: this.state.hospitalization_endpoint,
             hospitalization_endpoint_10: this.state.hospitalization_endpoint_10,
+            hospitalization_endpoints: this.state.hospitalization_endpoints,
             start_date: this.state.start_date,
             specified_start_date: this.state.specified_start_date,
             include_prevalent: this.state.include_prevalent,
@@ -628,6 +714,18 @@ class HospitalizationInformation extends React.Component {
         this.props.save_hospitalization_info(obj);
     }
 
+    setEndpoints = (endpoints) => {
+        let hospitalization_endpoints = [];
+        endpoints.map((endpoint, i) => {
+            if ((endpoint.condition || endpoint.icd9 || endpoint.icd10 || endpoint.other) && i > 0) {
+                hospitalization_endpoints.push(endpoint);
+            }
+        });
+
+        this.setState({
+            hospitalization_endpoints
+        }, this.saveHospitalizationInformation);
+    }
 
     render() {
         const radioStyle = {
@@ -771,43 +869,37 @@ class HospitalizationInformation extends React.Component {
                     </div>
                 </div>
 
-                <table border={0} style={{width: '100%'}}>
-                    <tbody>
-                    <tr>
-                        <td style={{width: '50%'}}>
-                            <Typography style={{padding: '10pt 10pt 0pt 10pt', width: '100%'}}>
-                                Which ICD-9 code(s) should be used to identify your endpoint(s)?
-                            </Typography>
-                            <Typography style={{padding: '2pt 10pt 0pt 10pt', width: '100%', fontStyle: 'italic'}}>
-                                Be sure to specify to what digit your endpoint is defined:
-                            </Typography>
+                <Typography style={{padding: '10pt 50pt 0pt 10pt', width: '100%'}}>
+                    How is the hospitalization endpoint defined?
+                </Typography>
 
-                            <div style={{padding: '10pt 20pt 10pt 10pt'}}>
-                                <TextArea rows={6}
-                                          value={this.state.hospitalization_endpoint}
-                                          onChange={this.onChangeHospitalizationEndpoint}
-                                          allowClear/>
-                            </div>
-                        </td>
-                        <td style={{width: '50%'}}>
-                            <Typography style={{padding: '10pt 10pt 0pt 10pt', width: '100%'}}>
-                                Which ICD-10 code(s) should be used to identify your endpoint(s)?
-                            </Typography>
-                            <Typography style={{padding: '2pt 10pt 0pt 10pt', width: '100%', fontStyle: 'italic'}}>
-                                Be sure to specify to what digit your endpoint is defined:
-                            </Typography>
+                <Typography style={{padding: '0pt 10pt 0pt 10pt', width: '100%'}}>
+                    For each condition, fill in the ICD-9 and ICD-10 codes, specifying all digits. If applicable, fill
+                    in any other criteria that defines the endpoint. Click the + button to add another condition.
+                </Typography>
 
-                            <div style={{padding: '10pt 20pt 10pt 10pt'}}>
-                                <TextArea rows={6}
-                                          value={this.state.hospitalization_endpoint_10}
-                                          onChange={this.onChangeHospitalizationEndpoint10}
-                                          allowClear/>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
+                <div style={{padding: '10pt 60pt 10pt 10pt', width: '100%'}}>
+                    <table style={{ width: '100%' }}>
+                        <tbody>
+                        <tr>
+                            <td style={{
+                                paddingTop: '32pt',
+                                paddingRight: '5pt',
+                                verticalAlign: 'top',
+                                textAlign: 'right'
+                            }}>
+                                <text>Example</text>
+                            </td>
+                            <td>
+                                <EditableTable set_endpoints={this.setEndpoints}
+                                               endpoints={this.state.hospitalization_endpoints}
+                                               ref={this.endpointsRef}
+                                />
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <Typography style={{padding: '10pt 50pt 0pt 10pt', width: '100%'}}>
                     A small number of participants have both diagnoses and procedures on the same day.
