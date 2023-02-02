@@ -1,0 +1,33 @@
+Delete 19 columns from the database and remove them from all_columns at the line 1511
+•	breast_cancer_res_only_ind
+•	surg_sum_cde
+•	surg_other_98_cde
+•	surg_primary_98_cde
+•	scope1_cde
+•	scope2_cde
+•	scope3_cde
+•	surg1_dt
+•	surg1_other_cde
+•	surg1_primary_cde
+•	surg2_dt
+•	surg2_other_cde
+•	surg2_primary_cde
+•	surg3_dt
+•	surg3_other_cde
+•	surg3_primary_cde
+•	estrogen_rcptr_ind
+•	progesterone_rcptr_ind
+•	her2_rcptr_ind
+
+How to use cancer_id?
+
+Should we completely delete the code for deleting the rows with breast_cancer_res_only_ind = 1 when 26000 is not in selected seer_ids?
+
+•	breast_cancer_res_only_ind
+
+o	line 1511: remove it from all_columns.
+o	line 1717: remove it from the SQL query for output when the project is not cohort + cancer
+o	line 1753; remove it from the SQL query
+o	line 2003 – 2041:  delete the rows with breast_cancer_res_only_ind = 1 when 26000 is not in selected seer_ids
+o	line 3250: remove the code, no need it.
+ 
