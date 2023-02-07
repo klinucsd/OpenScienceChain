@@ -1,0 +1,52 @@
+Update the text for the hospitalization module in the following
+locations:
+
+1. "Enter hospitalization information" module - first line of
+text
+
+"OSHPD Patient Discharge data are complete for all CTS
+participants from CTS baseline through 2018..."
+
+CHANGES TO:
+
+"Patient Discharge data are available for CTS participants starting
+at baseline. Ambulatory Surgery and Emergency Department data
+are also available beginning in 2005."
+
+2. "Enter hospitalization information" module - text above
+code table
+
+Add this, italicized, on a new line directly under "Click the + button
+to add another condition.":
+
+"You must include both ICD-9 and ICD-10 codes. If your endpoint
+includes both diagnoses and procedures, please indicate which are
+procedure codes. Please also provide HCPCS codes if you are
+interested in procedures from Ambulatory Surgery or Emergency
+Department visits."
+
+3. "Enter hospitalization information" module - second to last 
+question
+
+
+"CTS follow-up data currently complete through 12/31/2018. Will
+your analysis include all eligible cases through 12/31/2018?"
+
+CHANGES TO:
+
+"Will your analysis include all eligible cases through the current
+administrative censoring date?"
+
+
+4. The summary screen. Check the "Hospitalization
+Information" box on the summary page.
+
+
+Change "Include eligible cases through 12/31/2018" to "Include
+eligible cases through the administrative censoring date"
+
+
+
+5. The PDF that prints out the summary screen
+
+Make sure this matches #4 above
